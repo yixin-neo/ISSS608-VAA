@@ -1,0 +1,67 @@
+---
+title: "Hands-on Exercise 1"
+author: "NeoYX"
+editor: visual
+execute: 
+  freeze: auto
+  #echo: false
+---
+
+Getting Started Resources:
+
+[Markdown](https://quarto.org/docs/authoring/markdown-basics.html) -- useful for markdowns
+
+[Executionoptions](https://quarto.org/docs/computations/execution-options.html)
+
+### 1.2.1 Installing and loading the required libraries
+
+Install and launching R packages
+
+The code chunk below uses p_load() of [pacman](https://rpubs.com/akshaypatankar/594834) package to check if tidyverse packages are installed in the computer. If they are, then they will be launched into R.
+
+```{r}
+#| echo: true
+pacman::p_load(tidyverse)
+```
+
+### 1.2.2 Importing the data
+
+The code chunk below imports exam_data.csv into R environment by using [read_csv()](https://readr.tidyverse.org/reference/read_delim.html) function of [readr](https://readr.tidyverse.org/) package.
+
+readr is one of the tidyverse package.
+
+```{r}
+exam_data <- read_csv('data1/Exam_data.csv')
+```
+
+```{r}
+#| eval: false
+#| echo: false
+dim(exam_data)
+glimpse(exam_data)
+```
+
+## 1.3 Introducing ggplot
+
+For more details, visit [ggplot2](https://ggplot2.tidyverse.org/).
+
+Histogram cheatsheet ![ggplot2](histcodes.png) \### 1.3.1 R Graphics VS ggplot
+
+Plotting a simple bar chart
+
+```{r}
+ggplot(data = exam_data,
+       aes(x=RACE)) + 
+  geom_bar()
+
+```
+
+To show code chunk but do not show the chart:
+
+#\| eval: false
+
+To show the plot but do not show the code chunk
+
+#\| echo: false
+
+To not show both: type both codes

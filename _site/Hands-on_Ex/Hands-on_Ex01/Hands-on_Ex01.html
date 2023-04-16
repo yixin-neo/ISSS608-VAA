@@ -154,6 +154,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </li>  
     </ul>
   </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-in-class-exercise" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">In-class Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex01/In-class_Ex01.html">
+ <span class="dropdown-text">In-class Exercise 1</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-take-home-exercise" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Take-home Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-take-home-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex01/Take-home_Ex_Ex01.qmd">
+ <span class="dropdown-text">Take-home Exercise 1</span></a>
+  </li>  
+    </ul>
+  </li>
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
@@ -215,6 +237,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#working-with-facet_wrap" id="toc-working-with-facet_wrap" class="nav-link" data-scroll-target="#working-with-facet_wrap">1.9.1 Working with <code>facet_wrap()</code></a></li>
   <li><a href="#facet_grid-function" id="toc-facet_grid-function" class="nav-link" data-scroll-target="#facet_grid-function">1.9.2 <code>facet_grid()</code> function</a></li>
   </ul></li>
+  <li><a href="#essential-grammatical-elements-in-ggplot2-coordinates" id="toc-essential-grammatical-elements-in-ggplot2-coordinates" class="nav-link" data-scroll-target="#essential-grammatical-elements-in-ggplot2-coordinates">1.10 Essential Grammatical Elements in ggplot2: Coordinates</a>
+  <ul class="collapse">
+  <li><a href="#working-with-coordinate" id="toc-working-with-coordinate" class="nav-link" data-scroll-target="#working-with-coordinate">1.10.1 Working with Coordinate</a></li>
+  <li><a href="#changing-the-y--and-x-axis-range" id="toc-changing-the-y--and-x-axis-range" class="nav-link" data-scroll-target="#changing-the-y--and-x-axis-range">1.10.2 Changing the y- and x-axis range</a></li>
+  </ul></li>
+  <li><a href="#essential-grammatical-elements-in-ggplot2-themes" id="toc-essential-grammatical-elements-in-ggplot2-themes" class="nav-link" data-scroll-target="#essential-grammatical-elements-in-ggplot2-themes">1.11 Essential Grammatical Elements in ggplot2: themes</a>
+  <ul class="collapse">
+  <li><a href="#working-with-theme" id="toc-working-with-theme" class="nav-link" data-scroll-target="#working-with-theme">1.11.1 Working with theme</a></li>
+  </ul></li>
+  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference">1.12 Reference</a></li>
   </ul>
 </nav>
     </div>
@@ -843,14 +875,151 @@ Note
 <p><img src="Hands-on_Ex01_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p>NYX: We can also overlay multiple histograms together.</p>
+<p><a href="https://statisticsglobe.com/draw-overlaying-histograms-with-ggplot2-in-r">StatisticsGlobe</a></p>
+<p><a href="https://data-se.netlify.app/2021/06/23/overlaying-facetted-histograms-with-normal-curve-using-ggplot2/">Facetted histograms with overlaid normal curves</a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>sub_data,</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span>MATHS, <span class="at">fill =</span> GENDER)) <span class="sc">+</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">position =</span> <span class="st">"identity"</span>, <span class="at">alpha=</span><span class="fl">0.2</span>, <span class="at">bins=</span><span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y=</span><span class="st">'Number of students'</span>, <span class="at">x=</span><span class="st">'Math scores'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex01_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 </section>
 <section id="facet_grid-function" class="level3">
 <h3 class="anchored" data-anchor-id="facet_grid-function">1.9.2 <code>facet_grid()</code> function</h3>
 <p><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html"><code>facet_grid()</code></a> forms a matrix of panels defined by row and column facetting variables. It is most useful when you have two discrete variables, and all combinations of the variables exist in the data.</p>
 <p>The code chunk below plots a trellis plot using <code>facet_grid()</code>.</p>
-
-
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data,</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span>MATHS)) <span class="sc">+</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins=</span><span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(<span class="sc">~</span>CLASS) <span class="sc">+</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y=</span><span class="st">'Number of students'</span>, <span class="at">x=</span><span class="st">'Math scores'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex01_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 </section>
+</section>
+<section id="essential-grammatical-elements-in-ggplot2-coordinates" class="level2">
+<h2 class="anchored" data-anchor-id="essential-grammatical-elements-in-ggplot2-coordinates">1.10 Essential Grammatical Elements in ggplot2: Coordinates</h2>
+<p>The <em>Coordinates</em> functions map the position of objects onto the plane of the plot. There are a number of different possible coordinate systems to use, they are:</p>
+<pre><code>-   [`coord_cartesian()`](https://ggplot2.tidyverse.org/reference/coord_cartesian.html): the default cartesian coordinate systems, where you specify x and y values (e.g. allows you to zoom in or out).
+-   [`coord_flip()`](https://ggplot2.tidyverse.org/reference/coord_flip.html): a cartesian system with the x and y flipped.
+-   [`coord_fixed()`](https://ggplot2.tidyverse.org/reference/coord_fixed.html): a cartesian system with a "fixed" aspect ratio (e.g. 1.78 for a "widescreen" plot).
+-   [`coord_quickmap()`](https://ggplot2.tidyverse.org/reference/coord_map.html): a coordinate system that approximates a good aspect ratio for maps.</code></pre>
+<section id="working-with-coordinate" class="level3">
+<h3 class="anchored" data-anchor-id="working-with-coordinate">1.10.1 Working with Coordinate</h3>
+<p>By the default, the bar chart of ggplot2 is in vertical form.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span>RACE)) <span class="sc">+</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex01_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The code chunk below flips the horizontal bar chart into vertical bar chart by using <code>coord_flip()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span>RACE)) <span class="sc">+</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex01_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="changing-the-y--and-x-axis-range" class="level3">
+<h3 class="anchored" data-anchor-id="changing-the-y--and-x-axis-range">1.10.2 Changing the y- and x-axis range</h3>
+<p>The scatterplot on the right is slightly misleading because the y-aixs and x-axis range are not equal.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span> MATHS, <span class="at">y=</span>ENGLISH)) <span class="sc">+</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span>lm, <span class="at">size=</span><span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex01_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The code chunk below fixed both the y-axis and x-axis range from 0-100.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span> MATHS, <span class="at">y=</span>ENGLISH)) <span class="sc">+</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span>lm, <span class="at">size=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span> (<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">100</span>),</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">ylim=</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">100</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex01_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="essential-grammatical-elements-in-ggplot2-themes" class="level2">
+<h2 class="anchored" data-anchor-id="essential-grammatical-elements-in-ggplot2-themes">1.11 Essential Grammatical Elements in ggplot2: themes</h2>
+<p>Themes control elements of the graph not related to the data. For example:</p>
+<ul>
+<li><p>background colour</p></li>
+<li><p>size of fonts</p></li>
+<li><p>gridlines</p></li>
+<li><p>colour of labels</p></li>
+</ul>
+<p>Built-in themes include: - <code>theme_gray()</code> (default) - <code>theme_bw()</code> - <code>theme_classic()</code></p>
+<p>A list of theme can be found at this <a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">link</a>. Each theme element can be conceived of as either a line (e.g.&nbsp;x-axis), a rectangle (e.g.&nbsp;graph background), or text (e.g.&nbsp;axis title).</p>
+<section id="working-with-theme" class="level3">
+<h3 class="anchored" data-anchor-id="working-with-theme">1.11.1 Working with theme</h3>
+<p>The code chunk below plot a horizontal bar chart using <code>theme_gray()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span>RACE)) <span class="sc">+</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_gray</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex01_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>A horizontal bar chart plotted using <code>theme_classic()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span>RACE)) <span class="sc">+</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex01_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>A horizontal bar chart plotted using <code>theme_minimal()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span>RACE)) <span class="sc">+</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex01_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="reference" class="level2">
+<h2 class="anchored" data-anchor-id="reference">1.12 Reference</h2>
+<ul>
+<li><p>Hadley Wickham (2023) <a href="https://ggplot2-book.org/"><strong>ggplot2: Elegant Graphics for Data Analysis</strong></a>. Online 3rd edition.</p></li>
+<li><p>Winston Chang (2013) <a href="https://r-graphics.org/"><strong>R Graphics Cookbook 2nd edition</strong></a>. Online version.</p></li>
+<li><p>Healy, Kieran (2019) <a href="https://socviz.co/"><strong>Data Visualization: A practical introduction</strong></a>. Online version</p></li>
+<li><p><a href="https://henrywang.nl/learning-ggplot2-on-paper-components/">Learning ggplot2 on Paper – Components</a></p></li>
+<li><p><a href="https://henrywang.nl/learning-ggplot2-on-paper-layer/">Learning ggplot2 on Paper – Layer</a></p></li>
+<li><p><a href="https://henrywang.nl/tag/learning-ggplot2-on-paper/">Learning ggplot2 on Paper – Scale</a></p></li>
+</ul>
+
+
 </section>
 
 </main> <!-- /main -->

@@ -8,6 +8,7 @@ execute:
   #echo: false
   html:
     code-fold: false
+    code-overflow: wrap
     code-summary: "Show the code"
     code-line-numbers: true
 ---
@@ -481,9 +482,7 @@ library(ggpmisc)
 ::: callout-note
 About the error: annotate is masked from ggplot2. To use annotate from ggplot2, we can call it out explicitly.
 
-Eg.:
-# Call out the ggplot2 annotate() function explicitly
-p + ggplot2::annotate("text", x = 4, y = 20, label = "More text")
+Eg.: \# Call out the ggplot2 annotate() function explicitly p + ggplot2::annotate("text", x = 4, y = 20, label = "More text")
 
 Other references:
 
@@ -527,8 +526,144 @@ ggplot(data=sub_data,
   labs(y='Number of students', x='Math scores')
 ```
 
+NYX: We can also overlay multiple histograms together.
+
+[StatisticsGlobe](https://statisticsglobe.com/draw-overlaying-histograms-with-ggplot2-in-r)
+
+[Facetted histograms with overlaid normal curves](https://data-se.netlify.app/2021/06/23/overlaying-facetted-histograms-with-normal-curve-using-ggplot2/)
+
+```{r}
+ggplot(data=sub_data,
+       aes(x=MATHS, fill = GENDER)) +
+  geom_histogram(position = "identity", alpha=0.2, bins=20) +
+
+  labs(y='Number of students', x='Math scores')
+```
+
 ### 1.9.2 `facet_grid()` function
 
 [`facet_grid()`](https://ggplot2.tidyverse.org/reference/facet_grid.html) forms a matrix of panels defined by row and column facetting variables. It is most useful when you have two discrete variables, and all combinations of the variables exist in the data.
 
 The code chunk below plots a trellis plot using `facet_grid()`.
+
+```{r}
+ggplot(data=exam_data,
+       aes(x=MATHS)) +
+  geom_histogram(bins=20) +
+  facet_grid(~CLASS) +
+  labs(y='Number of students', x='Math scores')
+```
+
+## 1.10 Essential Grammatical Elements in ggplot2: Coordinates
+
+The *Coordinates* functions map the position of objects onto the plane of the plot. There are a number of different possible coordinate systems to use, they are:
+
+```         
+-   [`coord_cartesian()`](https://ggplot2.tidyverse.org/reference/coord_cartesian.html): the default cartesian coordinate systems, where you specify x and y values (e.g. allows you to zoom in or out).
+-   [`coord_flip()`](https://ggplot2.tidyverse.org/reference/coord_flip.html): a cartesian system with the x and y flipped.
+-   [`coord_fixed()`](https://ggplot2.tidyverse.org/reference/coord_fixed.html): a cartesian system with a "fixed" aspect ratio (e.g. 1.78 for a "widescreen" plot).
+-   [`coord_quickmap()`](https://ggplot2.tidyverse.org/reference/coord_map.html): a coordinate system that approximates a good aspect ratio for maps.
+```
+
+### 1.10.1 Working with Coordinate
+
+By the default, the bar chart of ggplot2 is in vertical form.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar()
+```
+
+The code chunk below flips the horizontal bar chart into vertical bar chart by using `coord_flip()`.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip()
+```
+
+### 1.10.2 Changing the y- and x-axis range
+
+The scatterplot on the right is slightly misleading because the y-aixs and x-axis range are not equal.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(method=lm, size=0.5)
+```
+
+The code chunk below fixed both the y-axis and x-axis range from 0-100.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(method=lm, size=0.5) +
+  coord_cartesian (xlim=c(0,100),
+                   ylim= c(0,100))
+```
+
+## 1.11 Essential Grammatical Elements in ggplot2: themes
+
+Themes control elements of the graph not related to the data. For example:
+
+-   background colour
+
+-   size of fonts
+
+-   gridlines
+
+-   colour of labels
+
+Built-in themes include: - `theme_gray()` (default) - `theme_bw()` - `theme_classic()`
+
+A list of theme can be found at this [link](https://ggplot2.tidyverse.org/reference/ggtheme.html). Each theme element can be conceived of as either a line (e.g. x-axis), a rectangle (e.g. graph background), or text (e.g. axis title).
+
+### 1.11.1 Working with theme
+
+The code chunk below plot a horizontal bar chart using `theme_gray()`.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_gray()
+```
+
+A horizontal bar chart plotted using `theme_classic()`.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_classic()
+```
+
+A horizontal bar chart plotted using `theme_minimal()`.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_minimal()
+```
+
+## 1.12 Reference
+
+-   Hadley Wickham (2023) [**ggplot2: Elegant Graphics for Data Analysis**](https://ggplot2-book.org/). Online 3rd edition.
+
+-   Winston Chang (2013) [**R Graphics Cookbook 2nd edition**](https://r-graphics.org/). Online version.
+
+-   Healy, Kieran (2019) [**Data Visualization: A practical introduction**](https://socviz.co/). Online version
+
+-   [Learning ggplot2 on Paper -- Components](https://henrywang.nl/learning-ggplot2-on-paper-components/)
+
+-   [Learning ggplot2 on Paper -- Layer](https://henrywang.nl/learning-ggplot2-on-paper-layer/)
+
+-   [Learning ggplot2 on Paper -- Scale](https://henrywang.nl/tag/learning-ggplot2-on-paper/)

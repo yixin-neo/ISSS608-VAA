@@ -13,6 +13,8 @@ execute:
     code-line-numbers: true
 ---
 
+# In-class Exercise 1: Programming Elegant DataVis with ggplot2
+
 ```{r}
 pacman:: p_load(tidyverse)
 ```
@@ -21,16 +23,24 @@ pacman:: p_load(tidyverse)
 exam_data <- read_csv("data1/Exam_data.csv")
 ```
 
-Task 1: Plotting a bar chart
+## Task 1: Plotting a bar chart
+
+In this section, I will explore the theme_minimal() and change the gridline colours.
 
 Reference website : [R bloggers](https://www.r-bloggers.com/2022/07/how-to-change-background-color-in-ggplot2-3/) (How to change the background colour of ggplot2?)
 
+To modify components of a theme , refer to this ggplot2 [webpage](https://ggplot2.tidyverse.org/reference/theme.html)
+
+::: panel-tabset
+## The plot
+
 ```{r}
+#| echo: false
 ggplot(data=exam_data,
        aes(x=RACE)) +
   geom_bar() +
   coord_flip() +
-  
+  theme_minimal() +
   theme(panel.background = element_rect(fill ='lightblue', color ='black',linetype = 'dotted'),
         panel.grid.major = element_line (color= 'red', linetype = 'dotted'),
         panel.grid.minor = element_line (colour='green', size= 2, linetype = 'dotted'),
@@ -39,6 +49,59 @@ ggplot(data=exam_data,
   labs(y='Number of students')
 ```
 
-```{r}
+## The code chunk
 
+```{r}
+#| eval: false
+ggplot(data=exam_data,
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_minimal() +
+  theme(panel.background = element_rect(fill ='lightblue', color ='black', linetype = 'dotted'),
+        panel.grid.major = element_line (color= 'red', linetype = 'dotted'),
+        panel.grid.minor = element_line (colour='green', size= 2, linetype = 'dotted'),
+        plot.title= element_text(size=rel(2))) +
+  ggtitle('Number of students by Race') +
+  labs(y='Number of students')
 ```
+:::
+
+## Task 2: Improve the data visualisation of an existing simple vertical bar chart
+
+```{r}
+#| echo: false
+ggplot(data=exam_data,
+       aes(x=RACE)) +
+  geom_bar()
+```
+
+**There are several flaws in the design above, namely:**
+
+1.  y-axis label is not clear (i.e. count)
+
+2.  To support effective comparison, the bars should be sorted by their respective frequencies.
+
+3.  For static graph, frequency values should be added to provide addition information. (labelled on the graph)
+
+The design below is an improvised version:
+
+```{r}
+#| eval: false
+exam_data %>%
+  group_by(RACE) %>% 
+  summarise(count = n()) %>% 
+  ggplot(aes(x = reorder(RACE, (-count)), y = count)) +
+  geom_bar(stat = 'identity', fill = 'steelblue') +
+  theme_grey() +
+  geom_text(aes(label = paste0(count,', ', round(count/sum(count)*100,1), '%')),
+            position = position_dodge(width = 0.8), vjust= -0.3, size = 3)
+```
+
+References:
+
+https://www.roelpeters.be/reorder-ggplot2-bar-chart-by-count/ http://www.sthda.com/english/wiki/ggplot2-barplots-quick-start-guide-r-software-and-data-visualization#bar-plot-with-labels
+
+[Meaning of the argument 'identity' in the 'stat' parameter:]{.underline}
+
+If you provide the argument stat="identity" to geom_bar() then you're telling R to calculate the sum of the y variable, grouped by the x variable and use bars to display the sums

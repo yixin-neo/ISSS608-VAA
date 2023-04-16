@@ -67,7 +67,7 @@
     "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#essential-grammatical-elements-in-ggplot2-themes",
     "title": "Hands-on Exercise 1",
     "section": "1.11 Essential Grammatical Elements in ggplot2: themes",
-    "text": "1.11 Essential Grammatical Elements in ggplot2: themes\nThemes control elements of the graph not related to the data. For example:\n\nbackground colour\nsize of fonts\ngridlines\ncolour of labels\n\nBuilt-in themes include: - theme_gray() (default) - theme_bw() - theme_classic()\nA list of theme can be found at this link. Each theme element can be conceived of as either a line (e.g. x-axis), a rectangle (e.g. graph background), or text (e.g. axis title).\n\n1.11.1 Working with theme\nThe code chunk below plot a horizontal bar chart using theme_gray().\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_gray()\n\n\n\n\nA horizontal bar chart plotted using theme_classic().\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_classic()\n\n\n\n\nA horizontal bar chart plotted using theme_minimal().\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_minimal()"
+    "text": "1.11 Essential Grammatical Elements in ggplot2: themes\nThemes control elements of the graph not related to the data. For example:\n\nbackground colour\nsize of fonts\ngridlines\ncolour of labels\n\nBuilt-in themes include: - theme_gray() (default) - theme_bw() - theme_classic()\nA list of theme can be found at this link. Each theme element can be conceived of as either a line (e.g. x-axis), a rectangle (e.g. graph background), or text (e.g. axis title).\n\n1.11.1 Working with theme\nThe code chunk below plot a horizontal bar chart using theme_gray().\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_gray()\n\n\n\n\nA horizontal bar chart plotted using theme_classic().\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_classic()\n\n\n\n\nA horizontal bar chart plotted using theme_minimal().\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_minimal()\n\n\n\n\nTo modify components of a theme , refer to this ggplot2 webpage"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#reference",
@@ -75,6 +75,13 @@
     "title": "Hands-on Exercise 1",
     "section": "1.12 Reference",
     "text": "1.12 Reference\n\nHadley Wickham (2023) ggplot2: Elegant Graphics for Data Analysis. Online 3rd edition.\nWinston Chang (2013) R Graphics Cookbook 2nd edition. Online version.\nHealy, Kieran (2019) Data Visualization: A practical introduction. Online version\nLearning ggplot2 on Paper – Components\nLearning ggplot2 on Paper – Layer\nLearning ggplot2 on Paper – Scale"
+  },
+  {
+    "objectID": "In-class_Ex/In-class_Ex01/In-class_Ex01.html",
+    "href": "In-class_Ex/In-class_Ex01/In-class_Ex01.html",
+    "title": "In-class_Ex01",
+    "section": "",
+    "text": "pacman:: p_load(tidyverse)\n\n\nexam_data <- read_csv(\"data1/Exam_data.csv\")\n\n\n\nIn this section, I will explore the theme_minimal() and change the gridline colours.\nReference website : R bloggers (How to change the background colour of ggplot2?)\nTo modify components of a theme , refer to this ggplot2 webpage\n\nThe plotThe code chunk\n\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data,\n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_minimal() +\n  theme(panel.background = element_rect(fill ='lightblue', color ='black', linetype = 'dotted'),\n        panel.grid.major = element_line (color= 'red', linetype = 'dotted'),\n        panel.grid.minor = element_line (colour='green', size= 2, linetype = 'dotted'),\n        plot.title= element_text(size=rel(2))) +\n  ggtitle('Number of students by Race') +\n  labs(y='Number of students')\n\n\n\n\n\n\n\n\n\n\n\n\nThere are several flaws in the design above, namely:\n\ny-axis label is not clear (i.e. count)\nTo support effective comparison, the bars should be sorted by their respective frequencies.\nFor static graph, frequency values should be added to provide addition information. (labelled on the graph)\n\nThe design below is an improvised version:\n\nexam_data %>%\n  group_by(RACE) %>% \n  summarise(count = n()) %>% \n  ggplot(aes(x = reorder(RACE, (-count)), y = count)) +\n  geom_bar(stat = 'identity', fill = 'steelblue') +\n  theme_grey() +\n  geom_text(aes(label = paste0(count,', ', round(count/sum(count)*100,1), '%')),\n            position = position_dodge(width = 0.8), vjust= -0.3, size = 3)\n\nReferences: https://www.roelpeters.be/reorder-ggplot2-bar-chart-by-count/ http://www.sthda.com/english/wiki/ggplot2-barplots-quick-start-guide-r-software-and-data-visualization#bar-plot-with-labels\nIf you provide the argument stat=”identity” to geom_bar() then you’re telling R to calculate the sum of the y variable, grouped by the x variable and use bars to display the sums"
   },
   {
     "objectID": "index.html",
@@ -89,12 +96,5 @@
     "title": "Take-home_Ex01",
     "section": "",
     "text": "To be updated"
-  },
-  {
-    "objectID": "In-class_Ex/In-class_Ex01/In-class_Ex01.html",
-    "href": "In-class_Ex/In-class_Ex01/In-class_Ex01.html",
-    "title": "In-class_Ex01",
-    "section": "",
-    "text": "pacman:: p_load(tidyverse)\n\n\nexam_data <- read_csv(\"data1/Exam_data.csv\")\n\nTask 1: Plotting a bar chart\nReference website : R bloggers (How to change the background colour of ggplot2?)\n\nggplot(data=exam_data,\n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme(panel.background = element_rect(fill ='lightblue', color ='pink'),\n        panel.grid.major = element_line (color= 'red', linetype = 'dotted'),\n        panel.grid.minor = element_line (colour='green', size= 2, linetype = 'dotted')) +\n  labs(y='Number of students')"
   }
 ]

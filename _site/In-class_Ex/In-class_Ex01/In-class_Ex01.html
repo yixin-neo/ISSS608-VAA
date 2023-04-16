@@ -197,7 +197,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#in-class-exercise-1-programming-elegant-datavis-with-ggplot2" id="toc-in-class-exercise-1-programming-elegant-datavis-with-ggplot2" class="nav-link active" data-scroll-target="#in-class-exercise-1-programming-elegant-datavis-with-ggplot2">In-class Exercise 1: Programming Elegant DataVis with ggplot2</a>
+  <ul class="collapse">
+  <li><a href="#task-1-plotting-a-bar-chart" id="toc-task-1-plotting-a-bar-chart" class="nav-link" data-scroll-target="#task-1-plotting-a-bar-chart">Task 1: Plotting a bar chart</a></li>
+  <li><a href="#task-2-improve-the-data-visualisation-of-an-existing-simple-vertical-bar-chart" id="toc-task-2-improve-the-data-visualisation-of-an-existing-simple-vertical-bar-chart" class="nav-link" data-scroll-target="#task-2-improve-the-data-visualisation-of-an-existing-simple-vertical-bar-chart">Task 2: Improve the data visualisation of an existing simple vertical bar chart</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -225,32 +235,77 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
+<section id="in-class-exercise-1-programming-elegant-datavis-with-ggplot2" class="level1">
+<h1>In-class Exercise 1: Programming Elegant DataVis with ggplot2</h1>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span> <span class="fu">p_load</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>exam_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data1/Exam_data.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Task 1: Plotting a bar chart</p>
+<section id="task-1-plotting-a-bar-chart" class="level2">
+<h2 class="anchored" data-anchor-id="task-1-plotting-a-bar-chart">Task 1: Plotting a bar chart</h2>
+<p>In this section, I will explore the theme_minimal() and change the gridline colours.</p>
 <p>Reference website : <a href="https://www.r-bloggers.com/2022/07/how-to-change-background-color-in-ggplot2-3/">R bloggers</a> (How to change the background colour of ggplot2?)</p>
+<p>To modify components of a theme , refer to this ggplot2 <a href="https://ggplot2.tidyverse.org/reference/theme.html">webpage</a></p>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">The plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">The code chunk</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="In-class_Ex01_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data,</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span>RACE)) <span class="sc">+</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span><span class="st">'lightblue'</span>, <span class="at">color =</span><span class="st">'pink'</span>),</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major =</span> <span class="fu">element_line</span> (<span class="at">color=</span> <span class="st">'red'</span>, <span class="at">linetype =</span> <span class="st">'dotted'</span>),</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_line</span> (<span class="at">colour=</span><span class="st">'green'</span>, <span class="at">size=</span> <span class="dv">2</span>, <span class="at">linetype =</span> <span class="st">'dotted'</span>)) <span class="sc">+</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y=</span><span class="st">'Number of students'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="In-class_Ex01_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span><span class="st">'lightblue'</span>, <span class="at">color =</span><span class="st">'black'</span>, <span class="at">linetype =</span> <span class="st">'dotted'</span>),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major =</span> <span class="fu">element_line</span> (<span class="at">color=</span> <span class="st">'red'</span>, <span class="at">linetype =</span> <span class="st">'dotted'</span>),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_line</span> (<span class="at">colour=</span><span class="st">'green'</span>, <span class="at">size=</span> <span class="dv">2</span>, <span class="at">linetype =</span> <span class="st">'dotted'</span>),</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title=</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="fu">rel</span>(<span class="dv">2</span>))) <span class="sc">+</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">'Number of students by Race'</span>) <span class="sc">+</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y=</span><span class="st">'Number of students'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
+</div>
+</div>
+</section>
+<section id="task-2-improve-the-data-visualisation-of-an-existing-simple-vertical-bar-chart" class="level2">
+<h2 class="anchored" data-anchor-id="task-2-improve-the-data-visualisation-of-an-existing-simple-vertical-bar-chart">Task 2: Improve the data visualisation of an existing simple vertical bar chart</h2>
 <div class="cell">
-
+<div class="cell-output-display">
+<p><img src="In-class_Ex01_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
+</div>
+<p><strong>There are several flaws in the design above, namely:</strong></p>
+<ol type="1">
+<li><p>y-axis label is not clear (i.e.&nbsp;count)</p></li>
+<li><p>To support effective comparison, the bars should be sorted by their respective frequencies.</p></li>
+<li><p>For static graph, frequency values should be added to provide addition information. (labelled on the graph)</p></li>
+</ol>
+<p>The design below is an improvised version:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>exam_data <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(RACE) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(RACE, (<span class="sc">-</span>count)), <span class="at">y =</span> count)) <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">'identity'</span>, <span class="at">fill =</span> <span class="st">'steelblue'</span>) <span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_grey</span>() <span class="sc">+</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(count,<span class="st">', '</span>, <span class="fu">round</span>(count<span class="sc">/</span><span class="fu">sum</span>(count)<span class="sc">*</span><span class="dv">100</span>,<span class="dv">1</span>), <span class="st">'%'</span>)),</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.8</span>), <span class="at">vjust=</span> <span class="sc">-</span><span class="fl">0.3</span>, <span class="at">size =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>References: https://www.roelpeters.be/reorder-ggplot2-bar-chart-by-count/ http://www.sthda.com/english/wiki/ggplot2-barplots-quick-start-guide-r-software-and-data-visualization#bar-plot-with-labels</p>
+<p>If you provide the argument stat=”identity” to geom_bar() then you’re telling R to calculate the sum of the y variable, grouped by the x variable and use bars to display the sums</p>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

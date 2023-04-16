@@ -1,0 +1,16 @@
+{
+  "hash": "f61f80a57e9ed6edb8dc54aea16e0b84",
+  "result": {
+    "markdown": "---\ntitle: \"In-class_Ex01\"\nauthor: \"NeoYX\"\neditor: visual\nexecute: \n  freeze: auto\n  warning: false\n  #echo: false\n  html:\n    code-fold: false\n    code-overflow: wrap\n    code-summary: \"Show the code\"\n    code-line-numbers: true\n---\n\n::: {.cell}\n\n```{.r .cell-code}\npacman:: p_load(tidyverse)\n```\n:::\n\n::: {.cell}\n\n```{.r .cell-code}\nexam_data <- read_csv(\"data1/Exam_data.csv\")\n```\n:::\n\n\nTask 1: Plotting a bar chart\n\nReference website : [R bloggers](https://www.r-bloggers.com/2022/07/how-to-change-background-color-in-ggplot2-3/) (How to change the background colour of ggplot2?)\n\n\n::: {.cell}\n\n```{.r .cell-code}\nggplot(data=exam_data,\n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme(panel.background = element_rect(fill ='lightblue', color ='pink'),\n        panel.grid.major = element_line (color= 'red', linetype = 'dotted'),\n        panel.grid.minor = element_line (colour='green', size= 2, linetype = 'dotted')) +\n  labs(y='Number of students')\n```\n\n::: {.cell-output-display}\n![](In-class_Ex01_files/figure-html/unnamed-chunk-3-1.png){width=672}\n:::\n:::\n\n::: {.cell}\n\n:::\n",
+    "supporting": [
+      "In-class_Ex01_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

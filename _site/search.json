@@ -89,5 +89,12 @@
     "title": "Take-home_Ex01",
     "section": "",
     "text": "To be updated"
+  },
+  {
+    "objectID": "In-class_Ex/In-class_Ex01/In-class_Ex01.html",
+    "href": "In-class_Ex/In-class_Ex01/In-class_Ex01.html",
+    "title": "In-class_Ex01",
+    "section": "",
+    "text": "pacman:: p_load(tidyverse)\n\n\nexam_data <- read_csv(\"data1/Exam_data.csv\")\n\nTask 1: Plotting a bar chart\nReference website : R bloggers (How to change the background colour of ggplot2?)\n\nggplot(data=exam_data,\n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme(panel.background = element_rect(fill ='lightblue', color ='pink'),\n        panel.grid.major = element_line (color= 'red', linetype = 'dotted'),\n        panel.grid.minor = element_line (colour='green', size= 2, linetype = 'dotted')) +\n  labs(y='Number of students')"
   }
 ]

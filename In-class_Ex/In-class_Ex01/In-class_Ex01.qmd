@@ -30,9 +30,12 @@ ggplot(data=exam_data,
        aes(x=RACE)) +
   geom_bar() +
   coord_flip() +
-  theme(panel.background = element_rect(fill ='lightblue', color ='pink'),
+  
+  theme(panel.background = element_rect(fill ='lightblue', color ='black',linetype = 'dotted'),
         panel.grid.major = element_line (color= 'red', linetype = 'dotted'),
-        panel.grid.minor = element_line (colour='green', size= 2, linetype = 'dotted')) +
+        panel.grid.minor = element_line (colour='green', size= 2, linetype = 'dotted'),
+        plot.title= element_text(size=rel(2))) +
+  ggtitle('Number of students by Race') +
   labs(y='Number of students')
 ```
 

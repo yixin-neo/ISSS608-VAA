@@ -654,6 +654,8 @@ ggplot(data=exam_data,
   theme_minimal()
 ```
 
+To modify components of a theme , refer to this ggplot2 [webpage](https://ggplot2.tidyverse.org/reference/theme.html)
+
 ## 1.12 Reference
 
 -   Hadley Wickham (2023) [**ggplot2: Elegant Graphics for Data Analysis**](https://ggplot2-book.org/). Online 3rd edition.

@@ -494,15 +494,61 @@ Levels: Chinese Malay Indian Others</code></pre>
 </div>
 </div>
 <div id="tabset-2-7" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-7-tab">
+<pre><code>this is the only example not plotting the count but based on another variable 'MATHS'. is this the reason why we do not need to input any argument in geom_bar()?</code></pre>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> exam_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(RACE, <span class="sc">-</span>MATHS, median), <span class="at">y =</span> MATHS)) <span class="sc">+</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Race"</span>) <span class="sc">+</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Math Score"</span>) <span class="sc">+</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Math Scores by Race"</span>) <span class="sc">+</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> exam_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(RACE, <span class="sc">-</span>MATHS, median), <span class="at">y =</span> MATHS)) <span class="sc">+</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Race"</span>) <span class="sc">+</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Math Score"</span>) <span class="sc">+</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Math Scores by Race"</span>) <span class="sc">+</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="In-class_Ex01_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">reorder</span>(exam_data<span class="sc">$</span>RACE, <span class="sc">-</span>exam_data<span class="sc">$</span>MATHS, median)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] Malay   Malay   Chinese Chinese Malay   Malay   Chinese Malay   Malay  
+ [10] Indian  Chinese Malay   Chinese Chinese Chinese Chinese Malay   Malay  
+ [19] Malay   Malay   Malay   Malay   Chinese Others  Malay   Malay   Malay  
+ [28] Malay   Indian  Indian  Malay   Malay   Chinese Malay   Chinese Malay  
+ [37] Chinese Chinese Malay   Chinese Malay   Malay   Malay   Malay   Malay  
+ [46] Chinese Chinese Chinese Indian  Malay   Chinese Chinese Chinese Malay  
+ [55] Chinese Chinese Chinese Malay   Chinese Chinese Malay   Indian  Malay  
+ [64] Chinese Malay   Malay   Malay   Malay   Chinese Chinese Malay   Malay  
+ [73] Malay   Chinese Malay   Chinese Malay   Malay   Malay   Indian  Malay  
+ [82] Malay   Chinese Chinese Malay   Indian  Chinese Chinese Chinese Chinese
+ [91] Malay   Malay   Malay   Chinese Chinese Chinese Chinese Malay   Malay  
+[100] Malay   Chinese Chinese Chinese Chinese Malay   Chinese Chinese Others 
+[109] Indian  Chinese Malay   Chinese Malay   Malay   Chinese Malay   Chinese
+[118] Chinese Chinese Chinese Malay   Malay   Malay   Chinese Malay   Malay  
+[127] Chinese Chinese Malay   Malay   Chinese Chinese Chinese Malay   Chinese
+[136] Chinese Malay   Others  Malay   Chinese Chinese Malay   Chinese Chinese
+[145] Chinese Malay   Chinese Chinese Malay   Others  Malay   Chinese Malay  
+[154] Malay   Chinese Chinese Malay   Chinese Others  Malay   Malay   Malay  
+[163] Malay   Chinese Malay   Chinese Chinese Others  Malay   Chinese Chinese
+[172] Chinese Chinese Chinese Chinese Chinese Chinese Chinese Chinese Chinese
+[181] Malay   Chinese Chinese Chinese Chinese Chinese Chinese Chinese Malay  
+[190] Chinese Chinese Chinese Chinese Chinese Malay   Chinese Indian  Malay  
+[199] Chinese Chinese Chinese Chinese Chinese Chinese Chinese Chinese Chinese
+[208] Chinese Chinese Chinese Chinese Malay   Chinese Chinese Chinese Chinese
+[217] Chinese Chinese Malay   Chinese Chinese Chinese Chinese Chinese Chinese
+[226] Chinese Chinese Chinese Chinese Chinese Malay   Chinese Chinese Chinese
+[235] Chinese Malay   Chinese Chinese Malay   Chinese Malay   Malay   Malay  
+[244] Chinese Chinese Indian  Malay   Others  Malay   Chinese Chinese Chinese
+[253] Chinese Chinese Malay   Malay   Chinese Chinese Chinese Chinese Chinese
+[262] Chinese Chinese Malay   Chinese Chinese Malay   Chinese Chinese Malay  
+[271] Chinese Malay   Chinese Others  Chinese Chinese Malay   Malay   Malay  
+[280] Chinese Indian  Chinese Chinese Chinese Chinese Chinese Malay   Chinese
+[289] Chinese Chinese Chinese Chinese Malay   Chinese Chinese Chinese Chinese
+[298] Chinese Malay   Malay   Chinese Chinese Chinese Chinese Chinese Chinese
+[307] Chinese Chinese Chinese Indian  Chinese Chinese Malay   Chinese Chinese
+[316] Chinese Chinese Chinese Others  Chinese Chinese Chinese
+attr(,"scores")
+Chinese  Indian   Malay  Others 
+  -79.0   -58.5   -61.5   -70.0 
+Levels: Chinese Others Malay Indian</code></pre>
 </div>
 </div>
 </div>

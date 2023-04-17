@@ -215,9 +215,9 @@ fct_infreq(exam_data$RACE)
 
 #### Another boxplot example
 
-```         
-this is the only example not plotting the count but based on another variable 'MATHS'. is this the reason why we do not need to input any argument in geom_bar()?
-```
+      
+This is the only example not plotting the count but based on another variable 'MATHS'. is this the reason why we do not need to input any argument in geom_bar()?
+
 
 ```{r}
 ggplot(data = exam_data, aes(x = reorder(RACE, -MATHS, median), y = MATHS)) +

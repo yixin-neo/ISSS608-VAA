@@ -279,6 +279,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="task-2-improve-the-data-visualisation-of-an-existing-simple-vertical-bar-chart" class="level2">
 <h2 class="anchored" data-anchor-id="task-2-improve-the-data-visualisation-of-an-existing-simple-vertical-bar-chart">Task 2: Improve the data visualisation of an existing simple vertical bar chart</h2>
 <div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data,</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span>RACE)) <span class="sc">+</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="In-class_Ex01_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -289,19 +295,219 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p>To support effective comparison, the bars should be sorted by their respective frequencies.</p></li>
 <li><p>For static graph, frequency values should be added to provide addition information. (labelled on the graph)</p></li>
 </ol>
-<p>The design below is an improvised version:</p>
+<p>The design below is an improvised version with the following features:</p>
+<ol type="1">
+<li><p>Both axes labelled clearly.</p></li>
+<li><p>Bars are sorted by - count (descending order).</p></li>
+<li><p>Count and percentage are labelled above the bars.</p></li>
+</ol>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">The makeover design</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">The code chunk (NYX)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">The code chunk (Prof Kam)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-4" role="tab" aria-controls="tabset-2-4" aria-selected="false">Understanding Reorder()</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-5" role="tab" aria-controls="tabset-2-5" aria-selected="false">Forcats package</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-6" role="tab" aria-controls="tabset-2-6" aria-selected="false">Understanding fct_infreq</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-7-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-7" role="tab" aria-controls="tabset-2-7" aria-selected="false">Another boxplot example</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>exam_data <span class="sc">%&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(RACE) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(RACE, (<span class="sc">-</span>count)), <span class="at">y =</span> count)) <span class="sc">+</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">'identity'</span>, <span class="at">fill =</span> <span class="st">'steelblue'</span>) <span class="sc">+</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_grey</span>() <span class="sc">+</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(count,<span class="st">', '</span>, <span class="fu">round</span>(count<span class="sc">/</span><span class="fu">sum</span>(count)<span class="sc">*</span><span class="dv">100</span>,<span class="dv">1</span>), <span class="st">'%'</span>)),</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.8</span>), <span class="at">vjust=</span> <span class="sc">-</span><span class="fl">0.3</span>, <span class="at">size =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="In-class_Ex01_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
 </div>
-<p>References: https://www.roelpeters.be/reorder-ggplot2-bar-chart-by-count/ http://www.sthda.com/english/wiki/ggplot2-barplots-quick-start-guide-r-software-and-data-visualization#bar-plot-with-labels</p>
-<p>If you provide the argument stat=”identity” to geom_bar() then you’re telling R to calculate the sum of the y variable, grouped by the x variable and use bars to display the sums</p>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>exam_data <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(RACE) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 2
+  RACE    count
+  &lt;chr&gt;   &lt;int&gt;
+1 Chinese   193
+2 Indian     12
+3 Malay     108
+4 Others      9</code></pre>
+</div>
+</div>
+<p>THe output of the code below is C,M,I O</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> exam_data <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(RACE) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">n</span>())</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">reorder</span>(t<span class="sc">$</span>RACE, (<span class="sc">-</span>t<span class="sc">$</span>count))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] Chinese Indian  Malay   Others 
+attr(,"scores")
+Chinese  Indian   Malay  Others 
+   -193     -12    -108      -9 
+Levels: Chinese Malay Indian Others</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>exam_data <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(RACE) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(RACE, (<span class="sc">-</span>count)), <span class="at">y =</span> count)) <span class="sc">+</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">'identity'</span>, <span class="at">color=</span><span class="st">'black'</span>, <span class="at">fill =</span> <span class="st">'#DD8888'</span>) <span class="sc">+</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>,<span class="dv">220</span>) <span class="sc">+</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(count,<span class="st">', '</span>, <span class="fu">round</span>(count<span class="sc">/</span><span class="fu">sum</span>(count)<span class="sc">*</span><span class="dv">100</span>,<span class="dv">1</span>), <span class="st">'%'</span>)),</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.8</span>), <span class="at">vjust=</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">size =</span> <span class="fl">3.5</span>) <span class="sc">+</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">'Distribution of Race'</span>) <span class="sc">+</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y=</span><span class="st">'No. </span><span class="sc">\n</span><span class="st">of </span><span class="sc">\n</span><span class="st">Pupils'</span>, <span class="at">x =</span> <span class="st">'Race'</span>) <span class="sc">+</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face=</span><span class="st">'bold'</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),   <span class="co">#bold title and center-justify</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.y=</span><span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">0</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><u>Meaning of the argument ‘identity’ in the ‘stat’ parameter:</u></p>
+<p>If we provide the argument stat=“identity” to geom_bar() then we’re telling R to calculate the sum of the y variable, grouped by the x variable and use bars to display the sums</p>
+<p>There are three arguments in the reorder() function. (1) categorical variable to be sorted (2) variable to sort (1) by (3) a function that returns numerical value on how to sort (1) by</p>
+<p>References:</p>
+<p>https://www.roelpeters.be/reorder-ggplot2-bar-chart-by-count/ http://www.sthda.com/english/wiki/ggplot2-barplots-quick-start-guide-r-software-and-data-visualization#bar-plot-with-labels</p>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span><span class="fu">reorder</span>(RACE,RACE,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                     <span class="cf">function</span>(x)<span class="sc">-</span><span class="fu">length</span>(x)))) <span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>,<span class="dv">220</span>) <span class="sc">+</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">stat=</span><span class="st">"count"</span>, </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">label=</span><span class="fu">paste0</span>(..count.., <span class="st">", "</span>, </span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">round</span>(..count..<span class="sc">/</span><span class="fu">sum</span>(..count..)<span class="sc">*</span><span class="dv">100</span>, <span class="dv">1</span>), <span class="st">"%"</span>)),</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">vjust=</span><span class="sc">-</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Race"</span>) <span class="sc">+</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"No. of</span><span class="sc">\n</span><span class="st">Pupils"</span>) <span class="sc">+</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.title.y=</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="In-class_Ex01_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div id="tabset-2-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-4-tab">
+<pre><code>Output of the code below is C,M,I,O</code></pre>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">reorder</span>(exam_data<span class="sc">$</span>RACE,exam_data<span class="sc">$</span>RACE,<span class="cf">function</span>(x)<span class="sc">-</span><span class="fu">length</span>(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] Malay   Malay   Chinese Chinese Malay   Malay   Chinese Malay   Malay  
+ [10] Indian  Chinese Malay   Chinese Chinese Chinese Chinese Malay   Malay  
+ [19] Malay   Malay   Malay   Malay   Chinese Others  Malay   Malay   Malay  
+ [28] Malay   Indian  Indian  Malay   Malay   Chinese Malay   Chinese Malay  
+ [37] Chinese Chinese Malay   Chinese Malay   Malay   Malay   Malay   Malay  
+ [46] Chinese Chinese Chinese Indian  Malay   Chinese Chinese Chinese Malay  
+ [55] Chinese Chinese Chinese Malay   Chinese Chinese Malay   Indian  Malay  
+ [64] Chinese Malay   Malay   Malay   Malay   Chinese Chinese Malay   Malay  
+ [73] Malay   Chinese Malay   Chinese Malay   Malay   Malay   Indian  Malay  
+ [82] Malay   Chinese Chinese Malay   Indian  Chinese Chinese Chinese Chinese
+ [91] Malay   Malay   Malay   Chinese Chinese Chinese Chinese Malay   Malay  
+[100] Malay   Chinese Chinese Chinese Chinese Malay   Chinese Chinese Others 
+[109] Indian  Chinese Malay   Chinese Malay   Malay   Chinese Malay   Chinese
+[118] Chinese Chinese Chinese Malay   Malay   Malay   Chinese Malay   Malay  
+[127] Chinese Chinese Malay   Malay   Chinese Chinese Chinese Malay   Chinese
+[136] Chinese Malay   Others  Malay   Chinese Chinese Malay   Chinese Chinese
+[145] Chinese Malay   Chinese Chinese Malay   Others  Malay   Chinese Malay  
+[154] Malay   Chinese Chinese Malay   Chinese Others  Malay   Malay   Malay  
+[163] Malay   Chinese Malay   Chinese Chinese Others  Malay   Chinese Chinese
+[172] Chinese Chinese Chinese Chinese Chinese Chinese Chinese Chinese Chinese
+[181] Malay   Chinese Chinese Chinese Chinese Chinese Chinese Chinese Malay  
+[190] Chinese Chinese Chinese Chinese Chinese Malay   Chinese Indian  Malay  
+[199] Chinese Chinese Chinese Chinese Chinese Chinese Chinese Chinese Chinese
+[208] Chinese Chinese Chinese Chinese Malay   Chinese Chinese Chinese Chinese
+[217] Chinese Chinese Malay   Chinese Chinese Chinese Chinese Chinese Chinese
+[226] Chinese Chinese Chinese Chinese Chinese Malay   Chinese Chinese Chinese
+[235] Chinese Malay   Chinese Chinese Malay   Chinese Malay   Malay   Malay  
+[244] Chinese Chinese Indian  Malay   Others  Malay   Chinese Chinese Chinese
+[253] Chinese Chinese Malay   Malay   Chinese Chinese Chinese Chinese Chinese
+[262] Chinese Chinese Malay   Chinese Chinese Malay   Chinese Chinese Malay  
+[271] Chinese Malay   Chinese Others  Chinese Chinese Malay   Malay   Malay  
+[280] Chinese Indian  Chinese Chinese Chinese Chinese Chinese Malay   Chinese
+[289] Chinese Chinese Chinese Chinese Malay   Chinese Chinese Chinese Chinese
+[298] Chinese Malay   Malay   Chinese Chinese Chinese Chinese Chinese Chinese
+[307] Chinese Chinese Chinese Indian  Chinese Chinese Malay   Chinese Chinese
+[316] Chinese Chinese Chinese Others  Chinese Chinese Chinese
+attr(,"scores")
+Chinese  Indian   Malay  Others 
+   -193     -12    -108      -9 
+Levels: Chinese Malay Indian Others</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-5-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>exam_data <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">RACE =</span> <span class="fu">fct_infreq</span>(RACE)) <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> RACE)) <span class="sc">+</span> </span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>()<span class="sc">+</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>,<span class="dv">220</span>) <span class="sc">+</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">stat=</span><span class="st">"count"</span>, </span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">label=</span><span class="fu">paste0</span>(..count.., <span class="st">", "</span>, </span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">round</span>(..count..<span class="sc">/</span><span class="fu">sum</span>(..count..)<span class="sc">*</span><span class="dv">100</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>            <span class="dv">1</span>), <span class="st">"%"</span>)),</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">vjust=</span><span class="sc">-</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Race"</span>) <span class="sc">+</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"No. of</span><span class="sc">\n</span><span class="st">Pupils"</span>) <span class="sc">+</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.title.y=</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="In-class_Ex01_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div id="tabset-2-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-6-tab">
+<pre><code>Output of the code below is also C,M,I,O</code></pre>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fct_infreq</span>(exam_data<span class="sc">$</span>RACE)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] Malay   Malay   Chinese Chinese Malay   Malay   Chinese Malay   Malay  
+ [10] Indian  Chinese Malay   Chinese Chinese Chinese Chinese Malay   Malay  
+ [19] Malay   Malay   Malay   Malay   Chinese Others  Malay   Malay   Malay  
+ [28] Malay   Indian  Indian  Malay   Malay   Chinese Malay   Chinese Malay  
+ [37] Chinese Chinese Malay   Chinese Malay   Malay   Malay   Malay   Malay  
+ [46] Chinese Chinese Chinese Indian  Malay   Chinese Chinese Chinese Malay  
+ [55] Chinese Chinese Chinese Malay   Chinese Chinese Malay   Indian  Malay  
+ [64] Chinese Malay   Malay   Malay   Malay   Chinese Chinese Malay   Malay  
+ [73] Malay   Chinese Malay   Chinese Malay   Malay   Malay   Indian  Malay  
+ [82] Malay   Chinese Chinese Malay   Indian  Chinese Chinese Chinese Chinese
+ [91] Malay   Malay   Malay   Chinese Chinese Chinese Chinese Malay   Malay  
+[100] Malay   Chinese Chinese Chinese Chinese Malay   Chinese Chinese Others 
+[109] Indian  Chinese Malay   Chinese Malay   Malay   Chinese Malay   Chinese
+[118] Chinese Chinese Chinese Malay   Malay   Malay   Chinese Malay   Malay  
+[127] Chinese Chinese Malay   Malay   Chinese Chinese Chinese Malay   Chinese
+[136] Chinese Malay   Others  Malay   Chinese Chinese Malay   Chinese Chinese
+[145] Chinese Malay   Chinese Chinese Malay   Others  Malay   Chinese Malay  
+[154] Malay   Chinese Chinese Malay   Chinese Others  Malay   Malay   Malay  
+[163] Malay   Chinese Malay   Chinese Chinese Others  Malay   Chinese Chinese
+[172] Chinese Chinese Chinese Chinese Chinese Chinese Chinese Chinese Chinese
+[181] Malay   Chinese Chinese Chinese Chinese Chinese Chinese Chinese Malay  
+[190] Chinese Chinese Chinese Chinese Chinese Malay   Chinese Indian  Malay  
+[199] Chinese Chinese Chinese Chinese Chinese Chinese Chinese Chinese Chinese
+[208] Chinese Chinese Chinese Chinese Malay   Chinese Chinese Chinese Chinese
+[217] Chinese Chinese Malay   Chinese Chinese Chinese Chinese Chinese Chinese
+[226] Chinese Chinese Chinese Chinese Chinese Malay   Chinese Chinese Chinese
+[235] Chinese Malay   Chinese Chinese Malay   Chinese Malay   Malay   Malay  
+[244] Chinese Chinese Indian  Malay   Others  Malay   Chinese Chinese Chinese
+[253] Chinese Chinese Malay   Malay   Chinese Chinese Chinese Chinese Chinese
+[262] Chinese Chinese Malay   Chinese Chinese Malay   Chinese Chinese Malay  
+[271] Chinese Malay   Chinese Others  Chinese Chinese Malay   Malay   Malay  
+[280] Chinese Indian  Chinese Chinese Chinese Chinese Chinese Malay   Chinese
+[289] Chinese Chinese Chinese Chinese Malay   Chinese Chinese Chinese Chinese
+[298] Chinese Malay   Malay   Chinese Chinese Chinese Chinese Chinese Chinese
+[307] Chinese Chinese Chinese Indian  Chinese Chinese Malay   Chinese Chinese
+[316] Chinese Chinese Chinese Others  Chinese Chinese Chinese
+Levels: Chinese Malay Indian Others</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-7" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-7-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> exam_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(RACE, <span class="sc">-</span>MATHS, median), <span class="at">y =</span> MATHS)) <span class="sc">+</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Race"</span>) <span class="sc">+</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Math Score"</span>) <span class="sc">+</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Math Scores by Race"</span>) <span class="sc">+</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="In-class_Ex01_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+</div>
+</div>
 
 
 </section>

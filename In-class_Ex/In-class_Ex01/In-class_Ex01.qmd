@@ -40,7 +40,7 @@ ggplot(data=exam_data,
   theme(panel.background = element_rect(fill ='lightblue', color ='black',linetype = 'dotted'),
         panel.grid.major = element_line (color= 'red', linetype = 'dotted'),
         panel.grid.minor = element_line (colour='green', size= 2, linetype = 'dotted'),
-        plot.title= element_text(size=rel(2))) +
+        plot.title= element_text(size=rel(1.5))) +
   ggtitle('Number of students by Race') +
   labs(y='Number of students')
 ```
@@ -463,6 +463,107 @@ ggplot(data=exam_data,
 The geom_histogram() function is used twice to create two overlapping histograms. The first histogram is created using the d_bg dataset (no GENDER data, rep all GENDERs) and is filled with grey. This histogram represents the background distribution of ENGLISH marks across ALL GENDERs. The second histogram is created using the entire exam dataset and makes use of the fill = GENDER in ggplot() to color gender differently. This results in a legend and is removed with guides(fill=FALSE). It also has a black border. This histogram represents the distribution of ENGLISH scores for each individual GENDER. Finally, facet_wrap(~GENDER) will create panels to represent distribution for each GENDER for easy comparison.
 
 Reference: [Plot background histogram data](https://drsimonj.svbtle.com/plotting-background-data-for-groups-with-ggplot2) 
+
+:::
+
+## Task 5: Improve the existing scatterplot of English against Math scores
+
+The original design below has several flaws:
+
+1.  The limits and scale ticks of both axes are inconsistent. 
+
+```{r}
+#| code-fold: true
+
+ggplot(data=exam_data,
+       aes(x=MATHS, y=ENGLISH)) +
+  geom_point()
+```
+The improvised design below includes:
+
+1. Common x and Y axes scale and range.
+
+2. Reference lines at 50 marks for both subjects.
+
+
+::: panel-tabset
+
+#### Makeover 1
+
+```{r}
+#| echo: false
+ggplot(data=exam_data,
+       aes(x=MATHS, y=ENGLISH)) +
+  geom_point() +
+  ylim(0,100) +
+  xlim(0,100) +
+  geom_vline(xintercept=50, linetype='dashed') +
+  geom_hline(yintercept=50, linetype='dashed')
+```
+
+#### Makeover 1 code chunk
+```{r}
+#| eval: false
+ggplot(data=exam_data,
+       aes(x=MATHS, y=ENGLISH)) +
+  geom_point() +
+  ylim(0,100) +
+  xlim(0,100) +
+  geom_vline(xintercept=50, linetype='dashed') +
+  geom_hline(yintercept=50, linetype='dashed')
+  
+```
+:::
+
+In makeover 2, I have included a third numerical variable, Science score into the scatterplot.
+
+The position of the legend has been shifted to the bottom.
+
+
+In makeover 3, I have used the ggExtra library to add distribution of the English and Math scores in the form of histograms at the margins of the plot. 
+
+:::panel-tabset
+
+
+#### Makeover 2
+```{r}
+#| code-fold: true
+ggplot(data=exam_data,
+       aes(x=MATHS, y=ENGLISH)) +
+  geom_point(aes(color=SCIENCE)) +
+  ylim(0,100) +
+  xlim(0,100) +
+  geom_vline(xintercept=50, linetype='dashed') +
+  geom_hline(yintercept=50, linetype='dashed') +
+  ggtitle('Scatterplot of English and Math scores') +
+  theme_minimal() +
+  theme(legend.position='bottom') +
+  scale_color_gradient(low="darkgreen", high="green")
+
+
+```
+#### Makeover 3
+```{r}
+#| code-fold: true
+library(ggExtra)
+
+ggMarginal(ggplot(data=exam_data,
+       aes(x=MATHS, y=ENGLISH)) +
+  geom_point(aes(color=SCIENCE)) +
+  ylim(0,100) +
+  xlim(0,100) +
+  geom_vline(xintercept=50, linetype='dashed') +
+  geom_hline(yintercept=50, linetype='dashed') +
+  ggtitle('Scatterplot of English and Math scores') +
+  theme_minimal() +
+  theme(legend.position='bottom') +
+  scale_color_gradient(low="darkgreen", high="green"), 
+  
+  type="histogram", fill =4)
+```
+
+Reference:
+['How to change ggplot2 colours manually and automatically?'](http://www.sthda.com/english/wiki/ggplot2-colors-how-to-change-colors-automatically-and-manually)
 
 :::
 

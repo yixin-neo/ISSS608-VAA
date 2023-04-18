@@ -25,7 +25,7 @@ exam_data <- read_csv("data1/Exam_data.csv")
 
 ## Task 1: Plotting a bar chart
 
-In this section, I will explore the theme_minimal() and change the gridline colours.
+In this section, I will explore the theme_minimal() and modify the components of a theme (e.g. plot fill and gridline colours).
 
 ::: panel-tabset
 ## The plot
@@ -37,9 +37,9 @@ ggplot(data=exam_data,
   geom_bar() +
   coord_flip() +
   theme_minimal() +
-  theme(panel.background = element_rect(fill ='lightblue', color ='black',linetype = 'dotted'),
-        panel.grid.major = element_line (color= 'red', linetype = 'dotted'),
-        panel.grid.minor = element_line (colour='green', size= 2, linetype = 'dotted'),
+  theme(panel.background = element_rect(fill ='lavender', color ='white',linetype ='solid'),
+        panel.grid.major = element_line (color= 'white', linetype = 'solid'),
+        panel.grid.minor = element_line (colour='white', size= 0.2, linetype = 'solid'),
         plot.title= element_text(size=rel(1.5))) +
   ggtitle('Number of students by Race') +
   labs(y='Number of students')
@@ -54,18 +54,19 @@ ggplot(data=exam_data,
   geom_bar() +
   coord_flip() +
   theme_minimal() +
-  theme(panel.background = element_rect(fill ='lightblue', color ='black', linetype = 'dotted'),
-        panel.grid.major = element_line (color= 'red', linetype = 'dotted'),
-        panel.grid.minor = element_line (colour='green', size= 2, linetype = 'dotted'),
-        plot.title= element_text(size=rel(2))) +
+  theme(panel.background = element_rect(fill ='lavender', color ='white',linetype ='solid'),
+        panel.grid.major = element_line (color= 'white', linetype = 'solid'),
+        panel.grid.minor = element_line (colour='white', size= 0.2, linetype = 'solid'),
+        plot.title= element_text(size=rel(1.5))) +
   ggtitle('Number of students by Race') +
   labs(y='Number of students')
 ```
-:::
 
 Reference website : [R bloggers](https://www.r-bloggers.com/2022/07/how-to-change-background-color-in-ggplot2-3/) (How to change the background colour of ggplot2?)
 
 To modify components of a theme , refer to this ggplot2 [webpage](https://ggplot2.tidyverse.org/reference/theme.html)
+:::
+
 
 
 ## Task 2: Improve the data visualisation of an existing simple vertical bar chart
@@ -169,7 +170,7 @@ https://www.roelpeters.be/reorder-ggplot2-bar-chart-by-count/ http://www.sthda.c
 
 ::: panel-tabset
 
-#### Makeover 2 (Prof Kam)
+#### Makeover 2 (Prof)
 ```{r}
 #| echo: false
 ggplot(data=exam_data, 
@@ -267,26 +268,57 @@ fct_infreq(exam_data$RACE)
 ```
 :::
 
-#### Another boxplot example
+::: panel-tabset
+#### Sorting a boxplot by median of Math scores
 
-This is the only example of not plotting the count but based on another variable 'MATHS'.  It is also sorted in descending order of median of MATH score by RACE.
+In the viz below, we are able to achieve several things in one go
 
-Is this the reason why we do not need to input any argument in geom_bar()?
+1. sort the boxplot by median of the Math scores in descending order.
+
+2. add mean value by Race
+
+3. use colours to distinguish between outliers and jitters
+
 
 ```{r}
-ggplot(data = exam_data, aes(x = reorder(RACE, -MATHS, median), y = MATHS)) +
-  geom_boxplot() +
-  xlab("Race") +
-  ylab("Math Score") +
-  ggtitle("Math Scores by Race") +
-  theme(plot.title = element_text(hjust = 0.5))
+#| echo: false
+ggplot(data = exam_data, aes(x = reorder(RACE, -MATHS, median), y = MATHS, fill=RACE)) +
+   geom_boxplot(outlier.colour="blue", outlier.size=1) +
+   geom_point(position = 'jitter',size=0.5) +
+   stat_summary(fun.y=mean, geom="point", shape=20, size=3, color="pink", fill="red") +
+   xlab("Race") +
+   ylab("Math Score") +
+   ggtitle("Math Scores by Race") +
+   scale_fill_brewer(palette='Set2') +
+   theme(plot.title = element_text(hjust = 0.5),
+         legend.position = 'none')
+
 
 ```
+```{r}
+#| eval: false
+ggplot(data = exam_data, aes(x = reorder(RACE, -MATHS, median), y = MATHS, fill=RACE)) +
+   geom_boxplot(outlier.colour="blue", outlier.size=1) +
+   geom_point(position = 'jitter',size=0.5) +
+   stat_summary(fun.y=mean, geom="point", shape=20, size=3, color="pink", fill="red") +
+   xlab("Race") +
+   ylab("Math Score") +
+   ggtitle("Math Scores by Race") +
+   scale_fill_brewer(palette='Set2') +
+   theme(plot.title = element_text(hjust = 0.5),
+         legend.position = 'none')
+
+
+```
+Reference: [Link](https://r-graph-gallery.com/index.html)
+
+#### Reorder()
 
 ```{r}
+#| code-fold: true
 reorder(exam_data$RACE, -exam_data$MATHS, median)
 ```
-
+:::
 
 ## Task 3: Improve the data viz of an existing histogram
 
@@ -339,7 +371,6 @@ ggplot(data=exam_data,
   ggtitle('Distribution of Math scores')
 
 ```
-Reference: [link](https://community.rstudio.com/t/geom-histogram-labeling-25th-50th-75th-percentiles/148838/2)
 
 #### Makeover 1 code chunk (NYX)
 
@@ -360,10 +391,11 @@ ggplot(data=exam_data,
 
 ```
 
+Reference: [link](https://community.rstudio.com/t/geom-histogram-labeling-25th-50th-75th-percentiles/148838/2)
 :::
 
 :::panel-tabset
-#### Makeover Design 2 (Prof Kam)
+#### Makeover Design 2 (Adapted from Prof)
 
 ```{r}
 #| echo: false
@@ -385,7 +417,7 @@ ggplot(data=exam_data,
 
 ```
 
-#### Makeover 2 code chunk (Prof Kam)
+#### Makeover 2 code chunk
 ```{r}
 #| eval:  false
 ggplot(data=exam_data, 
@@ -424,7 +456,7 @@ ggplot(data=exam_data,
 
 ```
 
-The makeover designs below now include overall distribution in the backgrounds of the trellis plots by gender. 
+The makeover design below now include overall distribution in the backgrounds of the trellis plots by gender. 
 
 
 ::: panel-tabset
@@ -449,18 +481,27 @@ ggplot(data=exam_data,
 ```{r}
 #| eval: false
 
-d_bg <- exam_data[, -3] # background data without GENDER column
+d_bg <- exam_data[, -3]  # background data without GENDER column
 ggplot(data=exam_data,
        aes(x=ENGLISH, fill=GENDER)) +
   geom_histogram(data=d_bg, bins=20, fill='grey',alpha=0.5) +
   geom_histogram(colour='black') +
   facet_wrap(~GENDER) +
-  guides(fill=FALSE) +
-  theme_minimal()
+  guides(fill=FALSE) + 
+  theme_minimal() +
+  labs(y= 'No. of \nPupils', x='English Score') +
+  theme(axis.title.y=element_text(angle = 0)) +
+  ggtitle('Distribution of English scores by Gender')
 
 ```
 
-The geom_histogram() function is used twice to create two overlapping histograms. The first histogram is created using the d_bg dataset (no GENDER data, rep all GENDERs) and is filled with grey. This histogram represents the background distribution of ENGLISH marks across ALL GENDERs. The second histogram is created using the entire exam dataset and makes use of the fill = GENDER in ggplot() to color gender differently. This results in a legend and is removed with guides(fill=FALSE). It also has a black border. This histogram represents the distribution of ENGLISH scores for each individual GENDER. Finally, facet_wrap(~GENDER) will create panels to represent distribution for each GENDER for easy comparison.
+The geom_histogram() function is used twice to create two overlapping histograms. 
+
+The first histogram is created using the d_bg dataset (no GENDER data, rep all GENDERs) and is filled with grey. This histogram represents the background distribution of ENGLISH marks across ALL GENDERs. 
+
+The second histogram is created using the entire exam dataset and makes use of the fill = GENDER in ggplot() to color gender differently. This results in a legend and is removed with guides(fill=FALSE). It also has a black border. This histogram represents the distribution of ENGLISH scores for each individual GENDER. 
+
+Finally, facet_wrap(~GENDER) will create panels to represent distribution for each GENDER for easy comparison.
 
 Reference: [Plot background histogram data](https://drsimonj.svbtle.com/plotting-background-data-for-groups-with-ggplot2) 
 
@@ -479,7 +520,7 @@ ggplot(data=exam_data,
        aes(x=MATHS, y=ENGLISH)) +
   geom_point()
 ```
-The improvised design below includes:
+The improvised design in Makeover 1 now includes:
 
 1. Common x and Y axes scale and range.
 

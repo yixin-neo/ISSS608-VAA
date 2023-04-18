@@ -270,9 +270,6 @@ fct_infreq(exam_data$RACE)
 
 Sorting a boxplot by median of Math scores using reorder().
 
-::: panel-tabset
-#### Boxplot design
-
 In the viz below, we are able to achieve several things in one go
 
 1. sort the boxplot by median of the Math scores in descending order.
@@ -281,6 +278,8 @@ In the viz below, we are able to achieve several things in one go
 
 3. use colours to distinguish between outliers and jitters
 
+::: panel-tabset
+#### Boxplot design
 
 ```{r}
 #| echo: false

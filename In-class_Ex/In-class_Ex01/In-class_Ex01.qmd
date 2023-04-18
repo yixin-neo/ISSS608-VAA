@@ -268,8 +268,10 @@ fct_infreq(exam_data$RACE)
 ```
 :::
 
+Sorting a boxplot by median of Math scores using reorder().
+
 ::: panel-tabset
-#### Sorting a boxplot by median of Math scores
+#### Boxplot design
 
 In the viz below, we are able to achieve several things in one go
 
@@ -295,6 +297,7 @@ ggplot(data = exam_data, aes(x = reorder(RACE, -MATHS, median), y = MATHS, fill=
 
 
 ```
+#### Code Chunk
 ```{r}
 #| eval: false
 ggplot(data = exam_data, aes(x = reorder(RACE, -MATHS, median), y = MATHS, fill=RACE)) +

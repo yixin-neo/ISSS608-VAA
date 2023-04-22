@@ -277,7 +277,7 @@ ggplot(data=exam_data,
                  boundary=100,
                  color='grey25',
                  fill='grey90') +
-  theme_ipsum(axis_title_size = 18,
+  theme_ipsum(axis_title_size = 15,
               base_size=15,
               grid= 'Y') +
  labs(y= 'No. of \nPupils') +
@@ -297,7 +297,7 @@ ggplot(data=exam_data,
                  boundary=100,
                  color='grey25',
                  fill='grey90') +
-  theme_ipsum(axis_title_size = 18,
+  theme_ipsum(axis_title_size = 15,
               base_size=15,
               grid= 'Y') +
  labs(y= 'No. of \nPupils') +
@@ -320,21 +320,50 @@ ggplot(data=exam_data,
 
 ## 2.5 Beyond Single Graph
 
-It is not unusual that multiple graphs are required to tell a compelling visual story. There are several ggplot2 extensions provide functions to compose figure with multiple graphs. In this section, you will learn how to create composite plot by combining multiple graphs. First, let us create three statistical graphics by using the code chunk below.
+It is not unusual that multiple graphs are required to tell a compelling visual story. There are several ggplot2 extensions provide functions to compose figure with multiple graphs. In this section, I will create composite plot by combining multiple graphs. First, create three statistical graphics by using the code chunk below.
 
 ::: panel-tabset
 #### The plot
 
 ```{r}
 #| echo: false
-
+ggplot(data=exam_data, 
+       aes(x=MATHS)) +
+  geom_histogram(binwidth=5,
+                 boundary=100,
+                 color='grey25',
+                 fill='grey90') +
+  coord_cartesian(xlim=c(0,100)) +
+  theme_ipsum(axis_title_size = 10,
+              base_size=10,
+              grid= 'Y') +
+ labs(y= 'No. of \nPupils') +
+ theme(axis.title.y=element_text(angle = 0,
+                                  vjust=0.9),
+       plot.title=element_text(size =15)) +
+  ggtitle('Distribution of Math scores')
 ```
 
 #### The code
 
 ```{r}
-#| eval: false
+#| eval: true
 
+p1 <- ggplot(data=exam_data, 
+       aes(x=MATHS)) +
+  geom_histogram(binwidth=5,
+                 boundary=100,
+                 color='grey25',
+                 fill='grey90') +
+  coord_cartesian(xlim=c(0,100)) +
+  theme_ipsum(axis_title_size = 10,
+              base_size=10,
+              grid= 'Y') +
+ labs(y= 'No. of \nPupils') +
+ theme(axis.title.y=element_text(angle = 0,
+                                  vjust=0.9),
+       plot.title=element_text(size =10)) +
+  ggtitle('Distribution of Math scores')
 ```
 :::
 
@@ -346,31 +375,88 @@ Next
 ```{r}
 #| echo: false
 
+ggplot(data=exam_data, 
+       aes(x=ENGLISH)) +
+  geom_histogram(binwidth=5,
+                 boundary=100,
+                 color='grey25',
+                 fill='grey90') +
+  coord_cartesian(xlim=c(0,100)) +
+  theme_ipsum(axis_title_size = 10,
+              base_size=10,
+              grid= 'Y') +
+ labs(y= 'No. of \nPupils') +
+ theme(axis.title.y=element_text(angle = 0,
+                                  vjust=0.9),
+       plot.title=element_text(size =15)) +
+  ggtitle('Distribution of English scores')
 ```
 
 #### The code
 
 ```{r}
-#| eval: false
+#| eval: true
 
+p2 <- ggplot(data=exam_data, 
+       aes(x=ENGLISH)) +
+  geom_histogram(binwidth=5,
+                 boundary=100,
+                 color='grey25',
+                 fill='grey90') +
+  coord_cartesian(xlim=c(0,100)) +
+  theme_ipsum(axis_title_size = 10,
+              base_size=10,
+              grid= 'Y') +
+ labs(y= 'No. of \nPupils') +
+ theme(axis.title.y=element_text(angle = 0,
+                                  vjust=0.9),
+       plot.title=element_text(size =10)) +
+  ggtitle('Distribution of English scores')
 ```
 :::
 
-Lastly, we will draw a scatterplot for English score versus Maths score by as shown below
+Lastly, draw a scatterplot for English score versus Maths score by as shown below
 
 ::: panel-tabset
 #### The plot
 
 ```{r}
 #| echo: false
-
+ggplot(data=exam_data, 
+       aes(x=MATHS, y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(method=lm, 
+              size = 0.5 )+
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100)) +
+  theme_ipsum(axis_title_size = 10,
+              base_size=10) +
+ labs(y= 'EL score', x= 'Math score') +
+ theme(axis.title.y=element_text(angle = 0,
+                                  vjust=0.9),
+       plot.title=element_text(size =15)) +
+  ggtitle('English scores vesus Math scores for Primary 3')
 ```
 
 #### The code
 
 ```{r}
-#| eval: false
+#| eval: true
 
+p3 <-ggplot(data=exam_data, 
+       aes(x=MATHS, y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(method=lm, 
+              size = 0.5 )+
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100)) +
+  theme_ipsum(axis_title_size = 10,
+              base_size=10) +
+ labs(y= 'EL score', x= 'Math score') +
+ theme(axis.title.y=element_text(angle = 0,
+                                  vjust=0.9),
+       plot.title=element_text(size =15)) +
+  ggtitle('English scores vesus Math scores for Primary 3')
 ```
 :::
 
@@ -395,7 +481,7 @@ Figure in the tabset below shows a composite of two histograms created using pat
 
 ```{r}
 #| echo: false
-
+p1 + p2
 ```
 
 #### The code

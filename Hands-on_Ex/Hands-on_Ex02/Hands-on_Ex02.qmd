@@ -6,11 +6,14 @@ execute:
   freeze: auto
   warning: false
   #echo: false
+  #message: false
   html:
     code-fold: false
     code-overflow: scroll
     code-summary: "Show the code"
     code-line-numbers: true
+    fig-width: 10
+    fig-height: 6
 ---
 
 # 2 Beyond ggplot2 fundamentals
@@ -579,7 +582,17 @@ Beside providing functions to place plots next to each other based on the provid
 
 ```{r}
 #| echo: false
+
 p4 <- ggplot(data=exam_data, 
+             aes(x = MATHS)) +
+  geom_histogram(bins=20, 
+                 boundary = 100,
+                 color="grey25", 
+                 fill="grey90") + 
+  coord_cartesian(xlim=c(0,100)) +
+  ggtitle("Distribution of Maths scores")
+
+p5 <- ggplot(data=exam_data, 
              aes(x = ENGLISH)) +
   geom_histogram(bins=20, 
                  boundary = 100,
@@ -588,7 +601,7 @@ p4 <- ggplot(data=exam_data,
   coord_cartesian(xlim=c(0,100)) +
   ggtitle("Distribution of English scores")
 
-p5 <- ggplot(data=exam_data, 
+p6 <- ggplot(data=exam_data, 
              aes(x= MATHS, 
                  y=ENGLISH)) +
   geom_point() +
@@ -598,7 +611,7 @@ p5 <- ggplot(data=exam_data,
                   ylim=c(0,100)) +
   ggtitle("English scores versus Maths scores for Primary 3")
 
-p5 +  inset_element(p4,
+p6 +  inset_element(p5,
                     left = 0.02,
                     bottom=0.7,
                     right= 0.5,
@@ -612,6 +625,15 @@ p5 +  inset_element(p4,
 #| eval: false
 
 p4 <- ggplot(data=exam_data, 
+             aes(x = MATHS)) +
+  geom_histogram(bins=20, 
+                 boundary = 100,
+                 color="grey25", 
+                 fill="grey90") + 
+  coord_cartesian(xlim=c(0,100)) +
+  ggtitle("Distribution of Maths scores")
+
+p5 <- ggplot(data=exam_data, 
              aes(x = ENGLISH)) +
   geom_histogram(bins=20, 
                  boundary = 100,
@@ -620,7 +642,7 @@ p4 <- ggplot(data=exam_data,
   coord_cartesian(xlim=c(0,100)) +
   ggtitle("Distribution of English scores")
 
-p5 <- ggplot(data=exam_data, 
+p6 <- ggplot(data=exam_data, 
              aes(x= MATHS, 
                  y=ENGLISH)) +
   geom_point() +
@@ -630,7 +652,7 @@ p5 <- ggplot(data=exam_data,
                   ylim=c(0,100)) +
   ggtitle("English scores versus Maths scores for Primary 3")
 
-p5 +  inset_element(p4,
+p6 +  inset_element(p5,
                     left = 0.02,
                     bottom=0.7,
                     right= 0.5,
@@ -648,7 +670,12 @@ Figure below is created by combining patchwork and theme_economist() of ggthemes
 
 ```{r}
 #| echo: false
-
+patchwork <- (p4/p5) | p6
+patchwork &   theme_economist() + theme(plot.title=element_text(size =8),
+                                        axis.title.y=element_text(size = 6,
+                                                                  angle = 0,
+                                                                  vjust=0.9),
+                                         axis.title.x=element_text(size = 6))
 
 ```
 
@@ -656,7 +683,12 @@ Figure below is created by combining patchwork and theme_economist() of ggthemes
 
 ```{r}
 #| eval: false
-
+patchwork <- (p4/p5) | p6
+patchwork &   theme_economist() + theme(plot.title=element_text(size =8),
+                                        axis.title.y=element_text(size = 6,
+                                                                  angle = 0,
+                                                                  vjust=0.9),
+                                         axis.title.x=element_text(size = 6))
 ```
 :::
 

@@ -12,8 +12,8 @@ execute:
     code-overflow: scroll
     code-summary: "Show the code"
     code-line-numbers: true
-    fig-width: 10
-    fig-height: 6
+    fig-width: 14
+    fig-asp: 0.68
 ---
 
 # 2 Beyond ggplot2 fundamentals
@@ -670,12 +670,14 @@ Figure below is created by combining patchwork and theme_economist() of ggthemes
 
 ```{r}
 #| echo: false
+#| fig-width: 14
+#| fig-asp: 0.68
 patchwork <- (p4/p5) | p6
-patchwork &   theme_economist() + theme(plot.title=element_text(size =8),
-                                        axis.title.y=element_text(size = 6,
+patchwork &   theme_economist() + theme(plot.title=element_text(size =10),
+                                        axis.title.y=element_text(size = 9,
                                                                   angle = 0,
                                                                   vjust=0.9),
-                                         axis.title.x=element_text(size = 6))
+                                         axis.title.x=element_text(size = 9))
 
 ```
 
@@ -683,12 +685,14 @@ patchwork &   theme_economist() + theme(plot.title=element_text(size =8),
 
 ```{r}
 #| eval: false
+#| fig-width: 14
+#| fig-asp: 0.68
 patchwork <- (p4/p5) | p6
-patchwork &   theme_economist() + theme(plot.title=element_text(size =8),
-                                        axis.title.y=element_text(size = 6,
+patchwork &   theme_economist() + theme(plot.title=element_text(size =10),
+                                        axis.title.y=element_text(size = 9,
                                                                   angle = 0,
                                                                   vjust=0.9),
-                                         axis.title.x=element_text(size = 6))
+                                         axis.title.x=element_text(size = 9))
 ```
 :::
 

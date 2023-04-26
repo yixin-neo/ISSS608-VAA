@@ -2,4 +2,4 @@
 title: "ISSS608-VAA"
 ---
 
-Welcome to my **ISSS608 Visual Analytics and Applications** HomePage! In this website, you will find my coursework.
+Welcome to my **ISSS608 Visual Analytics and Applications** HomePage! In this website, you will find my journey in using R for visualisation.

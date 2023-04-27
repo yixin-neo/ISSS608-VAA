@@ -245,53 +245,98 @@ girafe(ggobj=p,
 Code chunk below shows an advanced way to customise tooltip. In this example, a function is used to compute 90% confident interval of the mean. The derived statistics are then displayed in the tooltip.
 
 ```{r}
+tooltip <- function(y, ymax, accuracy = 0.01) {
+  mean <- scales::number(y, accuracy = accuracy)
+  sem <- scales:: number (ymax-y, accuracy = accuracy)
+  paste("mean maths scores:" , mean, "+/-", sem)
+}
+
+
+gg_point <- ggplot(data=exam_data,
+                   aes(x = RACE)) +
+  stat_summary(aes(y=MATHS,
+                   tooltip = after_stat(tooltip(y, ymax))),
+               fun.data = mean_se,
+               geom = GeomInteractiveCol,
+               fill = 'lightblue') +
+  stat_summary(aes(y= MATHS),
+               fun.data = mean_se,
+               geom= 'errorbar',
+               width = 0.2,
+               size = 0.2)
+
+girafe(ggobj=gg_point,
+       width_svg = 8,
+       height_svg = 8 * 0.618)
 
 ```
+**EXPLANATION of the codes above**
 
-- tooltip function: 
- - it takes in two arguments (y and ymax) from stat_summary via after_stat()
- - scales:: number is to convert number to tet, with formatting.
- - sem output: if ymax = y + se , then in tooltip, sem = ymax-y, isnt sem = se?
- - it outputs "mean maths scores: 57.44 +/- 2.03"
+1. Tooltip self defined function:
 
-- the first stat summary function has two aes mappings to visual: (1)MATHS as Y (2)tooltip output
-  - it first applies mean_se to get y, ymin, ymax for each X value
-  - after this, these groups of 3 values are send into tooltip function via after_stat() helper function
-  - GeomInteractive makes the columns interactive so tooltips is displayed when users hover over
-- the second stat summary uses y,ymin, ymax in mean_se to plot the error bar
+ - It takes in two arguments (`y` and `ymax`) from results of `stat_summary()` via `after_stat()`. accuracy is a fixed parameter and has a value of 0.01.
+ - `scales:: number` is to convert number to text, with formatting.
+ - `sem` output: If `ymax` = `y` + `se` , then in tooltip, `sem` = `ymax`-`y`, isnt `sem` = `se`?
+ - It outputs `"mean maths scores: 57.44 +/- 2.03"`
+
+2. Stat_summary function creates another geom layer. The first stat summary function has two aes mappings to visual: 
+(1)MATHS as Y (2)tooltip output
+
+  - It first applies mean_se method to output `y`, `ymin`, `ymax` for each X value (usually categorical)
+  - After this, these groups of 3 values are send into `tooltip` function via `after_stat(`) helper function
+  - `GeomInteractive` makes the columns interactive so tooltips is displayed when users hover over
+
+3. The second stat summary uses `y,ymin, ymax` obtained from `method= mean_se` to plot the error bar
 
 **DOUCUMENTATION**
-fun.data='mean_se' is default. It returns a data frame with three columns:
-mean_se(x, mult = 1)
 
-y
-The mean.
+[mean_se](https://ggplot2.tidyverse.org/reference/mean_se.html)
 
-ymin
-The mean minus the multiples of the standard error.
-
-ymax
-The mean plus the multiples of the standard error.
+stat_summary(aes(fun.data=mean_se) is default. `mean_se(x, mult = 1)`. When input a list of values, it returns a data frame with three columns:
 
 
-**There are a few summary functions from the Hmisc package which are reformatted for use in stat_summary(). They all return aesthetics for y, ymax, and ymin.**
+`y: The mean.`
 
-mean_cl_normal()
+`ymin: The mean minus the multiples of the standard error.`
+
+`ymax: The mean plus the multiples of the standard error.`
+
+
+*There are a few summary functions from the Hmisc package which are reformatted for use in stat_summary(). They all return aesthetics for y, ymax, and ymin.*
+
+`mean_cl_normal()`
 Returns sample mean and 95% confidence intervals assuming normality (i.e., t-distribution based)
-mean_sdl()
+
+`mean_sdl()`
 Returns sample mean and a confidence interval based on the standard deviation times some constant
-mean_cl_boot()
+
+`mean_cl_boot()`
 Uses a bootstrap method to determine a confidence interval for the sample mean without assuming normality.
-median_hilow()
-Returns the median and an upper and lower quantiles
+
+`median_hilow()`
+Returns the median and an upper and lower quantiles.
 
 ### 3.4.5 Hover effect with *data_id* aesthetic
 
 Code chunk below shows the second interactive feature of ggiraph, namely `data_id`.
 
 ```{r}
+#| eval: false
+p <- ggplot(data= exam_data,
+            aes(x=MATHS)) +
+  geom_dotplot_interactive(aes(data_id=CLASS),
+                           stackgroups = TRUE,
+                           binwidth= 1,
+                           method = 'histodot') +
+  scale_y_continuous( NULL,
+                      breaks = NULL)
+
+girafe(ggobj=p,
+       width_svg = 8,
+       height_svg = 8 *0.618)
 
 ```
+
 
 ::: callout-note
 ## Info
@@ -299,8 +344,21 @@ Code chunk below shows the second interactive feature of ggiraph, namely `data_i
 Interactivity: Elements associated with a *data_id* (i.e CLASS) will be highlighted upon mouse over.
 :::
 
-```{r}
 
+```{r}
+#| echo: false
+p <- ggplot(data= exam_data,
+            aes(x=MATHS)) +
+  geom_dotplot_interactive(aes(data_id=CLASS),
+                           stackgroups = TRUE,
+                           binwidth= 1,
+                           method = 'histodot') +
+  scale_y_continuous( NULL,
+                      breaks = NULL)
+
+girafe(ggobj=p,
+       width_svg = 8,
+       height_svg = 8 *0.618)
 ```
 
 Note that the default value of the hover css is *hover_css = \"fill:orange;\"*.
@@ -310,6 +368,24 @@ Note that the default value of the hover css is *hover_css = \"fill:orange;\"*.
 In the code chunk below, css codes are used to change the highlighting effect.
 
 ```{r}
+#| eval: false
+p <- ggplot(data=exam_data,
+            aes(x=MATHS)) +
+  geom_dotplot_interactive(aes(data_id = CLASS),
+                           stackgroups = TRUE,
+                           binwidth = 1,
+                           method = "histodot") +
+  scale_y_continuous(NULL,
+                     breaks= NULL)  #null to suppress axis labels
+
+girafe(ggobj=p,
+       width_svg = 6,
+       height_svg = 6*0.618,
+       options = list(                          #<<<
+         opts_hover(css='fill: #202020;'),      #<<<
+         opts_hover_inv(css = 'opacity: 0.2;')  #<<<
+         )
+       )
 
 ```
 
@@ -320,26 +396,81 @@ Interactivity: Elements associated with a *data_id* (i.e CLASS) will be highligh
 :::
 
 ```{r}
+#| echo: false
+p <- ggplot(data=exam_data,
+            aes(x=MATHS)) +
+  geom_dotplot_interactive(aes(data_id = CLASS),
+                           stackgroups = TRUE,
+                           binwidth = 1,
+                           method = "histodot") +
+  scale_y_continuous(NULL,
+                     breaks= NULL)  #null to suppress axis labels
 
+girafe(ggobj=p,
+       width_svg = 6,
+       height_svg = 6*0.618,
+       options = list(                          #<<<
+         opts_hover(css='fill: #202020;'),      #<<<
+         opts_hover_inv(css = 'opacity: 0.2;')  #<<<
+         )
+       )
 ```
 
-Note: Different from previous example, in this example the ccs customisation request are encoded directly.
+Note: Different from previous example (`tooltip_css` is pre-defined as input to a parameter in girafe(options=list(opts_tooltip(css=`tooltip_css`)))), in this example the ccs customisation request are encoded directly as `girafe(options=list(opts_hover(css='tooltip_css'fill:#202020;')))`
 
 ### 3.4.7 Combining tooltip and hover effect
 
 There are time that we want to combine tooltip and hover effect on the interactive statistical graph as shown in the code chunk below.
 
 ```{r}
+#| eval: false
+p <- ggplot(data=exam_data,
+            aes(x=MATHS)) +
+  geom_dotplot_interactive(aes(tooltip = CLASS,  #<<<
+                               data_id = CLASS),  #<<<
+                           stackgroups = TRUE,
+                           binwidth = 1,
+                           method = "histodot") +
+  scale_y_continuous(NULL,
+                     breaks= NULL)  #null to suppress axis labels
+
+girafe(ggobj=p,
+       width_svg = 6,
+       height_svg = 6*0.618,
+       options = list(                          #<<<
+         opts_hover(css='fill: blue;'),      #<<<
+         opts_hover_inv(css = 'opacity: 0.2;')  #<<<
+         )
+       )
 
 ```
 
 ::: callout-note
 ## Info
 
-Interactivity: Elements associated with a *data_id* (i.e CLASS) will be highlighted upon mouse over. At the same time, the tooltip will show the CLASS.
+Interactivity: Elements associated with a *data_id* (i.e CLASS) will be highlighted upon mouse over. At the same time, the *tooltip* will show the CLASS.
 :::
 
 ```{r}
+#| echo: false
+p <- ggplot(data=exam_data,
+            aes(x=MATHS)) +
+  geom_dotplot_interactive(aes(tooltip = CLASS,  #<<<
+                               data_id = CLASS),  #<<<
+                           stackgroups = TRUE,
+                           binwidth = 1,
+                           method = "histodot") +
+  scale_y_continuous(NULL,
+                     breaks= NULL)  #null to suppress axis labels
+
+girafe(ggobj=p,
+       width_svg = 6,
+       height_svg = 6*0.618,
+       options = list(                          #<<<
+         opts_hover(css='fill: blue;'),      #<<<
+         opts_hover_inv(css = 'opacity: 0.2;')  #<<<
+         )
+       )
 
 ```
 
@@ -350,6 +481,24 @@ Interactivity: Elements associated with a *data_id* (i.e CLASS) will be highligh
 The code chunk below shown an example of `onclick`.
 
 ```{r}
+#| eval: false
+exam_data$onclick <- sprintf("window.open(\"%s%s\")",
+"https://www.moe.gov.sg/schoolfinder?journey=Primary%20school",
+as.character(exam_data$ID))
+
+p <- ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_dotplot_interactive(              
+    aes(onclick = onclick),              
+    stackgroups = TRUE,                  
+    binwidth = 1,                        
+    method = "histodot") +               
+  scale_y_continuous(NULL,               
+                     breaks = NULL)
+girafe(                                  
+  ggobj = p,                             
+  width_svg = 6,                         
+  height_svg = 6*0.618)
 
 ```
 
@@ -360,7 +509,24 @@ Interactivity: Web document link with a data object will be displayed on the web
 :::
 
 ```{r}
+#| echo: false
+exam_data$onclick <- sprintf("window.open(\"%s%s\")",
+"https://www.moe.gov.sg/schoolfinder?journey=Primary%20school",
+as.character(exam_data$ID))
 
+p <- ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_dotplot_interactive(              
+    aes(onclick = onclick),              
+    stackgroups = TRUE,                  
+    binwidth = 1,                        
+    method = "histodot") +               
+  scale_y_continuous(NULL,               
+                     breaks = NULL)
+girafe(                                  
+  ggobj = p,                             
+  width_svg = 6,                         
+  height_svg = 6*0.618)
 ```
 
 ::: callout-warning
@@ -369,10 +535,41 @@ Note that click actions must be a string column in the dataset containing valid 
 
 ### 3.4.9 Coordinated Multiple Views with **ggiraph**
 
-Coordinated multiple views methods has been implemented in the data visualisation below.
+*Coordinated* multiple views methods has been implemented in the data visualisation below.
 
 ```{r}
+#| eval: false
+p1 <- ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_dotplot_interactive(              
+    aes(data_id = ID,
+        tooltip= ID),      #<<< NYX added this          
+    stackgroups = TRUE,                  
+    binwidth = 1,                        
+    method = "histodot") +  
+  coord_cartesian(xlim=c(0,100)) +    #<<< p1 same as p2 x-axis
+  scale_y_continuous(NULL,            # suppress y axis
+                     breaks = NULL)
 
+p2 <- ggplot(data=exam_data, 
+       aes(x = ENGLISH)) +
+  geom_dotplot_interactive(              
+    aes(data_id = ID),              
+    stackgroups = TRUE,                  
+    binwidth = 1,                        
+    method = "histodot") + 
+  coord_cartesian(xlim=c(0,100)) +    #<<< p1 same as p2 x-axis
+  scale_y_continuous(NULL,               
+                     breaks = NULL)
+
+girafe(code = print(p1 + p2),         #<<< coordinated multiple views
+       width_svg = 6,
+       height_svg = 3,
+       options = list(
+         opts_hover(css = "fill: #202020;"),
+         opts_hover_inv(css = "opacity:0.2;")
+         )
+       ) 
 ```
 
 Notice that when a data point of one of the dotplot is selected, the corresponding data point ID on the second data visualisation will be highlighted too.
@@ -383,7 +580,41 @@ In order to build a coordinated multiple views as shown in the example above, th
 
 2.  *patchwork* function of [patchwork](https://patchwork.data-imaginist.com/) package will be used inside girafe function to create the interactive coordinated multiple views.
 
+NYX: hover effects can be encoded directly in  `girafe` unlike tooltips and data_id . Added tooltip aes effects as well.
+
 ```{r}
+#| echo: false
+p1 <- ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_dotplot_interactive(              
+    aes(data_id = ID,
+        tooltip= ID),      #<<< NYX added this          
+    stackgroups = TRUE,                  
+    binwidth = 1,                        
+    method = "histodot") +  
+  coord_cartesian(xlim=c(0,100)) +    #<<< p1 same as p2 x-axis
+  scale_y_continuous(NULL,            # suppress y axis
+                     breaks = NULL)
+
+p2 <- ggplot(data=exam_data, 
+       aes(x = ENGLISH)) +
+  geom_dotplot_interactive(              
+    aes(data_id = ID),              
+    stackgroups = TRUE,                  
+    binwidth = 1,                        
+    method = "histodot") + 
+  coord_cartesian(xlim=c(0,100)) +    #<<< p1 same as p2 x-axis
+  scale_y_continuous(NULL,               
+                     breaks = NULL)
+
+girafe(code = print(p1 + p2),         #<<< coordinated multiple views
+       width_svg = 6,
+       height_svg = 3,
+       options = list(
+         opts_hover(css = "fill: #202020;"),
+         opts_hover_inv(css = "opacity:0.2;")
+         )
+       ) 
 
 ```
 

@@ -668,7 +668,10 @@ In the code chunk below, *color* argument is mapped to a qualitative visual vari
 
 ```{r}
 #| echo: false
-
+plot_ly(data=exam_data,
+        x= ~ENGLISH,
+        y= ~MATHS,
+        color=~RACE)
 
 ```
 
@@ -676,7 +679,10 @@ In the code chunk below, *color* argument is mapped to a qualitative visual vari
 
 ```{r}
 #| eval: false
-
+plot_ly(data=exam_data,
+        x= ~ENGLISH,
+        y= ~MATHS,
+        color=~RACE)
 
 ```
 :::
@@ -690,14 +696,38 @@ The code chunk below plots an interactive scatter plot by using [ggplotly()](htt
 
 ```{r}
 #| echo: false
+p <- ggplot(data = exam_data,
+            aes(x= MATHS,
+                y= ENGLISH)) +
+  geom_point (size =1) +
+  geom_smooth(method=lm)+
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100)) +
+  labs(y= 'ENGLISH') +                                    
+  theme(axis.title.y=element_text(angle = 0,
+                                  vjust=0.9)) +   #<<< does not work in ggplotly
+  ggtitle('English and Math scores')
 
+ggplotly(p)
 ```
 
 #### The code chunk
 
 ```{r}
 #| eval: false
+p <- ggplot(data = exam_data,
+            aes(x= MATHS,
+                y= ENGLISH)) +
+  geom_point (size =1) +
+  geom_smooth(method=lm)+
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100)) +
+  labs(y= 'ENGLISH') +                                    
+  theme(axis.title.y=element_text(angle = 0,
+                                  vjust=0.9)) +   #<<< does not work in ggplotly
+  ggtitle('English and Math scores')
 
+ggplotly(p)
 
 ```
 :::
@@ -717,7 +747,28 @@ The creation of a coordinated linked plot by using plotly involves three steps:
 
 ```{r}
 #| echo: false
+d <- highlight_key(exam_data)
 
+p1 <- ggplot(data=d, 
+            aes(x = MATHS,
+                y = ENGLISH)) +
+  geom_point(size=1) +
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100))
+
+p2 <- ggplot(data=d, 
+            aes(x = MATHS,
+                y = SCIENCE)) +
+  geom_point(size=1) +
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100)) +
+  labs(x='math',
+       y='english')
+
+subplot(ggplotly(p1),
+        ggplotly(p2)) %>% 
+  layout(xaxis = list(title = "math"),
+         yaxis = list(title = "english"))
 
 ```
 
@@ -725,7 +776,28 @@ The creation of a coordinated linked plot by using plotly involves three steps:
 
 ```{r}
 #| eval: false
+d <- highlight_key(exam_data)
 
+p1 <- ggplot(data=d, 
+            aes(x = MATHS,
+                y = ENGLISH)) +
+  geom_point(size=1) +
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100))
+
+p2 <- ggplot(data=d, 
+            aes(x = MATHS,
+                y = SCIENCE)) +
+  geom_point(size=1) +
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100)) +
+  labs(x='math',
+       y='english')
+
+subplot(ggplotly(p1),
+        ggplotly(p2)) %>% 
+  layout(xaxis = list(title = "math"),
+         yaxis = list(title = "english"))
 
 ```
 :::
@@ -757,7 +829,7 @@ Difference between 3.4.9 and 3.5.4
 
 ```{r}
 
-
+DT::datatable(exam_data, class='compact')
 ```
 
 ### 3.6.2 Linked brushing: crosstalk method
@@ -767,7 +839,20 @@ Difference between 3.4.9 and 3.5.4
 
 ```{r}
 #| echo: false
+d <- highlight_key(exam_data) 
+p <- ggplot(d, 
+            aes(ENGLISH, 
+                MATHS)) + 
+  geom_point(size=1) +
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100))
 
+gg <- highlight(ggplotly(p),        
+                "plotly_selected")  
+
+crosstalk::bscols(gg,
+                  DT::datatable(d),
+                  widths=5)
 ```
 
 #### The code chunk
@@ -775,7 +860,20 @@ Difference between 3.4.9 and 3.5.4
 ```{r}
 #| eval: false
 
+d <- highlight_key(exam_data) 
+p <- ggplot(d, 
+            aes(ENGLISH, 
+                MATHS)) + 
+  geom_point(size=1) +
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100))
 
+gg <- highlight(ggplotly(p),        
+                "plotly_selected")  
+
+crosstalk::bscols(gg,
+                  DT::datatable(d),
+                  widths=5)
 
 ```
 :::

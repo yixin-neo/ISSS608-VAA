@@ -109,7 +109,7 @@ glimpse(globalPop)
 
 -   `mutate_each_()` of dplyr package is used to convert all character data type into factor.
 
-    -   This line applies the **`factor()`** function to each column specified in the **`col`** argument. It takes column indices or column names in strings format as inputs, and returns a data frame with new columns for each column in the input data frame, where each new column is the result of applying the specified function to the corresponding column in the input data frame.
+    -   This line applies the **`factor()`** function to each column specified in the **`col`** argument. Character to factor. It takes column indices or column names in strings format as inputs, and returns a data frame with new columns for each column in the input data frame, where each new column is the result of applying the specified function to the corresponding column in the input data frame.
 
     -   The **`fun`** argument specifies the function to apply to each column, and **`factor(.)`** is a way to specify the **`factor`** works as an argument.
 
@@ -137,8 +137,27 @@ glimpse(globalPop)
 In the code chunk below, the basic ggplot2 functions are used to create a static bubble plot.
 
 ```{r}
-
+ggplot(data= globalPop,
+       aes(x= Old,
+           y=Young,
+           size= Population,
+           color=Country)) +
+  geom_point(alpha = 0.7,
+             show.legend = FALSE) +
+  scale_color_manual(values=country_colors) +  #<<< who has defined country_colors?
+  scale_size(range= c(2,12)) +
+  labs(title='Year:{frame_time}',
+       x = '% Aged',
+       y= '% Young')
 ```
+
+::: callout-note
+## Things to learn from the code
+
+-   The **`scale_size(range= c(2,12))`** sets the range of point sizes to be used in the plot to between 2 and 12.
+
+-   `Population` is mapped to `size` aes in `ggplot`, thus this range parameter controls the min nad max size of the points.
+:::
 
 ### 4.3.2 Building the animated bubble plot
 
@@ -147,6 +166,23 @@ In the code chunk below,
 -   [`transition_time()`](https://gganimate.com/reference/transition_time.html) of **gganimate** is used to create transition through distinct states in time (i.e. Year).
 
 -   `ease_aes()` is used to control easing of aesthetics. The default is `linear`. Other methods are: quadratic, cubic, quartic, quintic, sine, circular, exponential, elastic, back, and bounce.
+
+```{r}
+ggplot(data= globalPop,
+       aes(x= Old,
+           y=Young,
+           size= Population,
+           color=Country)) +
+  geom_point(alpha = 0.7,
+             show.legend = FALSE) +
+  scale_color_manual(values=country_colors) +  #<<< who has defined country_colors?
+  scale_size(range= c(2,12)) +
+  labs(title='Year:{frame_time}',
+       x = '% Aged',
+       y= '% Young') +
+  transition_time(Year) +
+  ease_aes('linear')
+```
 
 ## 4.4 Animated Data Visualisation: plotly
 

@@ -383,7 +383,7 @@ Things to learn from the code
 <li><p><a href="https://readxl.tidyverse.org/reference/read_excel.html"><code>read_xls()</code></a> of <strong>readxl</strong> package is used to import the Excel worksheet.</p></li>
 <li><p><code>mutate_each_()</code> of dplyr package is used to convert all character data type into factor.</p>
 <ul>
-<li><p>This line applies the <strong><code>factor()</code></strong> function to each column specified in the <strong><code>col</code></strong> argument. It takes column indices or column names in strings format as inputs, and returns a data frame with new columns for each column in the input data frame, where each new column is the result of applying the specified function to the corresponding column in the input data frame.</p></li>
+<li><p>This line applies the <strong><code>factor()</code></strong> function to each column specified in the <strong><code>col</code></strong> argument. Character to factor. It takes column indices or column names in strings format as inputs, and returns a data frame with new columns for each column in the input data frame, where each new column is the result of applying the specified function to the corresponding column in the input data frame.</p></li>
 <li><p>The <strong><code>fun</code></strong> argument specifies the function to apply to each column, and <strong><code>factor(.)</code></strong> is a way to specify the <strong><code>factor</code></strong> works as an argument.</p></li>
 </ul></li>
 <li><p><code>mutate</code> of dplyr package is used to convert data values of Year field into integer.</p>
@@ -409,7 +409,37 @@ Things to learn from the code
 <h3 class="anchored" data-anchor-id="building-a-static-population-bubble-plot">4.3.1 Building a static population bubble plot</h3>
 <p>In the code chunk below, the basic ggplot2 functions are used to create a static bubble plot.</p>
 <div class="cell">
-
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span> globalPop,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span> Old,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">y=</span>Young,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">size=</span> Population,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">color=</span>Country)) <span class="sc">+</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span>country_colors) <span class="sc">+</span>  <span class="co">#&lt;&lt;&lt; who has defined country_colors?</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_size</span>(<span class="at">range=</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">12</span>)) <span class="sc">+</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Year:{frame_time}'</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">'% Aged'</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y=</span> <span class="st">'% Young'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex04_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Things to learn from the code
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>The <strong><code>scale_size(range= c(2,12))</code></strong> sets the range of point sizes to be used in the plot to between 2 and 12.</p></li>
+<li><p><code>Population</code> is mapped to <code>size</code> aes in <code>ggplot</code>, thus this range parameter controls the min nad max size of the points.</p></li>
+</ul>
+</div>
 </div>
 </section>
 <section id="building-the-animated-bubble-plot" class="level3">
@@ -419,6 +449,25 @@ Things to learn from the code
 <li><p><a href="https://gganimate.com/reference/transition_time.html"><code>transition_time()</code></a> of <strong>gganimate</strong> is used to create transition through distinct states in time (i.e.&nbsp;Year).</p></li>
 <li><p><code>ease_aes()</code> is used to control easing of aesthetics. The default is <code>linear</code>. Other methods are: quadratic, cubic, quartic, quintic, sine, circular, exponential, elastic, back, and bounce.</p></li>
 </ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span> globalPop,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span> Old,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">y=</span>Young,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">size=</span> Population,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">color=</span>Country)) <span class="sc">+</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span>country_colors) <span class="sc">+</span>  <span class="co">#&lt;&lt;&lt; who has defined country_colors?</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_size</span>(<span class="at">range=</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">12</span>)) <span class="sc">+</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Year:{frame_time}'</span>,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">'% Aged'</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y=</span> <span class="st">'% Young'</span>) <span class="sc">+</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transition_time</span>(Year) <span class="sc">+</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ease_aes</span>(<span class="st">'linear'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex04_files/figure-html/unnamed-chunk-7-1.gif" class="img-fluid"></p>
+</div>
+</div>
 </section>
 </section>
 <section id="animated-data-visualisation-plotly" class="level2">

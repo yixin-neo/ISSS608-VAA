@@ -628,25 +628,33 @@ Plotly\'s R graphing library create interactive web graphics from **ggplot2** gr
 
 There are two ways to create interactive graph by using plotly, they are:
 
--   by using *plot_ly()*, and
+-   by using [plot_ly()](https://plotly.com/r/), and
 
--   by using *ggplotly()*
+-   by using [ggplotly()](https://plotly.com/ggplot2/)
 
 ### 3.5.1 Creating an interactive scatter plot: plot_ly() method
 
-The tabset below shows an example a basic interactive plot created by using *plot_ly()*.
+The tabset below shows an example a basic interactive plot created by using [plot_ly()](https://plotly.com/r/)
 
 ::: panel-tabset
 #### The plot
 
 ```{r}
 #| echo: false
+plot_ly(data=exam_data,
+        x=~MATHS,
+        y=~ENGLISH)
+
 ```
 
 #### The code chunk
 
 ```{r}
 #| eval: false
+
+plot_ly(data=exam_data,
+        x=~MATHS,
+        y=~ENGLISH)
 
 ```
 :::
@@ -660,31 +668,36 @@ In the code chunk below, *color* argument is mapped to a qualitative visual vari
 
 ```{r}
 #| echo: false
+
+
 ```
 
 #### The code chunk
 
 ```{r}
 #| eval: false
+
 
 ```
 :::
 
 ### 3.5.3 Creating an interactive scatter plot: ggplotly() method
 
-The code chunk below plots an interactive scatter plot by using *ggplotly()*.
+The code chunk below plots an interactive scatter plot by using [ggplotly()](https://plotly.com/ggplot2/).
 
 ::: panel-tabset
 #### The plot
 
 ```{r}
 #| echo: false
+
 ```
 
 #### The code chunk
 
 ```{r}
 #| eval: false
+
 
 ```
 :::
@@ -704,12 +717,15 @@ The creation of a coordinated linked plot by using plotly involves three steps:
 
 ```{r}
 #| echo: false
+
+
 ```
 
 #### The code chunk
 
 ```{r}
 #| eval: false
+
 
 ```
 :::
@@ -718,7 +734,16 @@ Thing to learn from the code chunk:
 
 -   `highlight_key()` simply creates an object of class [crosstalk::SharedData](https://rdrr.io/cran/crosstalk/man/SharedData.html).
 
--   Visit this [link](https://rstudio.github.io/crosstalk/) to learn more about crosstalk,
+-   Visit this [link](https://rstudio.github.io/crosstalk/) to learn more about crosstalk
+
+::: callout-note
+Difference between 3.4.9 and 3.5.4
+
+3.4.9:`interactive geom functions of ggiraph` & `girafe(patchwork)` used
+
+3.5.4 : `highlight_key()` , `normal ggplot + geom_obj` , `subplot(ggplot(p1), ggplot(p2))`
+
+:::
 
 ## 3.6 Interactive Data Visualisation - crosstalk methods!
 
@@ -732,6 +757,7 @@ Thing to learn from the code chunk:
 
 ```{r}
 
+
 ```
 
 ### 3.6.2 Linked brushing: crosstalk method
@@ -741,6 +767,7 @@ Thing to learn from the code chunk:
 
 ```{r}
 #| echo: false
+
 ```
 
 #### The code chunk
@@ -748,8 +775,21 @@ Thing to learn from the code chunk:
 ```{r}
 #| eval: false
 
+
+
 ```
 :::
+
+The `highlight_key()` function is used to create a unique identifier for each row in a data frame, based on its values. The resulting identifier is used to keep track of the rows that have been selected or highlighted on a plot, particularly when using the highlight() function.
+
+`plotly_selected` is a built-in plotly attribute that represents the currently selected points on the plot.
+
+So, highlight(ggplotly(p), "plotly_selected") is taking the ggplotly(p) object and **highlighting the currently selected points** on the plot by changing their appearance in some way, such as by changing their color or size.
+
+
+crosstalk::bscols() is a function in R that creates a Bootstrap column layout. The first argument is the left column, and the second argument is the right column. The widths argument is used to specify the relative width of the two columns, with the default value being 6 for both.
+
+crosstalk::bscols() is particularly useful when working with interactive data visualizations, as it allows for easy linking of different components of the dashboard, such as brushing and highlighting on the plot and filtering on the data table.
 
 ## 3.7 Reference
 

@@ -14,26 +14,6 @@ execute:
     code-line-numbers: true
 ---
 
-::: callout-note
-## header
-
-text
-:::
-
-::: panel-tabset
-#### The plot
-
-```{r}
-
-```
-
-#### The code chunk
-
-```{r}
-
-```
-:::
-
 # 4  Programming Animated Statistical Graphics with R
 
 ## 4.1 Overview
@@ -134,7 +114,11 @@ glimpse(globalPop)
 
 ### 4.3.1 Building a static population bubble plot
 
-In the code chunk below, the basic ggplot2 functions are used to create a static bubble plot.
+In the code chunk below, the basic ggplot2 functions are used to create a static [bubble plot](https://r-graph-gallery.com/bubble-chart.html)
+
+::: callout-note
+A bubble plot is created when a third numeric variable is assigned to `size` argument inside a ggplot with geom_point.
+:::
 
 ```{r}
 ggplot(data= globalPop,
@@ -149,6 +133,7 @@ ggplot(data= globalPop,
   labs(title='Year:{frame_time}',
        x = '% Aged',
        y= '% Young')
+
 ```
 
 ::: callout-note
@@ -165,7 +150,7 @@ In the code chunk below,
 
 -   [`transition_time()`](https://gganimate.com/reference/transition_time.html) of **gganimate** is used to create transition through distinct states in time (i.e. Year).
 
--   `ease_aes()` is used to control easing of aesthetics. The default is `linear`. Other methods are: quadratic, cubic, quartic, quintic, sine, circular, exponential, elastic, back, and bounce.
+-   [ease_aes()](https://gganimate.com/reference/ease_aes.html) is used to control easing of aesthetics. The default is `linear`. Other methods are: quadratic, cubic, quartic, quintic, sine, circular, exponential, elastic, back, and bounce.
 
 ```{r}
 ggplot(data= globalPop,
@@ -173,24 +158,24 @@ ggplot(data= globalPop,
            y=Young,
            size= Population,
            color=Country)) +
-  geom_point(alpha = 0.7,
+  geom_point( alpha = 0.7,
              show.legend = FALSE) +
-  scale_color_manual(values=country_colors) +  #<<< who has defined country_colors?
+  scale_color_manual(values=country_colors) +  #<<< gapminder lib
   scale_size(range= c(2,12)) +
   labs(title='Year:{frame_time}',
        x = '% Aged',
        y= '% Young') +
   transition_time(Year) +
-  ease_aes('linear')
+  ease_aes("linear")
 ```
 
 ## 4.4 Animated Data Visualisation: plotly
 
-In **Plotly R** package, both `ggplotly()` and `plot_ly()` support key frame animations through the `frame` argument/aesthetic. They also support an `ids` argument/aesthetic to ensure smooth transitions between objects with the same id (which helps facilitate object constancy).
+In **Plotly R** package, both [ggplotly()](https://plotly.com/ggplot2/animations/) nd `plot_ly()` support key frame animations through the `frame` argument/aesthetic. They also support an `ids` argument/aesthetic to ensure smooth transitions between objects with the same id (which helps facilitate object constancy).
 
 ### 4.4.1 Building an animated bubble plot: `ggplotly()` method
 
-In this sub-section, you will learn how to create an animated bubble plot by using `ggplotly()` method.
+In this sub-section, I will learn how to create an animated bubble plot by using `ggplotly()` method.
 
 ```{r}
 
@@ -209,6 +194,18 @@ In this sub-section, you will learn how to create an animated bubble plot by usi
 In this sub-section, you will learn how to create an animated bubble plot by using `plot_ly()` method.
 
 ```{r}
+bp <- globalPop %>% 
+  plot_ly( x = ~Old,
+           y= ~Young,
+           color = ~Continent,#<< 6 unique
+           frame= ~Year,
+           text= ~Country,
+           hoverinfo='text',
+           type = 'scatter',
+           mode= 'markers')
+
+
+bp
 
 ```
 

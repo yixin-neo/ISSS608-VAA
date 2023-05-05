@@ -159,3 +159,41 @@ ad.test(exam$ENGLISH)
 ```
 
 Results from the Anderson_darling normality test shows enough statistical evidence to reject the null hypothesis and conclude that the EL scores do not follow normal distribution . Thus the use of non parametric test is correct.
+
+### 9.3.6 Two-sample mean test: *ggbetweenstats()*
+
+In the code chunk below, [*ggbetweenstats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/ggbetweenstats.html) is used to build a visual for two-sample mean test of Maths scores by gender (independent).
+
+H0: Mean of F and M Math scores are the same.
+
+H1: Mean of F and M Math scores are not the same.
+
+```{r}
+ggbetweenstats(data=exam,
+               x=GENDER,
+               y=MATHS,
+               type='np',
+               messages=FALSE)
+```
+
+Default information: - statistical details - Bayes Factor - sample sizes - distribution summary
+
+Since p-value \> 0.05, we do not have enough statistical evidence to reject the null hypothesis that mean of Math scores of both gender are the same.
+
+However, if we check for normality of Math scores of each gender.
+
+```{r}
+# perform Shapiro-Wilk test on math scores by gender
+shapiro_test <- by(exam$MATHS, exam$GENDER, shapiro.test)
+
+# extract p-values
+p_values <- sapply(shapiro_test, function(x) x$p.value)
+# print results
+print(p_values)
+```
+
+::: callout-note
+The **`by()`** function is used to apply a function to subsets of a data frame or vector split by one or more factors. In the above code, we use **`by()`** to split the **`math_score`** column by **`gender`**, and apply the **`shapiro.test()`** function to each group.
+:::
+
+From the Shapiro-Wilk test results, MATHS scores for both gender follows normal distribution. Should we have used parametric test instead?

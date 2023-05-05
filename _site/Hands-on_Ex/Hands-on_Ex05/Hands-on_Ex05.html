@@ -232,6 +232,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#one-sample-test-gghistostats-method" id="toc-one-sample-test-gghistostats-method" class="nav-link" data-scroll-target="#one-sample-test-gghistostats-method">9.3.3 One-sample test: <em>gghistostats()</em> method</a></li>
   <li><a href="#unpacking-the-bayes-factor" id="toc-unpacking-the-bayes-factor" class="nav-link" data-scroll-target="#unpacking-the-bayes-factor">9.3.4 Unpacking the Bayes Factor</a></li>
   <li><a href="#how-to-interpret-bayes-factor" id="toc-how-to-interpret-bayes-factor" class="nav-link" data-scroll-target="#how-to-interpret-bayes-factor">9.3.5 How to interpret Bayes Factor</a></li>
+  <li><a href="#two-sample-mean-test-ggbetweenstats" id="toc-two-sample-mean-test-ggbetweenstats" class="nav-link" data-scroll-target="#two-sample-mean-test-ggbetweenstats">9.3.6 Two-sample mean test: <em>ggbetweenstats()</em></a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -391,7 +392,8 @@ $ SCIENCE &lt;dbl&gt; 15, 16, 16, 31, 25, 16, 25, 27, 15, 37, 42, 22, 32, 36, 35
 <p><img src="https://r4va.netlify.app/chap09/img/image6.jpg" class="img-fluid" width="342"></p>
 <section id="how-to-perform-a-one-sample-wilcoxon-test" class="level4">
 <h4 class="anchored" data-anchor-id="how-to-perform-a-one-sample-wilcoxon-test">9.3.5.1 How to perform a one-sample wilcoxon test</h4>
-<p>The one-sample Wilcoxon test (non parametric) will tell us whether the scores are <em>significantly</em> different from 60 or not (and thus whether they are different from 60in the population or not)</p>
+<p><a href="https://www.r-bloggers.com/2022/07/one-sample-wilcoxon-test-in-r/">Reference website from r-bloggers</a></p>
+<p>The one-sample Wilcoxon test (non parametric) will tell us whether the scores are <em>significantly</em> different from 60 or not (and thus whether they are different from 60 in the population or not)</p>
 <p>H0: EL scores = 60</p>
 <p>H1: EL scores != 60</p>
 <p>The scores are assumed to be independent (a student's score is not impacted or influenced by the score of another student)</p>
@@ -449,9 +451,55 @@ A = 4.3661, p-value = 7.341e-11</code></pre>
 </div>
 </div>
 <p>Results from the Anderson_darling normality test shows enough statistical evidence to reject the null hypothesis and conclude that the EL scores do not follow normal distribution . Thus the use of non parametric test is correct.</p>
-
-
 </section>
+</section>
+<section id="two-sample-mean-test-ggbetweenstats" class="level3">
+<h3 class="anchored" data-anchor-id="two-sample-mean-test-ggbetweenstats">9.3.6 Two-sample mean test: <em>ggbetweenstats()</em></h3>
+<p>In the code chunk below, <a href="https://indrajeetpatil.github.io/ggstatsplot/reference/ggbetweenstats.html"><em>ggbetweenstats()</em></a> is used to build a visual for two-sample mean test of Maths scores by gender (independent).</p>
+<p>H0: Mean of F and M Math scores are the same.</p>
+<p>H1: Mean of F and M Math scores are not the same.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggbetweenstats</span>(<span class="at">data=</span>exam,</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">x=</span>GENDER,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">y=</span>MATHS,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">type=</span><span class="st">'np'</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">messages=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex05_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Default information: - statistical details - Bayes Factor - sample sizes - distribution summary</p>
+<p>Since p-value &gt; 0.05, we do not have enough statistical evidence to reject the null hypothesis that mean of Math scores of both gender are the same.</p>
+<p>However, if we check for normality of Math scores of each gender.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># perform Shapiro-Wilk test on math scores by gender</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>shapiro_test <span class="ot">&lt;-</span> <span class="fu">by</span>(exam<span class="sc">$</span>MATHS, exam<span class="sc">$</span>GENDER, shapiro.test)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># extract p-values</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>p_values <span class="ot">&lt;-</span> <span class="fu">sapply</span>(shapiro_test, <span class="cf">function</span>(x) x<span class="sc">$</span>p.value)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># print results</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(p_values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Female         Male 
+1.603536e-07 6.268520e-08 </code></pre>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <strong><code>by()</code></strong> function is used to apply a function to subsets of a data frame or vector split by one or more factors. In the above code, we use <strong><code>by()</code></strong> to split the <strong><code>math_score</code></strong> column by <strong><code>gender</code></strong>, and apply the <strong><code>shapiro.test()</code></strong> function to each group.</p>
+</div>
+</div>
+<p>From the Shapiro-Wilk test results, MATHS scores for both gender follows normal distribution. Should we have used parametric test instead?</p>
+
+
 </section>
 </section>
 </section>

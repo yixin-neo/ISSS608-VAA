@@ -53,7 +53,7 @@ In this hands-on exercise, you will gain hands-on experience on using:
 In this exercise, **ggstatsplot** and **tidyverse** will be used.
 
 ```{r}
-pacman::p_load(ggstatsplot, tidyverse)
+pacman::p_load(ggstatsplot, tidyverse,nortest)
 ```
 
 ### 9.3.2 Importing data
@@ -61,15 +61,101 @@ pacman::p_load(ggstatsplot, tidyverse)
 Lets import the Exam_data.csv using the read_xls() function.
 
 ```{r}
-exam_data <- read_csv('data/Exam_data.csv')
+exam <- read_csv('data/Exam_data.csv')
 ```
 
 Take a glimpse at the data.
 
 ```{r}
-exam_data
+exam
 ```
 
 ```{r}
-glimpse(exam_data)
+glimpse(exam)
 ```
+
+### 9.3.3 One-sample test: *gghistostats()* method
+
+In the code chunk below, [*gghistostats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/gghistostats.html) is used to to build an visual of one-sample test on English scores.
+
+-   A one-sample test is a statistical hypothesis test used to determine whether the mean of a single sample of data differs significantly from a known or hypothesized value.
+
+-   It is a statistical test that compares the mean of a sample to a specified value, such as a population mean, to see if there is enough evidence to reject the null hypothesis that the sample comes from a population with the specified mean.
+
+```{r}
+set.seed(1234)
+
+gghistostats(data=exam,
+             x = ENGLISH,
+             type='bayes',
+             test.value =60,
+             xlab = 'English scores')
+```
+
+### 9.3.4 Unpacking the Bayes Factor
+
+-   A Bayes factor is the ratio of the likelihood of one particular hypothesis to the likelihood of another. It can be interpreted as a measure of the strength of evidence in favor of one theory among two competing theories.
+
+-   That\'s because the Bayes factor gives us a way to evaluate the data in favor of a null hypothesis, and to use external information to do so. It tells us what the weight of the evidence is in favor of a given hypothesis.
+
+-   When we are comparing two hypotheses, H1 (the alternate hypothesis) and H0 (the null hypothesis), the Bayes Factor is often written as B10. It can be defined mathematically as
+
+![](https://r4va.netlify.app/chap09/img/image5.jpg){width="335"}
+
+-   The [**Schwarz criterion**](https://www.statisticshowto.com/bayesian-information-criterion/) is one of the easiest ways to calculate rough approximation of the Bayes Factor.
+
+### 9.3.5 How to interpret Bayes Factor
+
+A **Bayes Factor** can be any positive number. One of the most common interpretations is this one---first proposed by Harold Jeffereys (1961) and slightly modified by [Lee and Wagenmakers](https://www-tandfonline-com.libproxy.smu.edu.sg/doi/pdf/10.1080/00031305.1999.10474443?needAccess=true) in 2013:
+
+![](https://r4va.netlify.app/chap09/img/image6.jpg){width="342"}
+
+#### 9.3.5.1 How to perform a one-sample wilcoxon test 
+
+[Reference website from r-bloggers](https://www.r-bloggers.com/2022/07/one-sample-wilcoxon-test-in-r/)
+
+The one-sample Wilcoxon test (non parametric) will tell us whether the scores are *significantly* different from 60 or not (and thus whether they are different from 60 in the population or not)
+
+H0: EL scores = 60
+
+H1: EL scores != 60
+
+The scores are assumed to be independent (a student\'s score is not impacted or influenced by the score of another student)
+
+```{r}
+wilcox.test(exam$ENGLISH,
+            mu = 60)
+```
+
+**Interpretation**
+
+P-value\<0.05, we have enough statistical evidence to reject the null hypothesis and conclude that the EL scores are significantly different from 60.
+
+::: callout-note
+
+By default, it is a two-tailed test that is done. As for the t.test() function, we can specify that a one-sided test is required by using either the alternative = "greater" or alternative = "less argument in the wilcox.test() function.
+:::
+
+**Combine statistical test and plot**
+
+```{r}
+set.seed(1234)
+
+gghistostats(data=exam,
+             x = ENGLISH,
+             type='nonparametric', #nonparametric = Wilcoxon, parametric = t-test
+             test.value =60,
+             xlab = 'English scores')
+```
+
+Did we forget to check if English scores follow a normal distribution? Use ad.test from nortest library.
+
+H0: EL scores follows normal distribution
+
+H1: EL scores do not follow normal distribution.
+
+```{r}
+ad.test(exam$ENGLISH)
+```
+
+Results from the Anderson_darling normality test shows enough statistical evidence to reject the null hypothesis and conclude that the EL scores do not follow normal distribution . Thus the use of non parametric test is correct.

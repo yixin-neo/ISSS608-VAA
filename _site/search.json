@@ -194,5 +194,33 @@
     "title": "Hands-on_Ex04",
     "section": "4.5 Reference",
     "text": "4.5 Reference\n\nGetting Started\nVisit this link for a very interesting implementation of gganimate by your senior.\nBuilding an animation step-by-step with gganimate.\nCreating a composite gif with multiple gganimate panels"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html",
+    "href": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html",
+    "title": "Hands-on_Ex05",
+    "section": "",
+    "text": "In this hands-on exercise, you will gain hands-on experience on using:\n\nggstatsplot package to create visual graphics with rich statistical information,\nperformance package to visualise model diagnostics, and\nparameters package to visualise model parameters\n\n\n\n\n\n\nggstatsplot is an extension of ggplot2 package for creating graphics with details from statistical tests included in the information-rich plots themselves.\n\nTo provide alternative statistical inference methods by default.\nTo follow best practices for statistical reporting. For all statistical tests reported in the plots, the default template abides by the APA gold standard for statistical reporting. For example, here are results from a robust t-test:\n\n\n\n\n\n\n\n\n\nNote\n\n\n\n\nparameter refers to the degree of freedom\nAn effect size of 0.77 is a standardized measure of the magnitude of a treatment or intervention effect, or the strength of an association between two variables. Guideline is that an effect size of 0.2 is considered small, 0.5 is considered moderate, and 0.8 is considered large.\nCI of 95% means if we replicate our sampling from underlying distribution many times, 95% of our samples will have their means within this interval.\n\n\n\n\n\n\n\n\nIn this exercise, ggstatsplot and tidyverse will be used.\n\npacman::p_load(ggstatsplot, tidyverse)\n\n\n\n\nLets import the Exam_data.csv using the read_xls() function.\n\nexam_data <- read_csv('data/Exam_data.csv')\n\nTake a glimpse at the data.\n\nexam_data\n\n# A tibble: 322 × 7\n   ID         CLASS GENDER RACE    ENGLISH MATHS SCIENCE\n   <chr>      <chr> <chr>  <chr>     <dbl> <dbl>   <dbl>\n 1 Student321 3I    Male   Malay        21     9      15\n 2 Student305 3I    Female Malay        24    22      16\n 3 Student289 3H    Male   Chinese      26    16      16\n 4 Student227 3F    Male   Chinese      27    77      31\n 5 Student318 3I    Male   Malay        27    11      25\n 6 Student306 3I    Female Malay        31    16      16\n 7 Student313 3I    Male   Chinese      31    21      25\n 8 Student316 3I    Male   Malay        31    18      27\n 9 Student312 3I    Male   Malay        33    19      15\n10 Student297 3H    Male   Indian       34    49      37\n# ℹ 312 more rows\n\n\n\nglimpse(exam_data)\n\nRows: 322\nColumns: 7\n$ ID      <chr> \"Student321\", \"Student305\", \"Student289\", \"Student227\", \"Stude…\n$ CLASS   <chr> \"3I\", \"3I\", \"3H\", \"3F\", \"3I\", \"3I\", \"3I\", \"3I\", \"3I\", \"3H\", \"3…\n$ GENDER  <chr> \"Male\", \"Female\", \"Male\", \"Male\", \"Male\", \"Female\", \"Male\", \"M…\n$ RACE    <chr> \"Malay\", \"Malay\", \"Chinese\", \"Chinese\", \"Malay\", \"Malay\", \"Chi…\n$ ENGLISH <dbl> 21, 24, 26, 27, 27, 31, 31, 31, 33, 34, 34, 36, 36, 36, 37, 38…\n$ MATHS   <dbl> 9, 22, 16, 77, 11, 16, 21, 18, 19, 49, 39, 35, 23, 36, 49, 30,…\n$ SCIENCE <dbl> 15, 16, 16, 31, 25, 16, 25, 27, 15, 37, 42, 22, 32, 36, 35, 45…"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#learning-outcome-1",
+    "href": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#learning-outcome-1",
+    "title": "Hands-on_Ex05",
+    "section": "9.1 Learning Outcome",
+    "text": "9.1 Learning Outcome\nIn this hands-on exercise, you will gain hands-on experience on using:\n\nggstatsplot package to create visual graphics with rich statistical information,\nperformance package to visualise model diagnostics, and\nparameters package to visualise model parameters"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#visual-statistical-analysis-with-ggstatsplot-1",
+    "href": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#visual-statistical-analysis-with-ggstatsplot-1",
+    "title": "Hands-on_Ex05",
+    "section": "9.2 Visual Statistical Analysis with ggstatsplot",
+    "text": "9.2 Visual Statistical Analysis with ggstatsplot\n\n\nggstatsplot is an extension of ggplot2 package for creating graphics with details from statistical tests included in the information-rich plots themselves.\n\nTo provide alternative statistical inference methods by default.\nTo follow best practices for statistical reporting. For all statistical tests reported in the plots, the default template abides by the APA gold standard for statistical reporting. For example, here are results from a robust t-test:\n\n\n\n\n\n\n\n\n\nNote\n\n\n\n\nparameter refers to the degree of freedom\nAn effect size of 0.77 is a standardized measure of the magnitude of a treatment or intervention effect, or the strength of an association between two variables. Guideline is that an effect size of 0.2 is considered small, 0.5 is considered moderate, and 0.8 is considered large.\nCI of 95% means if we replicate our sampling from underlying distribution many times, 95% of our samples will have their means within this interval."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#getting-started",
+    "href": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#getting-started",
+    "title": "Hands-on_Ex05",
+    "section": "9.3 Getting Started",
+    "text": "9.3 Getting Started\n\n9.3.1 Installing and launching R packages\nIn this exercise, ggstatsplot and tidyverse will be used.\n\npacman::p_load(readxl, ggstatsplot, tidyverse)\n\n\n\n9.3.2 Importing data\nLets import the Exam_data.csv using the read_xls() function.\n\nexam_data <- read_csv('data/Exam_data.csv')\n\nTake a glimpse at the data.\n\nglimpse(exam_data)\n\nRows: 322\nColumns: 7\n$ ID      <chr> \"Student321\", \"Student305\", \"Student289\", \"Student227\", \"Stude…\n$ CLASS   <chr> \"3I\", \"3I\", \"3H\", \"3F\", \"3I\", \"3I\", \"3I\", \"3I\", \"3I\", \"3H\", \"3…\n$ GENDER  <chr> \"Male\", \"Female\", \"Male\", \"Male\", \"Male\", \"Female\", \"Male\", \"M…\n$ RACE    <chr> \"Malay\", \"Malay\", \"Chinese\", \"Chinese\", \"Malay\", \"Malay\", \"Chi…\n$ ENGLISH <dbl> 21, 24, 26, 27, 27, 31, 31, 31, 33, 34, 34, 36, 36, 36, 37, 38…\n$ MATHS   <dbl> 9, 22, 16, 77, 11, 16, 21, 18, 19, 49, 39, 35, 23, 36, 49, 30,…\n$ SCIENCE <dbl> 15, 16, 16, 31, 25, 16, 25, 27, 15, 37, 42, 22, 32, 36, 35, 45…"
   }
 ]

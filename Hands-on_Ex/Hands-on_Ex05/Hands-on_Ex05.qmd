@@ -8,8 +8,68 @@ execute:
   #echo: false
   #message: false
   html:
-    code-fold: false
+    code-fold: True
     code-overflow: scroll
     code-summary: "Show the code"
     code-line-numbers: true
 ---
+
+# 9  Visual Statistical Analysis
+
+## 9.1 Learning Outcome
+
+In this hands-on exercise, you will gain hands-on experience on using:
+
+-   ggstatsplot package to create visual graphics with rich statistical information,
+
+-   performance package to visualise model diagnostics, and
+
+-   parameters package to visualise model parameters
+
+## 9.2 Visual Statistical Analysis with **ggstatsplot**
+
+![](https://r4va.netlify.app/chap09/img/image1.jpg){width="33" height="39"}
+
+-   [**ggstatsplot**](https://indrajeetpatil.github.io/ggstatsplot/) is an extension of [**ggplot2**](https://ggplot2.tidyverse.org/) package for creating graphics with details from statistical tests included in the information-rich plots themselves.
+
+    -   To provide alternative statistical inference methods by default.
+
+    -   To follow best practices for statistical reporting. For all statistical tests reported in the plots, the default template abides by the [APA](https://my.ilstu.edu/~jhkahn/apastats.html) gold standard for statistical reporting. For example, here are results from a robust t-test:
+
+![](https://r4va.netlify.app/chap09/img/image2.jpg)
+
+::: callout-note
+-   parameter refers to the degree of freedom
+
+-   An effect size of 0.77 is a standardized measure of the magnitude of a treatment or intervention effect, or the strength of an association between two variables. Guideline is that an effect size of 0.2 is considered small, 0.5 is considered moderate, and 0.8 is considered large.
+
+-   CI of 95% means if we replicate our sampling from underlying distribution many times, 95% of our samples will have their means within this interval.
+:::
+
+## 9.3 Getting Started
+
+### 9.3.1 Installing and launching R packages
+
+In this exercise, **ggstatsplot** and **tidyverse** will be used.
+
+```{r}
+pacman::p_load(ggstatsplot, tidyverse)
+```
+
+### 9.3.2 Importing data
+
+Lets import the Exam_data.csv using the read_xls() function.
+
+```{r}
+exam_data <- read_csv('data/Exam_data.csv')
+```
+
+Take a glimpse at the data.
+
+```{r}
+exam_data
+```
+
+```{r}
+glimpse(exam_data)
+```

@@ -415,6 +415,8 @@ From the graph above, there is a slight sign of heteroscedasticity as the residu
 We can also perform the complete check by using [*check_model()*](https://easystats.github.io/performance/reference/check_model.html).
 
 ```{r}
+#| fig-width: 14
+#| fig-height: 25
 check_model(model1)
 ```
 

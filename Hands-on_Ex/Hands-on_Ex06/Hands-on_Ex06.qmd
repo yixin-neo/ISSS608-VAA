@@ -106,8 +106,8 @@ Lets plot a 95% confidence interval of mean maths score by race. The error bars 
 ```{r}
 ggplot(my_sum) +
   geom_errorbar(aes(x=reorder(RACE,-mean),
-                    ymin=mean-se,
-                    ymax=mean+se),
+                    ymin=mean-1.96*se,
+                    ymax=mean+ 1.96*se),
                 width = 0.2,
                 colour = 'black',
                 alpha = 0.9,

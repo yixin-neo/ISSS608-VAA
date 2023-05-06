@@ -1,6 +1,8 @@
 ---
 title: "In-class_Ex04"
 author: "NeoYX"
+date: '5 May 2023'
+date-modified: "`r Sys.Date()`"
 editor: visual
 execute: 
   freeze: auto
@@ -21,9 +23,36 @@ We will load the following libraries:
 -   tidyverse: will automatically provide read_r() \<- for read_csv()
 
 ```{r}
+pacman::p_load(rstatix, gt, patchwork,tidyverse,nortest)
+```
+
+```{r}
 exam <- read_csv('C:/yixin-neo/ISSS608-VAA/Hands-on_Ex/Hands-on_Ex05/data/Exam_data.csv')
 ```
 
 ```{r}
-pacman::p_load(rstatic, gt, patchwork,tidyverse)
+library(car)
+b <- qqPlot(exam$ENGLISH)
+b
+```
+
+```{r}
+a <- ad.test(exam$ENGLISH)
+```
+
+```{r}
+shapiro.test(exam$ENGLISH)
+```
+
+FROM Prof kam
+
+```{r}
+#| fig-width: 4
+#| fig-height: 4
+
+ggplot(exam,
+       aes(sample=ENGLISH)) +  #<<< use a new argument call sample: el scores
+  stat_qq() +
+  stat_qq_line()
+  
 ```

@@ -237,6 +237,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#significant-test-of-correlation-ggscatterstats" id="toc-significant-test-of-correlation-ggscatterstats" class="nav-link" data-scroll-target="#significant-test-of-correlation-ggscatterstats">9.3.8 Significant Test of Correlation: <em>ggscatterstats()</em></a></li>
   <li><a href="#significant-test-of-association-dependence-ggbarstats-methods" id="toc-significant-test-of-association-dependence-ggbarstats-methods" class="nav-link" data-scroll-target="#significant-test-of-association-dependence-ggbarstats-methods">9.3.9 Significant Test of Association (Dependence) : <em>ggbarstats()</em> methods</a></li>
   </ul></li>
+  <li><a href="#visualising-models" id="toc-visualising-models" class="nav-link" data-scroll-target="#visualising-models">9.4 Visualising Models</a></li>
+  <li><a href="#getting-started-1" id="toc-getting-started-1" class="nav-link" data-scroll-target="#getting-started-1">9.5 Getting Started</a></li>
+  <li><a href="#installing-and-loading-the-required-libraries" id="toc-installing-and-loading-the-required-libraries" class="nav-link" data-scroll-target="#installing-and-loading-the-required-libraries">9.6 Installing and loading the required libraries</a>
+  <ul class="collapse">
+  <li><a href="#importing-excel-file-readxl-methods" id="toc-importing-excel-file-readxl-methods" class="nav-link" data-scroll-target="#importing-excel-file-readxl-methods">9.6.1 Importing Excel file: readxl methods</a></li>
+  <li><a href="#multiple-regression-model-using-lm" id="toc-multiple-regression-model-using-lm" class="nav-link" data-scroll-target="#multiple-regression-model-using-lm">9.6.2 Multiple Regression Model using lm()</a></li>
+  <li><a href="#model-diagnostic-checking-for-multicolinearity" id="toc-model-diagnostic-checking-for-multicolinearity" class="nav-link" data-scroll-target="#model-diagnostic-checking-for-multicolinearity">9.6.3 Model Diagnostic: checking for multicolinearity:</a></li>
+  <li><a href="#model-diagnostic-checking-normality-assumption" id="toc-model-diagnostic-checking-normality-assumption" class="nav-link" data-scroll-target="#model-diagnostic-checking-normality-assumption">9.6.4 Model Diagnostic: checking normality assumption</a></li>
+  <li><a href="#model-diagnostic-check-model-for-homogeneity-of-variances" id="toc-model-diagnostic-check-model-for-homogeneity-of-variances" class="nav-link" data-scroll-target="#model-diagnostic-check-model-for-homogeneity-of-variances">9.6.5 Model Diagnostic: Check model for homogeneity of variances</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -631,6 +641,184 @@ Note
 </div>
 </div>
 <p>From the results above , p-value &gt; 0.05 thus we have not enough statistical evidence to reject the null hypothesis that there is not association between the mathbin and gender variables.</p>
+</section>
+</section>
+<section id="visualising-models" class="level2">
+<h2 class="anchored" data-anchor-id="visualising-models">9.4 Visualising Models</h2>
+<p>In this section, I will learn how to visualise model diagnostic and model parameters by using parameters package.</p>
+<ul>
+<li>Toyota Corolla case study will be used. The purpose of study is to build a model to discover factors affecting prices of used-cars by taking into consideration a set of explanatory variables.</li>
+</ul>
+<p><img src="https://r4va.netlify.app/chap09/img/image4.jpg" class="img-fluid" width="338"></p>
+</section>
+<section id="getting-started-1" class="level2">
+<h2 class="anchored" data-anchor-id="getting-started-1">9.5 Getting Started</h2>
+</section>
+<section id="installing-and-loading-the-required-libraries" class="level2">
+<h2 class="anchored" data-anchor-id="installing-and-loading-the-required-libraries">9.6 Installing and loading the required libraries</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(readxl, performance, parameters, see)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="importing-excel-file-readxl-methods" class="level3">
+<h3 class="anchored" data-anchor-id="importing-excel-file-readxl-methods">9.6.1 Importing Excel file: readxl methods</h3>
+<p>In the code chunk below, <a href="https://readxl.tidyverse.org/reference/read_excel.html"><em>read_xls()</em></a> of <a href="https://readxl.tidyverse.org/"><strong>readxl</strong></a> package is used to import the data worksheet of <code>ToyotaCorolla.xls</code> workbook into R.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>car_resale <span class="ot">&lt;-</span> <span class="fu">read_xls</span>(<span class="st">'data/ToyotaCorolla.xls'</span>,</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">sheet=</span><span class="st">'data'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(car_resale)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 1,436
+Columns: 38
+$ Id               &lt;dbl&gt; 81, 1, 2, 3, 4, 5, 6, 7, 8, 44, 45, 46, 47, 49, 51, 6…
+$ Model            &lt;chr&gt; "TOYOTA Corolla 1.6 5drs 1 4/5-Doors", "TOYOTA Coroll…
+$ Price            &lt;dbl&gt; 18950, 13500, 13750, 13950, 14950, 13750, 12950, 1690…
+$ Age_08_04        &lt;dbl&gt; 25, 23, 23, 24, 26, 30, 32, 27, 30, 27, 22, 23, 27, 2…
+$ Mfg_Month        &lt;dbl&gt; 8, 10, 10, 9, 7, 3, 1, 6, 3, 6, 11, 10, 6, 11, 11, 11…
+$ Mfg_Year         &lt;dbl&gt; 2002, 2002, 2002, 2002, 2002, 2002, 2002, 2002, 2002,…
+$ KM               &lt;dbl&gt; 20019, 46986, 72937, 41711, 48000, 38500, 61000, 9461…
+$ Quarterly_Tax    &lt;dbl&gt; 100, 210, 210, 210, 210, 210, 210, 210, 210, 234, 234…
+$ Weight           &lt;dbl&gt; 1180, 1165, 1165, 1165, 1165, 1170, 1170, 1245, 1245,…
+$ Guarantee_Period &lt;dbl&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,…
+$ HP_Bin           &lt;chr&gt; "100-120", "&lt; 100", "&lt; 100", "&lt; 100", "&lt; 100", "&lt; 100…
+$ CC_bin           &lt;chr&gt; "1600", "&gt;1600", "&gt;1600", "&gt;1600", "&gt;1600", "&gt;1600", …
+$ Doors            &lt;dbl&gt; 5, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 3, 3,…
+$ Gears            &lt;dbl&gt; 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,…
+$ Cylinders        &lt;dbl&gt; 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,…
+$ Fuel_Type        &lt;chr&gt; "Petrol", "Diesel", "Diesel", "Diesel", "Diesel", "Di…
+$ Color            &lt;chr&gt; "Blue", "Blue", "Silver", "Blue", "Black", "Black", "…
+$ Met_Color        &lt;dbl&gt; 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1,…
+$ Automatic        &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ Mfr_Guarantee    &lt;dbl&gt; 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1,…
+$ BOVAG_Guarantee  &lt;dbl&gt; 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+$ ABS              &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+$ Airbag_1         &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+$ Airbag_2         &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+$ Airco            &lt;dbl&gt; 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+$ Automatic_airco  &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1,…
+$ Boardcomputer    &lt;dbl&gt; 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+$ CD_Player        &lt;dbl&gt; 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1,…
+$ Central_Lock     &lt;dbl&gt; 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+$ Powered_Windows  &lt;dbl&gt; 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+$ Power_Steering   &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+$ Radio            &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ Mistlamps        &lt;dbl&gt; 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ Sport_Model      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1,…
+$ Backseat_Divider &lt;dbl&gt; 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+$ Metallic_Rim     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ Radio_cassette   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ Tow_Bar          &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</code></pre>
+</div>
+</div>
+<p>Notice that the output object <code>car_resale</code> is a tibble data frame.</p>
+</section>
+<section id="multiple-regression-model-using-lm" class="level3">
+<h3 class="anchored" data-anchor-id="multiple-regression-model-using-lm">9.6.2 Multiple Regression Model using lm()</h3>
+<p>The code chunk below is used to calibrate a multiple linear regression model by using <em>lm()</em> of Base Stats of R.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(Price <span class="sc">~</span> Age_08_04 <span class="sc">+</span> Mfg_Year <span class="sc">+</span> KM <span class="sc">+</span> Weight <span class="sc">+</span> Guarantee_Period,</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>car_resale)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = Price ~ Age_08_04 + Mfg_Year + KM + Weight + Guarantee_Period, 
+    data = car_resale)
+
+Coefficients:
+     (Intercept)         Age_08_04          Mfg_Year                KM  
+      -2.637e+06        -1.409e+01         1.315e+03        -2.323e-02  
+          Weight  Guarantee_Period  
+       1.903e+01         2.770e+01  </code></pre>
+</div>
+</div>
+</section>
+<section id="model-diagnostic-checking-for-multicolinearity" class="level3">
+<h3 class="anchored" data-anchor-id="model-diagnostic-checking-for-multicolinearity">9.6.3 Model Diagnostic: checking for multicolinearity:</h3>
+<p>In the code chunk, <a href="https://easystats.github.io/performance/reference/check_collinearity.html"><em>check_collinearity()</em></a> of <a href="https://easystats.github.io/performance/"><strong>performance</strong></a> package.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_collinearity</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Check for Multicollinearity
+
+Low Correlation
+
+             Term  VIF     VIF 95% CI Increased SE Tolerance Tolerance 95% CI
+               KM 1.46 [ 1.37,  1.57]         1.21      0.68     [0.64, 0.73]
+           Weight 1.41 [ 1.32,  1.51]         1.19      0.71     [0.66, 0.76]
+ Guarantee_Period 1.04 [ 1.01,  1.17]         1.02      0.97     [0.86, 0.99]
+
+High Correlation
+
+      Term   VIF     VIF 95% CI Increased SE Tolerance Tolerance 95% CI
+ Age_08_04 31.07 [28.08, 34.38]         5.57      0.03     [0.03, 0.04]
+  Mfg_Year 31.16 [28.16, 34.48]         5.58      0.03     [0.03, 0.04]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>check_c <span class="ot">&lt;-</span> <span class="fu">check_collinearity</span>(model)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(check_c)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex05_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We can see high collinearity between Age and Mfg_Year. One is derived from the other. We should remove one of them and repeat muliti collinearity check again for the new model.</p>
+</section>
+<section id="model-diagnostic-checking-normality-assumption" class="level3">
+<h3 class="anchored" data-anchor-id="model-diagnostic-checking-normality-assumption">9.6.4 Model Diagnostic: checking normality assumption</h3>
+<p>In the code chunk, <a href="https://easystats.github.io/performance/reference/check_normality.html"><em>check_normality()</em></a> of <a href="https://easystats.github.io/performance/"><strong>performance</strong></a> package.</p>
+<p>Notice that the Mfg_Year variable has been removed from the independent variables list.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Price <span class="sc">~</span> Age_08_04 <span class="sc">+</span> KM <span class="sc">+</span> </span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>              Weight <span class="sc">+</span> Guarantee_Period, <span class="at">data =</span> car_resale)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>check_c1 <span class="ot">&lt;-</span> <span class="fu">check_collinearity</span>(model1)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(check_c1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex05_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>check_n <span class="ot">&lt;-</span> <span class="fu">check_normality</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(check_n)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex05_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Recap: Assumptions of linear regression
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In linear regression, one of the key assumptions is that the residuals (the differences between the predicted values and the actual values) are normally distributed. The normality assumption is important because it affects the validity of statistical inference procedures such as hypothesis testing and confidence intervals.</p>
+<p>If the residuals are not normally distributed, it may indicate that the linear regression model is not a good fit for the data and that alternative modeling approaches may be needed.</p>
+</div>
+</div>
+</section>
+<section id="model-diagnostic-check-model-for-homogeneity-of-variances" class="level3">
+<h3 class="anchored" data-anchor-id="model-diagnostic-check-model-for-homogeneity-of-variances">9.6.5 Model Diagnostic: Check model for homogeneity of variances</h3>
+<p>In the code chunk, <a href="https://easystats.github.io/performance/reference/check_heteroscedasticity.html"><em>check_heteroscedasticity()</em></a> of <a href="https://easystats.github.io/performance/"><strong>performance</strong></a> package.</p>
+<p>Heteroscedasticity refers to a situation where the variance of the <strong>errors (or residuals)</strong> in the linear regression model is not constant across different levels of the predictor variable(s).</p>
+<p>If heteroscedasticity is detected, there are several ways to address it, including transforming the data, using weighted least squares regression, or using robust standard errors. In DAl, we rebuild another model by creating subclasses out of the original Y variable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>check_h <span class="ot">&lt;-</span> <span class="fu">check_heteroscedasticity</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(check_h)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex05_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>From the graph above, there is a slight sign of heteroscedasticity as the residuals seem to be funnelled outsides as the fitted values increase.</p>
 
 
 </section>

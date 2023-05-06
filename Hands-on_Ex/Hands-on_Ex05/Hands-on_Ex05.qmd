@@ -305,3 +305,108 @@ ggbarstats(exam1,
 
 From the results above , p-value \> 0.05 thus we have not enough statistical evidence to reject the null hypothesis that there is not association between the mathbin and gender variables.
 
+## 9.4 Visualising Models
+
+In this section, I will learn how to visualise model diagnostic and model parameters by using parameters package.
+
+-   Toyota Corolla case study will be used. The purpose of study is to build a model to discover factors affecting prices of used-cars by taking into consideration a set of explanatory variables.
+
+![](https://r4va.netlify.app/chap09/img/image4.jpg){width="338"}
+
+## 9.5 Getting Started
+
+## 9.6 Installing and loading the required libraries
+
+```{r}
+pacman::p_load(readxl, performance, parameters, see)
+```
+
+### 9.6.1 Importing Excel file: readxl methods
+
+In the code chunk below, [*read_xls()*](https://readxl.tidyverse.org/reference/read_excel.html) of [**readxl**](https://readxl.tidyverse.org/) package is used to import the data worksheet of `ToyotaCorolla.xls` workbook into R.
+
+```{r}
+car_resale <- read_xls('data/ToyotaCorolla.xls',
+                       sheet='data')
+```
+
+```{r}
+glimpse(car_resale)
+```
+
+Notice that the output object `car_resale` is a tibble data frame.
+
+### 9.6.2 Multiple Regression Model using lm()
+
+The code chunk below is used to calibrate a multiple linear regression model by using *lm()* of Base Stats of R.
+
+```{r}
+model <- lm(Price ~ Age_08_04 + Mfg_Year + KM + Weight + Guarantee_Period,
+            data=car_resale)
+model
+```
+
+### 9.6.3 Model Diagnostic: checking for multicolinearity:
+
+In the code chunk, [*check_collinearity()*](https://easystats.github.io/performance/reference/check_collinearity.html) of [**performance**](https://easystats.github.io/performance/) package.
+
+```{r}
+check_collinearity(model)
+```
+
+```{r}
+check_c <- check_collinearity(model)
+plot(check_c)
+```
+
+We can see high collinearity between Age and Mfg_Year. One is derived from the other. We should remove one of them and repeat muliti collinearity check again for the new model.
+
+### 9.6.4 Model Diagnostic: checking normality assumption
+
+In the code chunk, [*check_normality()*](https://easystats.github.io/performance/reference/check_normality.html) of [**performance**](https://easystats.github.io/performance/) package.
+
+Notice that the Mfg_Year variable has been removed from the independent variables list.
+
+```{r}
+model1 <- lm(Price ~ Age_08_04 + KM + 
+              Weight + Guarantee_Period, data = car_resale)
+```
+
+```{r}
+check_c1 <- check_collinearity(model1)
+plot(check_c1)
+```
+
+```{r}
+check_n <- check_normality(model1)
+```
+
+```{r}
+plot(check_n)
+```
+
+::: callout-note
+## Recap: Assumptions of linear regression
+
+In linear regression, one of the key assumptions is that the residuals (the differences between the predicted values and the actual values) are normally distributed. The normality assumption is important because it affects the validity of statistical inference procedures such as hypothesis testing and confidence intervals.
+
+If the residuals are not normally distributed, it may indicate that the linear regression model is not a good fit for the data and that alternative modeling approaches may be needed.
+:::
+
+### 9.6.5 Model Diagnostic: Check model for homogeneity of variances
+
+In the code chunk, [*check_heteroscedasticity()*](https://easystats.github.io/performance/reference/check_heteroscedasticity.html) of [**performance**](https://easystats.github.io/performance/) package.
+
+Heteroscedasticity refers to a situation where the variance of the **errors (or residuals)** in the linear regression model is not constant across different levels of the predictor variable(s).
+
+If heteroscedasticity is detected, there are several ways to address it, including transforming the data, using weighted least squares regression, or using robust standard errors. In DAl, we rebuild another model by creating subclasses out of the original Y variable.
+
+```{r}
+check_h <- check_heteroscedasticity(model1)
+```
+
+```{r}
+plot(check_h)
+```
+
+From the graph above, there is a slight sign of heteroscedasticity as the residuals seem to be funnelled outsides as the fitted values increase.

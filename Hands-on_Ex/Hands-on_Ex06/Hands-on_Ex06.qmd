@@ -35,7 +35,7 @@ The standard error is the standard deviation of both sides of the 'mother of all
 :::
 
 ```{r}
-pacman::p_load(tidyverse, plotly, crosstalk, DT, ggdist, gganimate)
+pacman::p_load(tidyverse, plotly, crosstalk, DT, ggdist, gganimate, ggiraph)
 ```
 
 -   [**DT**](https://rstudio.github.io/DT/) provides an R interface to the JavaScript library [DataTables](https://datatables.net/) that create interactive table on html page.
@@ -113,8 +113,8 @@ Lets plot a 95% confidence interval of mean maths score by race. The error bars 
 
 ```{r}
 ggplot(my_sum) +
-  geom_errorbar(aes(x=reorder(RACE,-mean),
-                    ymin=mean-1.96*se,    #<<<<
+  geom_errorbar(aes(x=reorder(RACE,-mean),  # reorder(x,y) means to reorder x based on increasing or decreasing values of y. To sort by descending values of Y, use -Y.
+                    ymin=mean-1.96*se,    #<<<< formula to calc 95% CI
                     ymax=mean+ 1.96*se),  #<<<<
                 width = 0.2,
                 colour = 'black',
@@ -126,7 +126,7 @@ ggplot(my_sum) +
              color='red', 
              size = 1.5,
              alpha = 1) + 
-  ggtitle('Standard error of mean maths score by race')
+  ggtitle('95% confidence interval of maths score by race')
 ```
 
 ::: callout-note
@@ -136,3 +136,101 @@ Earlier , we plot error bars of 1 standard deviation away from the mother of all
 
 Here, we are plotting 1.96 \* standard deviation away from the mother of all means. The higher the % CI, the greater the margin or error.
 :::
+
+### 10.2.4 Visualizing the uncertainty of point estimates with interactive error bars
+
+**Task: Plot an interactive error bars for the 99% confidence interval of mean maths score by race.**
+
+Recall in hands-on 3 that we create can create interactive plots using [ggiraph](https://davidgohel.github.io/ggiraph/) and [ggplot geometries](https://davidgohel.github.io/ggiraph/reference/#section-interactive-geometries) that can understand 3 arguments; namely **tooltip**, **data_id** and \*\*onclick\*\*.
+
+```{r}
+my_sum$tooltip <- c(paste0("RACE: ",
+                           my_sum$RACE,
+                           "\n N= ",
+                            my_sum$n,
+                           "\n Ave Score: ",
+                           round(my_sum$mean, digits=2)
+                           ))
+
+p <- ggplot(my_sum) +
+  geom_errorbar_interactive(aes(x=reorder(RACE,-mean),
+                    ymin=mean-2.58*se,    #<<<< formula to calc 95% CI
+                    ymax=mean+ 2.58*se,
+                    tooltip=tooltip),  
+                width = 0.2,
+                colour = 'black',
+                alpha = 0.9,
+                size=0.5) +
+    geom_point(aes(x=RACE,
+                 y=mean),
+             stat = 'identity', #<<< actual points refer to mean 
+             color='red', 
+             size = 1.5,
+             alpha = 1) + 
+  labs(title='99% confidence interval of maths score by race',
+       x = 'Race') +
+  theme(axis.title.y=element_text(angle = 0,
+                                  vjust=0.9),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.title = element_text(face = "bold"),
+        axis.line = element_line(size = 0.2))
+
+girafe(ggobj = p,
+       width_svg = 8,
+       height_svg = 8*0.618)
+```
+
+**Next task: Print an interactive Data Table beside the plot above.**
+
+First, we create an interactive Data Table using DT().
+
+We use the **`%>%`** operator to pipe the data frame into the **`mutate_if()`** function, where we specify the condition **`is.numeric`** to select only the numeric columns. We use the tilde **`~`** symbol to specify the rounding function, and pass the **`digits`** argument to round to two decimal places. The resulting data frame **`df`** will have all numerical columns rounded to two decimal places.
+
+```{r}
+# Round numerical columns to two decimal places
+my_sum <- my_sum %>% 
+  mutate_if(is.numeric, ~ round(., digits = 2))
+
+DT::datatable(my_sum, class='compact')
+```
+
+Next, combine uncertainty graph and interactive table using [Crosstalk](https://rstudio.github.io/crosstalk/), which is an add-on to the htmlwidgets package. It extends htmlwidgets with a set of classes, functions, and conventions for implementing cross-widget interactions (currently, linked brushing and filtering).
+(refer to hands-on 3)
+
+```{r}
+#| fig-width: 8
+#| fig-height: 6
+d <- highlight_key(my_sum) 
+
+
+p <- ggplot(d) +
+  geom_errorbar(aes(x=reorder(RACE,-mean),
+                    ymin=mean-2.58*se,    #<<<< formula to calc 95% CI
+                    ymax=mean+ 2.58*se),  
+                width = 0.2,
+                colour = 'black',
+                alpha = 0.9,
+                size=0.5) +
+    geom_point(aes(x=RACE,
+                 y=mean),
+             stat = 'identity', #<<< actual points refer to mean 
+             color='red', 
+             size = 1.5,
+             alpha = 1) + 
+  labs(title='99% confidence interval of maths score by race',
+       x = 'Race') +
+  theme(axis.title.y=element_text(angle = 0,
+                                  vjust=0.9),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.title = element_text(face = "bold"),
+        axis.line = element_line(size = 0.2))
+
+
+
+gg <- highlight(ggplotly(p),        
+                "plotly_selected")  
+
+crosstalk::bscols(list(width = 7,gg),
+                  list(width=5,DT::datatable(d)),
+                  widths=5)
+```

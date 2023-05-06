@@ -199,7 +199,7 @@ H0: Math scores by gender follows normal distribution.
 
 H1: Math scores by gender do not follow normal distribution.
 
-From the Shapiro-Wilk test results, MATHS scores for both gender follows normal distribution. Should we have used parametric test instead?
+From the Shapiro-Wilk test results, we have enough statistical evidence to reject the null hypothesis and conclude that the Math scores by gender does not follow a normal distribution. Thus the use of 'np' is appropriate.
 
 ### 9.3.7 Oneway ANOVA Test: *ggbetweenstats()* method
 

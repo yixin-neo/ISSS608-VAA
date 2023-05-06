@@ -316,7 +316,8 @@ exam %>%
   stat_pointinterval(.width = c(0.95,0.99),
   .point = median,
   .interval = qi,
-  aes(interval_color=stat(level))) +
+  aes(interval_color=stat(level)),
+  show.legend = FALSE) +
   
   #Defining the color of the intervals 
   scale_color_manual(
@@ -333,18 +334,66 @@ exam %>%
 **`stat(level)`** calculates the confidence interval limits based on the specified **`conf.level`** argument, and **`interval_color`** maps the calculated interval color to the **`interval_color`** argument.
 :::
 
+### 10.3.3 Visualizing the uncertainty of point estimates: **ggdist** methods
+
+In the code chunk below, [`stat_gradientinterval()`](https://mjskay.github.io/ggdist/reference/stat_gradientinterval.html) of **ggdist** is used to build a visual for displaying distribution of maths scores by race.
+
 ```{r}
 #| code-fold: True
+exam %>%
+  ggplot(aes(x = RACE, 
+             y = MATHS)) +
+  stat_gradientinterval(   
+    fill = "green",      
+    show.legend = TRUE     
+  ) +                        
+  labs(
+    title = "Visualising confidence intervals of mean math score",
+    subtitle = "Gradient + interval plot")
+```
+
+## 10.4 Visualising Uncertainty with Hypothetical Outcome Plots (HOPs)
+
+Step 1: Installing ungeviz package
+
+```{r}
+#devtools::install_github("wilkelab/ungeviz")
+```
+
+```{r}
+library(ungeviz)
 ```
 
 ```{r}
 #| code-fold: True
+ggplot(data = exam, 
+       (aes(x = factor(RACE), y = MATHS))) +
+  geom_point(position = position_jitter(
+    height = 0.3, width = 0.05), 
+    size = 0.4, color = "#0072B2", alpha = 1/2) +
+  geom_hpline(data = sampler(25, group = RACE), height = 0.6, color = "#D55E00") +
+  theme_bw() + 
+  # `.draw` is a generated column indicating the sample draw
+  transition_states(.draw, 1, 3)
 ```
+
+## 10.5 Visualising Uncertainty with Hypothetical Outcome Plots (HOPs)
 
 ```{r}
 #| code-fold: True
-```
-
-```{r}
-#| code-fold: True
+ggplot(data = exam, 
+       (aes(x = factor(RACE), 
+            y = MATHS))) +
+  geom_point(position = position_jitter(
+    height = 0.3, 
+    width = 0.05), 
+    size = 0.4, 
+    color = "#0072B2", 
+    alpha = 1/2) +
+  geom_hpline(data = sampler(25, 
+                             group = RACE), 
+              height = 0.6, 
+              color = "#D55E00") +
+  theme_bw() + 
+  transition_states(.draw, 1, 3)
 ```

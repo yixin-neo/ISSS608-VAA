@@ -25,7 +25,7 @@ execute:
 Uncertainty is expressed as standard error, confidence interval, or credible interval
 
 ::: callout-important
-Don\'t confuse the uncertainty of a point estimate (mean, median..) with the variation in the sample (standard deviation sigma, and variation sigma square etc)
+Don't confuse the uncertainty of a point estimate (mean, median..) with the variation in the sample (standard deviation sigma, and variation sigma square etc)
 :::
 
 ```{r}
@@ -101,8 +101,7 @@ In the code above, **`stat = 'identity'`** means that the **`y`** values in the 
 
 ### 10.2.3 Visualizing the uncertainty of point estimates: **ggplot2** methods
 
-Lets plot a 95% confidence interval of mean maths score by race. The error bars should be sorted by the average maths scores.
-(Refer to take-home ex 1 on sorting by mean)
+Lets plot a 95% confidence interval of mean maths score by race. The error bars should be sorted by the average maths scores. (Refer to take-home ex 1 on sorting by mean)
 
 ```{r}
 ggplot(my_sum) +

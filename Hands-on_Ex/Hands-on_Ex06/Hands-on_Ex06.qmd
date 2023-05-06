@@ -141,9 +141,11 @@ Here, we are plotting 1.96 \* standard deviation away from the mother of all mea
 
 **Task: Plot an interactive error bars for the 99% confidence interval of mean maths score by race.**
 
-Recall in hands-on 3 that we create can create interactive plots using [ggiraph](https://davidgohel.github.io/ggiraph/) and [ggplot geometries](https://davidgohel.github.io/ggiraph/reference/#section-interactive-geometries) that can understand 3 arguments; namely **tooltip**, **data_id** and \*\*onclick\*\*.
+Recall in hands-on 3 that we create can create interactive plots using [ggiraph](https://davidgohel.github.io/ggiraph/) and [ggplot geometries](https://davidgohel.github.io/ggiraph/reference/#section-interactive-geometries) that can understand 3 arguments; namely **tooltip**, **data_id** and **onclick**.
+I will use one of them methods (geom_errorbar_interactive with girafe) to construct here. The other method is to use plotly.
 
 ```{r}
+# create a new column tooltip to contain the tooltip text.
 my_sum$tooltip <- c(paste0("RACE: ",
                            my_sum$RACE,
                            "\n N= ",
@@ -180,26 +182,31 @@ girafe(ggobj = p,
        height_svg = 8*0.618)
 ```
 
-**Next task: Print an interactive Data Table beside the plot above.**
+**Next task: Create an interactive Data Table beside the interactive error bars (also with coordinated views)**
 
 First, we create an interactive Data Table using DT().
-
-We use the **`%>%`** operator to pipe the data frame into the **`mutate_if()`** function, where we specify the condition **`is.numeric`** to select only the numeric columns. We use the tilde **`~`** symbol to specify the rounding function, and pass the **`digits`** argument to round to two decimal places. The resulting data frame **`df`** will have all numerical columns rounded to two decimal places.
+ - We use the **`%>%`** operator to pipe the data frame into the **`mutate_if()`** function, where we specify the condition **`is.numeric`** to select only the numeric columns. We use the tilde **`~`** symbol to specify the rounding function, and pass the **`digits`** argument to round to two decimal places. The resulting data frame **`df`** will have all numerical columns rounded to two decimal places.
 
 ```{r}
-# Round numerical columns to two decimal places
+# Round all numerical columns to two decimal places
 my_sum <- my_sum %>% 
   mutate_if(is.numeric, ~ round(., digits = 2))
 
 DT::datatable(my_sum, class='compact')
 ```
 
-Next, combine uncertainty graph and interactive table using [Crosstalk](https://rstudio.github.io/crosstalk/), which is an add-on to the htmlwidgets package. It extends htmlwidgets with a set of classes, functions, and conventions for implementing cross-widget interactions (currently, linked brushing and filtering).
+Next, combine uncertainty graph and **plotly** interactive table using [Crosstalk](https://rstudio.github.io/crosstalk/), which is an add-on to the htmlwidgets package. It extends htmlwidgets with a set of classes, functions, and conventions for implementing cross-widget interactions (currently, linked brushing and filtering).
+
 (refer to hands-on 3)
+
+The datatable is linked to the visualisation on the left. Click on multiple rows to filter according.
 
 ```{r}
 #| fig-width: 8
 #| fig-height: 6
+#| code-fold: True
+
+# Use highlight_key() to add a unique key to the data frame my_sum3 so that it can be linked to interactive plots later
 d <- highlight_key(my_sum) 
 
 
@@ -225,8 +232,7 @@ p <- ggplot(d) +
         axis.title = element_text(face = "bold"),
         axis.line = element_line(size = 0.2))
 
-
-
+# Convert ggplot to an interactive plotly plot using the ggplotly(), "plotly click" specifies that highlight should be based on click
 gg <- highlight(ggplotly(p),        
                 "plotly_selected")  
 

@@ -7,6 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="NeoYX">
+<meta name="dcterms.date" content="2023-05-05">
 
 <title>ISSS608-VAA - Hands-on_Ex06</title>
 <style>
@@ -238,9 +239,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#learning-outcome" id="toc-learning-outcome" class="nav-link" data-scroll-target="#learning-outcome">10.1 Learning Outcome</a></li>
   <li><a href="#visualizing-the-uncertainty-of-point-estimates" id="toc-visualizing-the-uncertainty-of-point-estimates" class="nav-link" data-scroll-target="#visualizing-the-uncertainty-of-point-estimates">10.2 Visualizing the uncertainty of point estimates</a>
   <ul class="collapse">
-  <li><a href="#visualizing-the-uncertainty-of-point-estimates-ggplot2-methods" id="toc-visualizing-the-uncertainty-of-point-estimates-ggplot2-methods" class="nav-link" data-scroll-target="#visualizing-the-uncertainty-of-point-estimates-ggplot2-methods">10.2.1 Visualizing the uncertainty of point estimates: ggplot2 methods</a></li>
-  <li><a href="#visualizing-the-uncertainty-of-point-estimates-ggplot2-methods-1" id="toc-visualizing-the-uncertainty-of-point-estimates-ggplot2-methods-1" class="nav-link" data-scroll-target="#visualizing-the-uncertainty-of-point-estimates-ggplot2-methods-1">10.2.2 Visualizing the uncertainty of point estimates: ggplot2 methods</a></li>
-  <li><a href="#visualizing-the-uncertainty-of-point-estimates-ggplot2-methods-2" id="toc-visualizing-the-uncertainty-of-point-estimates-ggplot2-methods-2" class="nav-link" data-scroll-target="#visualizing-the-uncertainty-of-point-estimates-ggplot2-methods-2">10.2.3 Visualizing the uncertainty of point estimates: <strong>ggplot2</strong> methods</a></li>
+  <li><a href="#visualizing-the-uncertainty-of-point-estimates-manual-calculation-and-creating-of-my_sum-table" id="toc-visualizing-the-uncertainty-of-point-estimates-manual-calculation-and-creating-of-my_sum-table" class="nav-link" data-scroll-target="#visualizing-the-uncertainty-of-point-estimates-manual-calculation-and-creating-of-my_sum-table">10.2.1 Visualizing the uncertainty of point estimates: Manual calculation and creating of my_sum table</a></li>
+  <li><a href="#visualizing-the-uncertainty-of-point-estimates-use-my_sum-table-and-ggplot2-methods-to-plot-uncertainty" id="toc-visualizing-the-uncertainty-of-point-estimates-use-my_sum-table-and-ggplot2-methods-to-plot-uncertainty" class="nav-link" data-scroll-target="#visualizing-the-uncertainty-of-point-estimates-use-my_sum-table-and-ggplot2-methods-to-plot-uncertainty">10.2.2 Visualizing the uncertainty of point estimates: Use my_sum table and ggplot2 methods to plot uncertainty</a></li>
+  <li><a href="#visualizing-the-uncertainty-of-point-estimates-ggplot2-methods" id="toc-visualizing-the-uncertainty-of-point-estimates-ggplot2-methods" class="nav-link" data-scroll-target="#visualizing-the-uncertainty-of-point-estimates-ggplot2-methods">10.2.3 Visualizing the uncertainty of point estimates: <strong>ggplot2</strong> methods</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -265,7 +266,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div>
   </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">May 5, 2023</p>
+    </div>
+  </div>
   
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">May 6, 2023</p>
+    </div>
+  </div>
     
   </div>
   
@@ -293,7 +306,9 @@ Important
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Don’t confuse the uncertainty of a point estimate (mean, median..) with the variation in the sample (standard deviation sigma, and variation sigma square etc)</p>
+<p>Don’t confuse the uncertainty of a point estimate (mean, median..) with the variation in the sample (standard deviation sigma, and variation sigma square etc).</p>
+<p>The standard deviation measures the variation of the values from the mean of ONE sample.</p>
+<p>The standard error is the standard deviation of both sides of the ‘mother of all means’ of all the sample means. &lt;- refer lecture 4 slide 23</p>
 </div>
 </div>
 <div class="cell">
@@ -302,14 +317,14 @@ Important
 <ul>
 <li><p><a href="https://rstudio.github.io/DT/"><strong>DT</strong></a> provides an R interface to the JavaScript library <a href="https://datatables.net/">DataTables</a> that create interactive table on html page.</p></li>
 <li><p><a href="https://rstudio.github.io/crosstalk/">Crosstalk</a> is an add-on to the htmlwidgets package. It extends htmlwidgets with a set of classes, functions, and conventions for implementing cross-widget interactions (currently, linked brushing and filtering).</p></li>
-<li><p><a href="https://mjskay.github.io/ggdist/">ggdist</a> is an R package that provides a flexible set of <code>ggplot2</code> geoms and stats designed especially for visualizing distributions and uncertainty.</p>
+<li><p><a href="https://mjskay.github.io/ggdist/">ggdist</a> is an R package that provides a flexible set of <code>ggplot2</code> geoms and stats designed especially for <strong>visualizing</strong> distributions and uncertainty.</p>
 <p>Lets load the student exam data.csv</p></li>
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>exam <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'C:/yixin-neo/ISSS608-VAA/Hands-on_Ex/Hands-on_Ex05/data/Exam_data.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<section id="visualizing-the-uncertainty-of-point-estimates-ggplot2-methods" class="level3">
-<h3 class="anchored" data-anchor-id="visualizing-the-uncertainty-of-point-estimates-ggplot2-methods">10.2.1 Visualizing the uncertainty of point estimates: ggplot2 methods</h3>
+<section id="visualizing-the-uncertainty-of-point-estimates-manual-calculation-and-creating-of-my_sum-table" class="level3">
+<h3 class="anchored" data-anchor-id="visualizing-the-uncertainty-of-point-estimates-manual-calculation-and-creating-of-my_sum-table">10.2.1 Visualizing the uncertainty of point estimates: Manual calculation and creating of my_sum table</h3>
 <p>The code chunk below performs the followings:</p>
 <ul>
 <li><p>group the observation by RACE,</p></li>
@@ -325,6 +340,7 @@ Important
 </div></li>
 </ul>
 <p>Refer to lecture 4 slide 20 for mathematical formula explanation.</p>
+<p>my_sum is specially created for visualisation later using ggplot2.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(my_sum), <span class="at">format =</span> <span class="st">'html'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -374,9 +390,9 @@ Important
 </div>
 </div>
 </section>
-<section id="visualizing-the-uncertainty-of-point-estimates-ggplot2-methods-1" class="level3">
-<h3 class="anchored" data-anchor-id="visualizing-the-uncertainty-of-point-estimates-ggplot2-methods-1">10.2.2 Visualizing the uncertainty of point estimates: ggplot2 methods</h3>
-<p>The code chunk below is used to reveal the <strong>standard error</strong> of <strong>mean</strong> maths score by race.</p>
+<section id="visualizing-the-uncertainty-of-point-estimates-use-my_sum-table-and-ggplot2-methods-to-plot-uncertainty" class="level3">
+<h3 class="anchored" data-anchor-id="visualizing-the-uncertainty-of-point-estimates-use-my_sum-table-and-ggplot2-methods-to-plot-uncertainty">10.2.2 Visualizing the uncertainty of point estimates: Use my_sum table and ggplot2 methods to plot uncertainty</h3>
+<p>The code chunk below is used to reveal the <strong>standard error</strong> of <strong>mean</strong> maths score by race. It shows <strong>one</strong> standard deviation away from the ‘mother of all means’ for all the means from all the samples.</p>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -424,14 +440,14 @@ Note
 </div>
 </div>
 </section>
-<section id="visualizing-the-uncertainty-of-point-estimates-ggplot2-methods-2" class="level3">
-<h3 class="anchored" data-anchor-id="visualizing-the-uncertainty-of-point-estimates-ggplot2-methods-2">10.2.3 Visualizing the uncertainty of point estimates: <strong>ggplot2</strong> methods</h3>
+<section id="visualizing-the-uncertainty-of-point-estimates-ggplot2-methods" class="level3">
+<h3 class="anchored" data-anchor-id="visualizing-the-uncertainty-of-point-estimates-ggplot2-methods">10.2.3 Visualizing the uncertainty of point estimates: <strong>ggplot2</strong> methods</h3>
 <p>Lets plot a 95% confidence interval of mean maths score by race. The error bars should be sorted by the average maths scores. (Refer to take-home ex 1 on sorting by mean)</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(my_sum) <span class="sc">+</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">reorder</span>(RACE,<span class="sc">-</span>mean),</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ymin=</span>mean<span class="fl">-1.96</span><span class="sc">*</span>se,</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ymax=</span>mean<span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span>se),</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ymin=</span>mean<span class="fl">-1.96</span><span class="sc">*</span>se,    <span class="co">#&lt;&lt;&lt;&lt;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ymax=</span>mean<span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span>se),  <span class="co">#&lt;&lt;&lt;&lt;</span></span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">width =</span> <span class="fl">0.2</span>,</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">colour =</span> <span class="st">'black'</span>,</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">alpha =</span> <span class="fl">0.9</span>,</span>
@@ -445,6 +461,20 @@ Note
 <span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">'Standard error of mean maths score by race'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="Hands-on_Ex06_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+What is the difference between standard error plot above and this 95% confidence interval plot?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Earlier , we plot error bars of 1 standard deviation away from the mother of all means.</p>
+<p>Here, we are plotting 1.96 * standard deviation away from the mother of all means. The higher the % CI, the greater the margin or error.</p>
 </div>
 </div>
 

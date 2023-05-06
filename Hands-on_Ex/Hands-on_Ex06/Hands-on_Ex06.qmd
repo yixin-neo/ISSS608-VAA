@@ -1,6 +1,8 @@
 ---
 title: "Hands-on_Ex06"
 author: "NeoYX"
+date: '5 May 2023'
+date-modified: "`r Sys.Date()`"
 editor: visual
 execute: 
   freeze: auto
@@ -25,7 +27,11 @@ execute:
 Uncertainty is expressed as standard error, confidence interval, or credible interval
 
 ::: callout-important
-Don't confuse the uncertainty of a point estimate (mean, median..) with the variation in the sample (standard deviation sigma, and variation sigma square etc)
+Don't confuse the uncertainty of a point estimate (mean, median..) with the variation in the sample (standard deviation sigma, and variation sigma square etc).
+
+The standard deviation measures the variation of the values from the mean of ONE sample.
+
+The standard error is the standard deviation of both sides of the 'mother of all means' of all the sample means. \<- refer lecture 4 slide 23
 :::
 
 ```{r}
@@ -36,7 +42,7 @@ pacman::p_load(tidyverse, plotly, crosstalk, DT, ggdist, gganimate)
 
 -   [Crosstalk](https://rstudio.github.io/crosstalk/) is an add-on to the htmlwidgets package. It extends htmlwidgets with a set of classes, functions, and conventions for implementing cross-widget interactions (currently, linked brushing and filtering).
 
--   [ggdist](https://mjskay.github.io/ggdist/) is an R package that provides a flexible set of `ggplot2` geoms and stats designed especially for visualizing distributions and uncertainty.
+-   [ggdist](https://mjskay.github.io/ggdist/) is an R package that provides a flexible set of `ggplot2` geoms and stats designed especially for **visualizing** distributions and uncertainty.
 
     Lets load the student exam data.csv
 
@@ -44,7 +50,7 @@ pacman::p_load(tidyverse, plotly, crosstalk, DT, ggdist, gganimate)
 exam <- read_csv('C:/yixin-neo/ISSS608-VAA/Hands-on_Ex/Hands-on_Ex05/data/Exam_data.csv')
 ```
 
-### 10.2.1 Visualizing the uncertainty of point estimates: ggplot2 methods
+### 10.2.1 Visualizing the uncertainty of point estimates: Manual calculation and creating of my_sum table
 
 The code chunk below performs the followings:
 
@@ -65,13 +71,15 @@ The code chunk below performs the followings:
 
 Refer to lecture 4 slide 20 for mathematical formula explanation.
 
+my_sum is specially created for visualisation later using ggplot2.
+
 ```{r}
 knitr::kable(head(my_sum), format = 'html')
 ```
 
-### 10.2.2 Visualizing the uncertainty of point estimates: ggplot2 methods
+### 10.2.2 Visualizing the uncertainty of point estimates: Use my_sum table and ggplot2 methods to plot uncertainty
 
-The code chunk below is used to reveal the **standard error** of **mean** maths score by race.
+The code chunk below is used to reveal the **standard error** of **mean** maths score by race. It shows **one** standard deviation away from the 'mother of all means' for all the means from all the samples.
 
 ::: callout-note
 Standard error is a measure of the variation of the mean of all the means from all samples of an underlying distribution.
@@ -106,8 +114,8 @@ Lets plot a 95% confidence interval of mean maths score by race. The error bars 
 ```{r}
 ggplot(my_sum) +
   geom_errorbar(aes(x=reorder(RACE,-mean),
-                    ymin=mean-1.96*se,
-                    ymax=mean+ 1.96*se),
+                    ymin=mean-1.96*se,    #<<<<
+                    ymax=mean+ 1.96*se),  #<<<<
                 width = 0.2,
                 colour = 'black',
                 alpha = 0.9,
@@ -120,3 +128,11 @@ ggplot(my_sum) +
              alpha = 1) + 
   ggtitle('Standard error of mean maths score by race')
 ```
+
+::: callout-note
+## What is the difference between standard error plot above and this 95% confidence interval plot?
+
+Earlier , we plot error bars of 1 standard deviation away from the mother of all means.
+
+Here, we are plotting 1.96 \* standard deviation away from the mother of all means. The higher the % CI, the greater the margin or error.
+:::

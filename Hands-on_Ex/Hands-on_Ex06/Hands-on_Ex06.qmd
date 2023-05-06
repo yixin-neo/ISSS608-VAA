@@ -13,3 +13,111 @@ execute:
     code-summary: "Show the code"
     code-line-numbers: true
 ---
+
+# 10  Visualising Uncertainty
+
+## 10.1 Learning Outcome
+
+## 10.2 Visualizing the uncertainty of point estimates
+
+-   A point estimate is a single number, such as a mean.
+
+Uncertainty is expressed as standard error, confidence interval, or credible interval
+
+::: callout-important
+Don\'t confuse the uncertainty of a point estimate (mean, median..) with the variation in the sample (standard deviation sigma, and variation sigma square etc)
+:::
+
+```{r}
+pacman::p_load(tidyverse, plotly, crosstalk, DT, ggdist, gganimate)
+```
+
+-   [**DT**](https://rstudio.github.io/DT/) provides an R interface to the JavaScript library [DataTables](https://datatables.net/) that create interactive table on html page.
+
+-   [Crosstalk](https://rstudio.github.io/crosstalk/) is an add-on to the htmlwidgets package. It extends htmlwidgets with a set of classes, functions, and conventions for implementing cross-widget interactions (currently, linked brushing and filtering).
+
+-   [ggdist](https://mjskay.github.io/ggdist/) is an R package that provides a flexible set of `ggplot2` geoms and stats designed especially for visualizing distributions and uncertainty.
+
+    Lets load the student exam data.csv
+
+```{r}
+exam <- read_csv('C:/yixin-neo/ISSS608-VAA/Hands-on_Ex/Hands-on_Ex05/data/Exam_data.csv')
+```
+
+### 10.2.1 Visualizing the uncertainty of point estimates: ggplot2 methods
+
+The code chunk below performs the followings:
+
+-   group the observation by RACE,
+
+-   computes the count of observations, mean, standard deviation and standard error of Maths by RACE, and
+
+-   save the output as a tibble data table called `my_sum`.
+
+    ```{r}
+    my_sum <- exam %>% 
+      group_by(RACE) %>% 
+      summarise(n=n(),
+                mean=mean(MATHS),
+                sd = sd(MATHS)) %>% 
+      mutate(se=sd/sqrt(n-1))   #<<< standard error formula
+    ```
+
+Refer to lecture 4 slide 20 for mathematical formula explanation.
+
+```{r}
+knitr::kable(head(my_sum), format = 'html')
+```
+
+### 10.2.2 Visualizing the uncertainty of point estimates: ggplot2 methods
+
+The code chunk below is used to reveal the **standard error** of **mean** maths score by race.
+
+::: callout-note
+Standard error is a measure of the variation of the mean of all the means from all samples of an underlying distribution.
+:::
+
+```{r}
+ggplot(my_sum) +
+  geom_errorbar(aes(x=RACE,
+                    ymin=mean-se,
+                    ymax=mean+se),
+                width = 0.2,
+                colour = 'black',
+                alpha = 0.9,
+                size=0.5) +
+    geom_point(aes(x=RACE,
+                 y=mean),
+             stat = 'identity', #<<< actual points refer to mean 
+             color='red', 
+             size = 1.5,
+             alpha = 1) + 
+  ggtitle('Standard error of mean maths score by race')
+```
+
+::: callout-note
+In the code above, **`stat = 'identity'`** means that the **`y`** values in the **`geom_point`** layer correspond to the **actual values** in the data frame, rather than a summary statistic like mean or median.
+:::
+
+### 10.2.3 Visualizing the uncertainty of point estimates: **ggplot2** methods
+
+Lets plot a 95% confidence interval of mean maths score by race. The error bars should be sorted by the average maths scores.
+(Refer to take-home ex 1 on sorting by mean)
+
+```{r}
+ggplot(my_sum) +
+  geom_errorbar(aes(x=reorder(RACE,-mean),
+                    ymin=mean-se,
+                    ymax=mean+se),
+                width = 0.2,
+                colour = 'black',
+                alpha = 0.9,
+                size=0.5) +
+    geom_point(aes(x=RACE,
+                 y=mean),
+             stat = 'identity', #<<< actual points refer to mean 
+             color='red', 
+             size = 1.5,
+             alpha = 1) + 
+  ggtitle('Standard error of mean maths score by race')
+```

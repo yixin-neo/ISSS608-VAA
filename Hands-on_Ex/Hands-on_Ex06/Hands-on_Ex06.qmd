@@ -190,7 +190,7 @@ girafe(ggobj = p,
 
 STEP 2: CREATE AN INTERACTIVE DATA TABLE USING DT()
 
- - We use the **`%>%`** operator to pipe the data frame into the **`mutate_if()`** function, where we specify the condition **`is.numeric`** to select only the numeric columns. We use the tilde **`~`** symbol to specify the rounding function, and pass the **`digits`** argument to round to two decimal places. The resulting data frame **`df`** will have all numerical columns rounded to two decimal places.
+-   We use the **`%>%`** operator to pipe the data frame into the **`mutate_if()`** function, where we specify the condition **`is.numeric`** to select only the numeric columns. We use the tilde **`~`** symbol to specify the rounding function, and pass the **`digits`** argument to round to two decimal places. The resulting data frame **`df`** will have all numerical columns rounded to two decimal places.
 
 ```{r}
 #| code-fold: True
@@ -260,7 +260,7 @@ My mistakes on the attempt to produce this plot:
 
 -   It is designed for both frequentist and Bayesian uncertainty visualization, taking the view that uncertainty visualization can be unified through the perspective of distribution visualization:
 
-    -   for frequentist models, one visualises confidence distributions or bootstrap distributions (see vignette(\"freq-uncertainty-vis\"));
+    -   for frequentist models, one visualises confidence distributions or bootstrap distributions (see vignette("freq-uncertainty-vis"));
 
     -   for Bayesian models, one visualises probability distributions (see the tidybayes package, which builds on top of ggdist).
 
@@ -364,6 +364,20 @@ Step 1: Installing ungeviz package
 library(ungeviz)
 ```
 
+**What are HOPs?**
+Rather than showing a continuous probability distribution, Hypothetical Outcome Plots (or HOPs) **visualize a set of draws from a distribution, where each draw is shown as a new plot in either a small multiples or animated form**.
+
+**Explanation of the code below:**\
+The code is creating a ggplot object to visualize the distribution of **`MATHS`** scores for different races in the **`exam`** dataset using the **`geom_point()`** and **`geom_hpline()`** functions from **`ggplot2`**.
+
+Specifically, it is creating a scatterplot (**`geom_point()`**) of **`MATHS`** scores against **`RACE`** with some jitter (**`position_jitter()`**) added to the points to avoid overplotting. The **`factor()`** function is used to convert the **`RACE`** variable to a categorical variable.
+
+Additionally, a horizontal line (**`geom_hpline()`**) is added to the plot to represent the median **`MATHS`** score for each race, calculated using **`sampler()`** function with 25 samples drawn from the original dataset for each race. The line is colored in **`#D55E00`**.
+
+The **`transition_states()`** function is used to create an animation by specifying the **`.draw`** column as the states for the animation. The animation has 3 states (1, 2, 3) and will animate the plot with a transition between each state.
+
+Finally, the **`theme_bw()`** function is used to set the theme of the plot to a black and white color scheme.
+
 ```{r}
 #| code-fold: True
 ggplot(data = exam, 
@@ -377,23 +391,4 @@ ggplot(data = exam,
   transition_states(.draw, 1, 3)
 ```
 
-## 10.5 Visualising Uncertainty with Hypothetical Outcome Plots (HOPs)
-
-```{r}
-#| code-fold: True
-ggplot(data = exam, 
-       (aes(x = factor(RACE), 
-            y = MATHS))) +
-  geom_point(position = position_jitter(
-    height = 0.3, 
-    width = 0.05), 
-    size = 0.4, 
-    color = "#0072B2", 
-    alpha = 1/2) +
-  geom_hpline(data = sampler(25, 
-                             group = RACE), 
-              height = 0.6, 
-              color = "#D55E00") +
-  theme_bw() + 
-  transition_states(.draw, 1, 3)
-```
+A [jitter plot](https://datavizproject.com/data-type/jitter-plot/#:~:text=A%20jitter%20plot%20is%20a,many%20individual%20one%2Ddimensional%20values.) is a variant of the strip plot with a better view of overlapping data points, used to visualise the distribution of many individual one-dimensional values. The values are plotted as dots along one axis, and the dots are then shifted randomly along the other axis, which has no meaning in itself data-wise, allowing the dots not to overlap.

@@ -2,7 +2,7 @@ project:
   type: website
 
 website:
-  title: "ISSS608-VAA"
+  title: "NYX VA"
   navbar:
     left:
     - text: "Hands-on Exercise"

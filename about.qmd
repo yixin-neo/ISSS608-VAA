@@ -2,8 +2,4 @@
 title: "About"
 ---
 
-About this site
-
-```{r}
-1 + 1
-```
+I am currently a student at MITB learning to enhance my skills in visual analytics using R and tableau. I welcome related discussions at [email](yixin.neo.2022@mitb.smu.edu.sg.).

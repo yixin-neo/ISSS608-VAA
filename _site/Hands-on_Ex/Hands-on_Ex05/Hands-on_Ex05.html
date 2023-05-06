@@ -234,6 +234,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#how-to-interpret-bayes-factor" id="toc-how-to-interpret-bayes-factor" class="nav-link" data-scroll-target="#how-to-interpret-bayes-factor">9.3.5 How to interpret Bayes Factor</a></li>
   <li><a href="#two-sample-mean-test-ggbetweenstats" id="toc-two-sample-mean-test-ggbetweenstats" class="nav-link" data-scroll-target="#two-sample-mean-test-ggbetweenstats">9.3.6 Two-sample mean test: <em>ggbetweenstats()</em></a></li>
   <li><a href="#oneway-anova-test-ggbetweenstats-method" id="toc-oneway-anova-test-ggbetweenstats-method" class="nav-link" data-scroll-target="#oneway-anova-test-ggbetweenstats-method">9.3.7 Oneway ANOVA Test: <em>ggbetweenstats()</em> method</a></li>
+  <li><a href="#significant-test-of-correlation-ggscatterstats" id="toc-significant-test-of-correlation-ggscatterstats" class="nav-link" data-scroll-target="#significant-test-of-correlation-ggscatterstats">9.3.8 Significant Test of Correlation: <em>ggscatterstats()</em></a></li>
+  <li><a href="#significant-test-of-association-dependence-ggbarstats-methods" id="toc-significant-test-of-association-dependence-ggbarstats-methods" class="nav-link" data-scroll-target="#significant-test-of-association-dependence-ggbarstats-methods">9.3.9 Significant Test of Association (Dependence) : <em>ggbarstats()</em> methods</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -498,6 +500,8 @@ Note
 <p>The <strong><code>by()</code></strong> function is used to apply a function to subsets of a data frame or vector split by one or more factors. In the above code, we use <strong><code>by()</code></strong> to split the <strong><code>math_score</code></strong> column by <strong><code>gender</code></strong>, and apply the <strong><code>shapiro.test()</code></strong> function to each group.</p>
 </div>
 </div>
+<p>H0: Math scores by gender follows normal distribution.</p>
+<p>H1: Math scores by gender do not follow normal distribution.</p>
 <p>From the Shapiro-Wilk test results, MATHS scores for both gender follows normal distribution. Should we have used parametric test instead?</p>
 </section>
 <section id="oneway-anova-test-ggbetweenstats-method" class="level3">
@@ -521,6 +525,112 @@ Note
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="do">## might need to call library(PMCMRplus) and library(rstantools) if this code chunck doesnt work.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Since p-value &lt; 0.05, we have enough statistical evidence to reject the null hypothesis and conclude that NOT ALL means of EL scores by race are the same. The results shows that the means of EL scores of Chinese, Indian and Malay are significantly different.</p>
+<p>Once again, lets go backwards and confirm that the distribution of EL scores by RACE conforms to normal distribution.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># perform Shapiro-Wilk test on math scores by gender</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>shapiro_test <span class="ot">&lt;-</span> <span class="fu">by</span>(exam<span class="sc">$</span>ENGLISH, exam<span class="sc">$</span>RACE, shapiro.test)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># extract p-values</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>p_values <span class="ot">&lt;-</span> <span class="fu">sapply</span>(shapiro_test, <span class="cf">function</span>(x) x<span class="sc">$</span>p.value)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co"># print results</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(p_values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     Chinese       Indian        Malay       Others 
+1.305153e-07 8.482600e-01 1.251020e-02 5.181740e-01 </code></pre>
+</div>
+</div>
+<p>H0: EL scores by Race follow normal distribution. H1: EL scores by Race do not follow normal distribution.</p>
+<p>The results of the Shapiro-wilk test shows p_value of all EL score distribution by race follows normal distribution.</p>
+<section id="ggbetweenstats---summary-of-tests" class="level4">
+<h4 class="anchored" data-anchor-id="ggbetweenstats---summary-of-tests">9.3.7.1 ggbetweenstats - Summary of tests</h4>
+<p><img src="https://r4va.netlify.app/chap09/img/image7.jpg" class="img-fluid"></p>
+<p><img src="https://r4va.netlify.app/chap09/img/image8.jpg" class="img-fluid"></p>
+<p><img src="https://r4va.netlify.app/chap09/img/image9.jpg" class="img-fluid"></p>
+</section>
+</section>
+<section id="significant-test-of-correlation-ggscatterstats" class="level3">
+<h3 class="anchored" data-anchor-id="significant-test-of-correlation-ggscatterstats">9.3.8 Significant Test of Correlation: <em>ggscatterstats()</em></h3>
+<p>Earlier, we have checked that EL scores do not follow a normal distribution. Now we will do the same for Math scores.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ad.test</span>(exam<span class="sc">$</span>MATHS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Anderson-Darling normality test
+
+data:  exam$MATHS
+A = 7.9125, p-value &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Since the p-value &lt; 0.05, we have enough statistical evidence to reject the null hypothesis and conclude that the Math scores also do not follow normal distribution.</p>
+<p>In the code chunk below, <a href="https://indrajeetpatil.github.io/ggstatsplot/reference/ggscatterstats.html"><em>ggscatterstats()</em></a> is used to build a visual for Significant Test of Correlation between Maths scores and English scores.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggscatterstats</span>(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> exam,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> MATHS,</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> ENGLISH,</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">type=</span><span class="st">'nonparametric'</span>, <span class="co"># 'parametric', 'robust', 'bayes'</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">marginal =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex05_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I have chosen a non parametric version of this test as both Math and EL scores do not follow normal distribution.</p>
+</div>
+</div>
+</section>
+<section id="significant-test-of-association-dependence-ggbarstats-methods" class="level3">
+<h3 class="anchored" data-anchor-id="significant-test-of-association-dependence-ggbarstats-methods">9.3.9 Significant Test of Association (Dependence) : <em>ggbarstats()</em> methods</h3>
+<p>In the code chunk below, the Maths scores is binned into a 4-class variable by using <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/cut"><em>cut()</em></a>.</p>
+<p>We will create a new dataframe exam1 similar to exam df but with extra column called ‘MATHS_bins’.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>exam1 <span class="ot">&lt;-</span> exam <span class="sc">%&gt;%</span> </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">MATHS_bins =</span> </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">cut</span>(MATHS, </span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">60</span>,<span class="dv">75</span>,<span class="dv">85</span>,<span class="dv">100</span>))</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>exam1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 322 × 8
+   ID         CLASS GENDER RACE    ENGLISH MATHS SCIENCE MATHS_bins
+   &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt;     
+ 1 Student321 3I    Male   Malay        21     9      15 (0,60]    
+ 2 Student305 3I    Female Malay        24    22      16 (0,60]    
+ 3 Student289 3H    Male   Chinese      26    16      16 (0,60]    
+ 4 Student227 3F    Male   Chinese      27    77      31 (75,85]   
+ 5 Student318 3I    Male   Malay        27    11      25 (0,60]    
+ 6 Student306 3I    Female Malay        31    16      16 (0,60]    
+ 7 Student313 3I    Male   Chinese      31    21      25 (0,60]    
+ 8 Student316 3I    Male   Malay        31    18      27 (0,60]    
+ 9 Student312 3I    Male   Malay        33    19      15 (0,60]    
+10 Student297 3H    Male   Indian       34    49      37 (0,60]    
+# ℹ 312 more rows</code></pre>
+</div>
+</div>
+<p>In this code chunk below <a href="https://indrajeetpatil.github.io/ggstatsplot/reference/ggbarstats.html"><em>ggbarstats()</em></a> is used to build a visual for Significant Test of Association.</p>
+<p>(Two categorical variables) H0: There is no association between mathbin and gender.</p>
+<p>H1: There is an association between mathbin and gender.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggbarstats</span>(exam1,</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">x=</span>MATHS_bins,</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">y=</span>GENDER)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex05_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>From the results above , p-value &gt; 0.05 thus we have not enough statistical evidence to reject the null hypothesis that there is not association between the mathbin and gender variables.</p>
 
 
 </section>

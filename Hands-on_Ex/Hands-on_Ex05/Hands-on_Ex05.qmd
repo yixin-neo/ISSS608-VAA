@@ -195,6 +195,10 @@ print(p_values)
 The **`by()`** function is used to apply a function to subsets of a data frame or vector split by one or more factors. In the above code, we use **`by()`** to split the **`math_score`** column by **`gender`**, and apply the **`shapiro.test()`** function to each group.
 :::
 
+H0: Math scores by gender follows normal distribution.
+
+H1: Math scores by gender do not follow normal distribution.
+
 From the Shapiro-Wilk test results, MATHS scores for both gender follows normal distribution. Should we have used parametric test instead?
 
 ### 9.3.7 Oneway ANOVA Test: *ggbetweenstats()* method
@@ -217,3 +221,87 @@ ggbetweenstats(
 ```
 
 Since p-value \< 0.05, we have enough statistical evidence to reject the null hypothesis and conclude that NOT ALL means of EL scores by race are the same. The results shows that the means of EL scores of Chinese, Indian and Malay are significantly different.
+
+Once again, lets go backwards and confirm that the distribution of EL scores by RACE conforms to normal distribution.
+
+```{r}
+# perform Shapiro-Wilk test on math scores by gender
+shapiro_test <- by(exam$ENGLISH, exam$RACE, shapiro.test)
+
+# extract p-values
+p_values <- sapply(shapiro_test, function(x) x$p.value)
+# print results
+print(p_values)
+```
+
+H0: EL scores by Race follow normal distribution. H1: EL scores by Race do not follow normal distribution.
+
+The results of the Shapiro-wilk test shows p_value of all EL score distribution by race follows normal distribution.
+
+#### 9.3.7.1 ggbetweenstats - Summary of tests
+
+![](https://r4va.netlify.app/chap09/img/image7.jpg)
+
+![](https://r4va.netlify.app/chap09/img/image8.jpg)
+
+![](https://r4va.netlify.app/chap09/img/image9.jpg)
+
+### 9.3.8 Significant Test of Correlation: *ggscatterstats()*
+
+Earlier, we have checked that EL scores do not follow a normal distribution. Now we will do the same for Math scores.
+
+```{r}
+ad.test(exam$MATHS)
+```
+
+Since the p-value \< 0.05, we have enough statistical evidence to reject the null hypothesis and conclude that the Math scores also do not follow normal distribution.
+
+In the code chunk below, [*ggscatterstats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/ggscatterstats.html) is used to build a visual for Significant Test of Correlation between Maths scores and English scores.
+
+```{r}
+ggscatterstats(
+  data = exam,
+  x = MATHS,
+  y = ENGLISH,
+  type='nonparametric', # 'parametric', 'robust', 'bayes'
+  marginal = FALSE,
+  )
+```
+
+::: callout-note
+I have chosen a non parametric version of this test as both Math and EL scores do not follow normal distribution.
+:::
+
+### 9.3.9 Significant Test of Association (Dependence) : *ggbarstats()* methods
+
+In the code chunk below, the Maths scores is binned into a 4-class variable by using [*cut()*](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/cut).
+
+We will create a new dataframe exam1 similar to exam df but with extra column called 'MATHS_bins'.
+
+```{r}
+exam1 <- exam %>% 
+  mutate(MATHS_bins = 
+           cut(MATHS, 
+               breaks = c(0,60,75,85,100))
+)
+```
+
+```{r}
+exam1
+```
+
+In this code chunk below [*ggbarstats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/ggbarstats.html) is used to build a visual for Significant Test of Association.
+
+(Two categorical variables)
+H0: There is no association between mathbin and gender.
+
+H1: There is an association between mathbin and gender.
+
+```{r}
+ggbarstats(exam1,
+            x=MATHS_bins,
+            y=GENDER)
+```
+
+From the results above , p-value \> 0.05 thus we have not enough statistical evidence to reject the null hypothesis that there is not association between the mathbin and gender variables.
+

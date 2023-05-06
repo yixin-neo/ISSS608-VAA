@@ -53,7 +53,7 @@ In this hands-on exercise, you will gain hands-on experience on using:
 In this exercise, **ggstatsplot** and **tidyverse** will be used.
 
 ```{r}
-pacman::p_load(ggstatsplot, tidyverse,nortest)
+pacman::p_load(ggstatsplot, tidyverse,nortest, ggdist)
 ```
 
 ### 9.3.2 Importing data
@@ -96,7 +96,7 @@ gghistostats(data=exam,
 
 -   A Bayes factor is the ratio of the likelihood of one particular hypothesis to the likelihood of another. It can be interpreted as a measure of the strength of evidence in favor of one theory among two competing theories.
 
--   That\'s because the Bayes factor gives us a way to evaluate the data in favor of a null hypothesis, and to use external information to do so. It tells us what the weight of the evidence is in favor of a given hypothesis.
+-   That's because the Bayes factor gives us a way to evaluate the data in favor of a null hypothesis, and to use external information to do so. It tells us what the weight of the evidence is in favor of a given hypothesis.
 
 -   When we are comparing two hypotheses, H1 (the alternate hypothesis) and H0 (the null hypothesis), the Bayes Factor is often written as B10. It can be defined mathematically as
 
@@ -110,7 +110,7 @@ A **Bayes Factor** can be any positive number. One of the most common interpreta
 
 ![](https://r4va.netlify.app/chap09/img/image6.jpg){width="342"}
 
-#### 9.3.5.1 How to perform a one-sample wilcoxon test 
+#### 9.3.5.1 How to perform a one-sample wilcoxon test
 
 [Reference website from r-bloggers](https://www.r-bloggers.com/2022/07/one-sample-wilcoxon-test-in-r/)
 
@@ -120,7 +120,7 @@ H0: EL scores = 60
 
 H1: EL scores != 60
 
-The scores are assumed to be independent (a student\'s score is not impacted or influenced by the score of another student)
+The scores are assumed to be independent (a student's score is not impacted or influenced by the score of another student)
 
 ```{r}
 wilcox.test(exam$ENGLISH,
@@ -132,7 +132,6 @@ wilcox.test(exam$ENGLISH,
 P-value\<0.05, we have enough statistical evidence to reject the null hypothesis and conclude that the EL scores are significantly different from 60.
 
 ::: callout-note
-
 By default, it is a two-tailed test that is done. As for the t.test() function, we can specify that a one-sided test is required by using either the alternative = "greater" or alternative = "less argument in the wilcox.test() function.
 :::
 
@@ -197,3 +196,24 @@ The **`by()`** function is used to apply a function to subsets of a data frame o
 :::
 
 From the Shapiro-Wilk test results, MATHS scores for both gender follows normal distribution. Should we have used parametric test instead?
+
+### 9.3.7 Oneway ANOVA Test: *ggbetweenstats()* method
+
+In the code chunk below, [*ggbetweenstats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/ggbetweenstats.html) is used to build a visual for One-way ANOVA test on English score by race (Independent 4 sample mean).
+
+```{r}
+ggbetweenstats(
+  data = exam,
+  x = RACE, 
+  y = ENGLISH,
+  type = "p",
+  mean.ci=TRUE,
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",  # 'ns': shows only non-sig, 's': shows only sig, 'all': both 
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+## might need to call library(PMCMRplus) and library(rstantools) if this code chunck doesnt work.
+```
+
+Since p-value \< 0.05, we have enough statistical evidence to reject the null hypothesis and conclude that NOT ALL means of EL scores by race are the same. The results shows that the means of EL scores of Chinese, Indian and Malay are significantly different.

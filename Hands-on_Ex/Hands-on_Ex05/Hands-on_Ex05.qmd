@@ -292,8 +292,7 @@ exam1
 
 In this code chunk below [*ggbarstats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/ggbarstats.html) is used to build a visual for Significant Test of Association.
 
-(Two categorical variables)
-H0: There is no association between mathbin and gender.
+(Two categorical variables) H0: There is no association between mathbin and gender.
 
 H1: There is an association between mathbin and gender.
 
@@ -409,4 +408,29 @@ check_h <- check_heteroscedasticity(model1)
 plot(check_h)
 ```
 
-From the graph above, there is a slight sign of heteroscedasticity as the residuals seem to be funnelled outsides as the fitted values increase.
+From the graph above, there is a slight sign of heteroscedasticity as the residuals seem to be funnelled outwards as the fitted values increase.
+
+### 9.6.6 Model Diagnostic: Complete check
+
+We can also perform the complete check by using [*check_model()*](https://easystats.github.io/performance/reference/check_model.html).
+
+```{r}
+check_model(model1)
+```
+
+### 9.6.7 Visualising Regression Parameters: see() methods
+
+In the code below, plot() of see package and parameters() of parameters package is used to visualise the parameters of a regression model.
+
+```{r}
+plot(parameters(model1))
+```
+
+### 9.6.8 Visualising Regression Parameters: *ggcoefstats()* methods
+
+In the code below, [*ggcoefstats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/ggcoefstats.html) of ggstatsplot package to visualise the parameters of a regression model.
+
+```{r}
+ggcoefstats(model1, 
+            output = "plot")
+```

@@ -251,6 +251,16 @@ The results of the Shapiro-wilk test shows p_value of all EL score distribution 
 
 #### 9.3.7.1 ggbetweenstats - Summary of tests
 
+1.  type argument entered by us will determine the centrality tendency measure displayed
+
+-   **mean** for parametric statistics
+
+-   **median** for non-parametric statistics
+
+-   **trimmed mean** for robust statistics
+
+-   **MAP estimator** for Bayesian statistics
+
 ![](https://r4va.netlify.app/chap09/img/image7.jpg)
 
 ![](https://r4va.netlify.app/chap09/img/image8.jpg)

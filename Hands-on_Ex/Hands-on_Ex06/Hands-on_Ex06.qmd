@@ -20,7 +20,7 @@ execute:
 
 ## 10.1 Learning Outcome
 
-## 10.2 Visualizing the uncertainty of point estimates
+## 10.2 Visualizing the uncertainty of point estimates (Manual Method, without ggdist package)
 
 -   A point estimate is a single number, such as a mean.
 
@@ -130,7 +130,7 @@ ggplot(my_sum) +
 ```
 
 ::: callout-note
-## What is the difference between standard error plot above and this 95% confidence interval plot?
+**What is the difference between standard error plot above and this 95% confidence interval plot?**
 
 Earlier , we plot error bars of 1 standard deviation away from the mother of all means.
 
@@ -240,3 +240,24 @@ crosstalk::bscols(list(width = 7,gg),
                   list(width=5,DT::datatable(d)),
                   widths=5)
 ```
+
+My mistakes on the attempt to produce this plot:
+
+1.  Did not use d in ggplot(d) and datatable(d) in crosstalk. As a result, the plot and table were both not able to communicate with each other.
+2.  Wrongly added `geom_errorbar_interactive(aes(tooltip)` and `girafe` together with `plotly` and `crosstalk::bscols`. As as result, no error bars were seen.
+
+## 10.3 Visualising Uncertainty: **ggdist** package
+
+-   [**ggdist**](https://mjskay.github.io/ggdist/) is an R package that provides a flexible set of ggplot2 geoms and stats designed especially for visualising distributions and uncertainty.
+
+-   It is designed for both frequentist and Bayesian uncertainty visualization, taking the view that uncertainty visualization can be unified through the perspective of distribution visualization:
+
+    -   for frequentist models, one visualises confidence distributions or bootstrap distributions (see vignette(\"freq-uncertainty-vis\"));
+
+    -   for Bayesian models, one visualises probability distributions (see the tidybayes package, which builds on top of ggdist).
+
+![](https://r4va.netlify.app/chap10/img/ggdist.png)
+
+### 10.3.1 Visualizing the uncertainty of point estimates: **ggdist** methods
+
+In the code chunk below, [`stat_pointinterval()`](https://mjskay.github.io/ggdist/reference/stat_pointinterval.html) of **ggdist** is used to build a visual for displaying distribution of maths scores by race.

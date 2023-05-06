@@ -1,6 +1,8 @@
 ---
 title: "Hands-on_Ex07"
 author: "NeoYX"
+date: '7 May 2023'
+date-modified: "`r Sys.Date()`"
 editor: visual
 execute: 
   freeze: auto
@@ -13,3 +15,9 @@ execute:
     code-summary: "Show the code"
     code-line-numbers: true
 ---
+
+```{r}
+#| fig-width: 8
+#| fig-height: 6
+#| code-fold: True
+```

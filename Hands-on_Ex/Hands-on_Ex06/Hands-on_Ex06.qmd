@@ -86,6 +86,7 @@ Standard error is a measure of the variation of the mean of all the means from a
 :::
 
 ```{r}
+#| code-fold: True
 ggplot(my_sum) +
   geom_errorbar(aes(x=RACE,
                     ymin=mean-se,
@@ -112,6 +113,7 @@ In the code above, **`stat = 'identity'`** means that the **`y`** values in the 
 Lets plot a 95% confidence interval of mean maths score by race. The error bars should be sorted by the average maths scores. (Refer to take-home ex 1 on sorting by mean)
 
 ```{r}
+#| code-fold: True
 ggplot(my_sum) +
   geom_errorbar(aes(x=reorder(RACE,-mean),  # reorder(x,y) means to reorder x based on increasing or decreasing values of y. To sort by descending values of Y, use -Y.
                     ymin=mean-1.96*se,    #<<<< formula to calc 95% CI
@@ -139,12 +141,16 @@ Here, we are plotting 1.96 \* standard deviation away from the mother of all mea
 
 ### 10.2.4 Visualizing the uncertainty of point estimates with interactive error bars
 
-**Task: Plot an interactive error bars for the 99% confidence interval of mean maths score by race.**
+**Task: Plot an interactive error bars for the 99% confidence interval of mean maths score by race., and add the source data table on the right. Table and plot have coordinated views.**
 
 Recall in hands-on 3 that we create can create interactive plots using [ggiraph](https://davidgohel.github.io/ggiraph/) and [ggplot geometries](https://davidgohel.github.io/ggiraph/reference/#section-interactive-geometries) that can understand 3 arguments; namely **tooltip**, **data_id** and **onclick**.
+
 I will use one of them methods (geom_errorbar_interactive with girafe) to construct here. The other method is to use plotly.
 
+STEP 1: CREATE INTERACTIVE ERROR BAR for 99% CI
+
 ```{r}
+#| code-fold: True
 # create a new column tooltip to contain the tooltip text.
 my_sum$tooltip <- c(paste0("RACE: ",
                            my_sum$RACE,
@@ -182,12 +188,12 @@ girafe(ggobj = p,
        height_svg = 8*0.618)
 ```
 
-**Next task: Create an interactive Data Table beside the interactive error bars (also with coordinated views)**
+STEP 2: CREATE AN INTERACTIVE DATA TABLE USING DT()
 
-First, we create an interactive Data Table using DT().
  - We use the **`%>%`** operator to pipe the data frame into the **`mutate_if()`** function, where we specify the condition **`is.numeric`** to select only the numeric columns. We use the tilde **`~`** symbol to specify the rounding function, and pass the **`digits`** argument to round to two decimal places. The resulting data frame **`df`** will have all numerical columns rounded to two decimal places.
 
 ```{r}
+#| code-fold: True
 # Round all numerical columns to two decimal places
 my_sum <- my_sum %>% 
   mutate_if(is.numeric, ~ round(., digits = 2))
@@ -195,9 +201,11 @@ my_sum <- my_sum %>%
 DT::datatable(my_sum, class='compact')
 ```
 
+STEP 3: COMBINE BOTH
+
 Next, combine uncertainty graph and **plotly** interactive table using [Crosstalk](https://rstudio.github.io/crosstalk/), which is an add-on to the htmlwidgets package. It extends htmlwidgets with a set of classes, functions, and conventions for implementing cross-widget interactions (currently, linked brushing and filtering).
 
-(refer to hands-on 3)
+(Refer to hands-on 3)
 
 The datatable is linked to the visualisation on the left. Click on multiple rows to filter according.
 
@@ -267,6 +275,7 @@ In the code chunk below, [`stat_pointinterval()`](https://mjskay.github.io/ggdis
 Take note that the default .width values are set to c(0.66, 0.95) confidence intervals.
 
 ```{r}
+#| code-fold: True
 exam %>% 
   ggplot(aes(x=RACE,       #<< plot the base layer
              y=MATHS)) +
@@ -283,6 +292,7 @@ Some of the arguments (there are many , have to read the syntax reference for mo
 -   `point_interval`: This function determines the point summary (typically mean, median, or mode) and interval type (quantile interval, `qi`; highest-density interval, `hdi`; or highest-density continuous interval, `hdci`)
 
     ```{r}
+    #| code-fold: True
     exam %>%
       ggplot(aes(x = RACE, y = MATHS)) +
       stat_pointinterval(.width = 0.95,
@@ -298,6 +308,7 @@ Some of the arguments (there are many , have to read the syntax reference for mo
 Task: Makeover the plot on previous slide by showing 95% and 99% confidence intervals.
 
 ```{r}
+#| code-fold: True
 exam %>%
   ggplot(aes(x = RACE, y = MATHS)) +
   
@@ -321,3 +332,19 @@ exam %>%
 ::: callout-note
 **`stat(level)`** calculates the confidence interval limits based on the specified **`conf.level`** argument, and **`interval_color`** maps the calculated interval color to the **`interval_color`** argument.
 :::
+
+```{r}
+#| code-fold: True
+```
+
+```{r}
+#| code-fold: True
+```
+
+```{r}
+#| code-fold: True
+```
+
+```{r}
+#| code-fold: True
+```

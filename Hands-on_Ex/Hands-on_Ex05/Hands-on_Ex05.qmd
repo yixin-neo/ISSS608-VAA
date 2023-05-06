@@ -82,12 +82,14 @@ In the code chunk below, [*gghistostats()*](https://indrajeetpatil.github.io/ggs
 
 -   It is a statistical test that compares the mean of a sample to a specified value, such as a population mean, to see if there is enough evidence to reject the null hypothesis that the sample comes from a population with the specified mean.
 
+H0: EL average score is 60.
+
 ```{r}
-set.seed(1234)
+set.seed(1234)  #<<< important to set if we use bayes statistics
 
 gghistostats(data=exam,
              x = ENGLISH,
-             type='bayes',
+             type='bayes',  #<< '
              test.value =60,
              xlab = 'English scores')
 ```
@@ -142,8 +144,9 @@ set.seed(1234)
 
 gghistostats(data=exam,
              x = ENGLISH,
-             type='nonparametric', #nonparametric = Wilcoxon, parametric = t-test
+             type='nonparametric', #nonparametric (median) = Wilcoxon, parametric = t-test (default is look for mean and unequal variance method)
              test.value =60,
+             conf.level = 0.95,
              xlab = 'English scores')
 ```
 
@@ -158,6 +161,14 @@ ad.test(exam$ENGLISH)
 ```
 
 Results from the Anderson_darling normality test shows enough statistical evidence to reject the null hypothesis and conclude that the EL scores do not follow normal distribution . Thus the use of non parametric test is correct.
+
+::: callout-important
+## On Parametric and Non-parametric types
+
+type= parametric: default look for **mean** and assumes **unequal variance** method
+
+type = Non parametric: student-t test and use **median** (not mean!!)
+:::
 
 ### 9.3.6 Two-sample mean test: *ggbetweenstats()*
 

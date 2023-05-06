@@ -4,7 +4,7 @@
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "I am currently a student at MITB learning to enhance my skills in visual analytics using R and tableau. I welcome related discussions at email."
+    "text": "I am currently a student at MITB learning to enhance my skills in visual analytics using R and tableau.\nI welcome related discussions at yixin.neo.2022@mitb.smu.edu.sg =)"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html",
@@ -172,7 +172,7 @@
     "href": "In-class_Ex/In-class_Ex04/In-class_Ex04.html#import-libraries",
     "title": "In-class_Ex04",
     "section": "Import libraries",
-    "text": "Import libraries\nThe new libraries used today are :\n\nrstatic: Allows us to perform basic statistical tests, including t-test, Wilcoxon test, ANOVA, Kruskal-Wallis and correlation analyses.\ngt() : starting from a tibble table, customise a table and export in various formats. Most importantly, it works with patch. We will save the tabular results from shapiro test as gt object and export using gtsave() into .png file later.\nNote:\nImporting tidyverse: will automatically provide read_r() <- for read_csv()\n\n\npacman::p_load(rstatix, gt, patchwork,tidyverse,nortest)\n\n\nexam <- read_csv('C:/yixin-neo/ISSS608-VAA/Hands-on_Ex/Hands-on_Ex05/data/Exam_data.csv')"
+    "text": "Import libraries\nThe new libraries used today are :\n\nrstatic: Allows us to perform basic statistical tests, including t-test, Wilcoxon test, ANOVA, Kruskal-Wallis and correlation analyses.\ngt() : starting from a tibble table, customise a table and export in various formats. Most importantly, it works with patch. We will save the tabular results from shapiro test as gt object and export using gtsave() into .png file later.\n\n\n\n\n\n\nOn importing data\n\n\n\n\nImporting tidyverse: will automatically provide read_r() <- for read_csv()\nread.csv() will insert ‘.’ between words. Thus we normally use read_csv()\nTo read excel files, load readxl and use read_xls()\n\n\n\n\n\npacman::p_load(rstatix, gt, patchwork,tidyverse,nortest)\n\n\nexam <- read_csv('C:/yixin-neo/ISSS608-VAA/Hands-on_Ex/Hands-on_Ex05/data/Exam_data.csv')"
   },
   {
     "objectID": "In-class_Ex/In-class_Ex04/In-class_Ex04.html#background-info",

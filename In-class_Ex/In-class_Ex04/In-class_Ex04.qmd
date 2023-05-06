@@ -26,9 +26,15 @@ The new libraries used today are :
 
 -   [gt()](https://gt.rstudio.com/) : starting from a tibble table, customise a table and export in various formats. Most importantly, it works with patch. We will save the tabular results from shapiro test as gt object and export using gtsave() into .png file later.
 
-    Note:
+    ::: callout-note
+    ## On importing data
 
--   Importing tidyverse: will automatically provide read_r() \<- for read_csv()
+    -   Importing tidyverse: will automatically provide read_r() \<- for read_csv()
+
+    -   read.csv() will insert '.' between words. Thus we normally use read_csv()
+
+    -   To read excel files, load `readxl` and use read_xls()
+    :::
 
 ```{r}
 pacman::p_load(rstatix, gt, patchwork,tidyverse,nortest)

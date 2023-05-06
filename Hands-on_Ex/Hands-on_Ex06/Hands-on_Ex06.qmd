@@ -248,7 +248,7 @@ My mistakes on the attempt to produce this plot:
 
 ## 10.3 Visualising Uncertainty: **ggdist** package
 
--   [**ggdist**](https://mjskay.github.io/ggdist/) is an R package that provides a flexible set of ggplot2 geoms and stats designed especially for visualising distributions and uncertainty.
+-   [**ggdist**](https://mjskay.github.io/ggdist/) is an R package that provides a flexible set of ggplot2 geoms and stats designed especially for **visualising** distributions and uncertainty.
 
 -   It is designed for both frequentist and Bayesian uncertainty visualization, taking the view that uncertainty visualization can be unified through the perspective of distribution visualization:
 
@@ -256,8 +256,68 @@ My mistakes on the attempt to produce this plot:
 
     -   for Bayesian models, one visualises probability distributions (see the tidybayes package, which builds on top of ggdist).
 
-![](https://r4va.netlify.app/chap10/img/ggdist.png)
+![](https://r4va.netlify.app/chap10/img/ggdist.png){width="561"}
 
 ### 10.3.1 Visualizing the uncertainty of point estimates: **ggdist** methods
 
 In the code chunk below, [`stat_pointinterval()`](https://mjskay.github.io/ggdist/reference/stat_pointinterval.html) of **ggdist** is used to build a visual for displaying distribution of maths scores by race.
+
+`stat_pointinterval` means points and multiple intervals. The default confidence interval us 95%. To change the level to 99%, add **conf.level = 0.99** to **`stat_pointinterval`** function.
+
+Take note that the default .width values are set to c(0.66, 0.95) confidence intervals.
+
+```{r}
+exam %>% 
+  ggplot(aes(x=RACE,       #<< plot the base layer
+             y=MATHS)) +
+  stat_pointinterval() +   #<< .width=c(0.66,0.95)
+  labs(
+    title='Visualising confidence intervals of mean math score',
+    subtitle = "Mean Point + Multiple-interval plot 66% and 95%")
+```
+
+Some of the arguments (there are many , have to read the syntax reference for more details)
+
+-   `.width`: For intervals, the interval width as a numeric value in `[0, 1]`. For slabs, the width of the smallest interval containing that value of the slab.
+
+-   `point_interval`: This function determines the point summary (typically mean, median, or mode) and interval type (quantile interval, `qi`; highest-density interval, `hdi`; or highest-density continuous interval, `hdci`)
+
+    ```{r}
+    exam %>%
+      ggplot(aes(x = RACE, y = MATHS)) +
+      stat_pointinterval(.width = 0.95,
+      .point = median,
+      .interval = qi) +
+      labs(
+        title = "Visualising confidence intervals of mean math score",
+        subtitle = "Mean Point + Multiple-interval plot, 95% only")
+    ```
+
+### 10.3.2 Visualizing the uncertainty of point estimates: **ggdist** methods
+
+Task: Makeover the plot on previous slide by showing 95% and 99% confidence intervals.
+
+```{r}
+exam %>%
+  ggplot(aes(x = RACE, y = MATHS)) +
+  
+  #Using stat_pointinterval to plot the points and intervals
+  stat_pointinterval(.width = c(0.95,0.99),
+  .point = median,
+  .interval = qi,
+  aes(interval_color=stat(level))) +
+  
+  #Defining the color of the intervals 
+  scale_color_manual(
+    values = c("blue", "darkblue"),
+    aesthetics = "interval_color") +
+  
+  #Title, subtitle, and caption
+  labs(
+    title = "Visualising confidence intervals of mean math score",
+    subtitle = "Mean Point + Multiple-interval plot, 95% and 99%")
+```
+
+::: callout-note
+**`stat(level)`** calculates the confidence interval limits based on the specified **`conf.level`** argument, and **`interval_color`** maps the calculated interval color to the **`interval_color`** argument.
+:::

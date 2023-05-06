@@ -22,7 +22,7 @@ In today's in class exercise, Prof shared with us how to combine a qqplot and ta
 
 The new libraries used today are :
 
--   [rstatic](https://rpkgs.datanovia.com/rstatix/): Allows us to perform basic statistical tests with visualisation, including t-test, Wilcoxon test, ANOVA, Kruskal-Wallis and correlation analyses.
+-   [rstatic](https://rpkgs.datanovia.com/rstatix/): Allows us to perform basic statistical tests, including t-test, Wilcoxon test, ANOVA, Kruskal-Wallis and correlation analyses.
 
 -   [gt()](https://gt.rstudio.com/) : starting from a tibble table, customise a table and export in various formats. Most importantly, it works with patch. We will save the tabular results from shapiro test as gt object and export using gtsave() into .png file later.
 
@@ -48,7 +48,7 @@ Usually, when we check for normality of a distribution, we can use the Anderson-
 ad.test(exam$ENGLISH)
 ```
 
-### The shapiro.test 
+### The shapiro.test
 
 Using shapiro.test will generate result as a HTML object.
 
@@ -74,7 +74,7 @@ ggplot(exam,
   stat_qq_line()
 ```
 
-## Task for today: 
+## Task for today:
 
 ### Combine qqplot with results from Shapiro-test.
 

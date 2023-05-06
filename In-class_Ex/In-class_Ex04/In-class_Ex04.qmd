@@ -40,19 +40,39 @@ b
 a <- ad.test(exam$ENGLISH)
 ```
 
+HTML object
+
 ```{r}
 shapiro.test(exam$ENGLISH)
 ```
 
+tibble object
+
+```{r}
+exam %>% 
+  shapiro_test(ENGLISH)
+```
+
 FROM Prof kam
+
+recall hands-on 3 we use DT to create an interactive table , however it is not recognized by patchwork
 
 ```{r}
 #| fig-width: 4
 #| fig-height: 4
 
-ggplot(exam,
+qq <- ggplot(exam,
        aes(sample=ENGLISH)) +  #<<< use a new argument call sample: el scores
   stat_qq() +
   stat_qq_line()
-  
+
+sw_t <- exam %>% 
+  shapiro_test(ENGLISH) %>% gt()   #<<< make into a gt format (will give a nice table) if shapiro.test gives output in another output
+
+tmp <- tempfile(fileext = '.png') # create  temp table
+gtsave(sw_t, tmp)  # use gtsave() to save sw_t into tmp folder
+table_png <- png::readPNG(tmp, native = TRUE)
+
+qq+table_png
+
 ```

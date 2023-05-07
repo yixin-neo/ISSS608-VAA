@@ -102,13 +102,21 @@ any(is.na(ptcp))
 
 I will discuss the issues in the datasets and proposed cleaning methods.
 
-`finance` dataset:
+### `finance` dataset issues:
 
 -   **participantId** should be converted from `<dbl>` format to `<chr>` format. It should be a categorical and not numerical data type.
 
 -   **timestamp** should be converted from `<dttm>` format to `<date>` format as I will not be analysing time in this exercise.
 
 -   Negative values of **amount** that belong to the expenses categories should be converted to positive values. The amount will also be rounded to two decimal places.
+
+The code chunk below does the following:
+
+-   use the **`as.character()`** function to convert **participantId** to `<chr>` format
+
+-   create a new column **month_year** by extracting the year and month from the **timestamp** column using the **`format()`** function with the **`%Y-%m`** format specifier.
+
+-   use the **`abs()`** function to convert negative values **amount** to positive and round the values to 2 decimal places using the **`round()`** function.
 
 ```{r}
 
@@ -126,13 +134,9 @@ finance <- finance %>%
 
 ```
 
-In the code chunk above:
+A check for duplicates using the `duplicated()` function reveals that there are 1,113 records of duplicates.
 
-EDIT BELOW
-
-In this code snippet, we first load the **`dplyr`** package. Then, we use the **`mutate()`** function to convert the **`participantId`** column to character using the **`as.character()`** function. Next, we create a new column **`month_year`** by extracting the year and month from the **`timestamp`** column using the **`format()`** function with the **`%Y-%m`** format specifier. Finally, we use **`mutate()`** again to transform all negative values of the **`amount`** column to positive using the **`abs()`** function and round the **`amount`** column to 2 decimal places using the **`round()`** function.
-
-A check for duplicates using the `duplicated()` function reveals that there are 1,113 records of duplicates. The
+-   The **`duplicated()`** function to identify the duplicate rows. It returns a logical vector indicating whether each row is a duplicate of a previous row in the data frame. We can then use this logical vector to subset the data frame and show the duplicate rows. The logical vector is stored in a filter **duplicated_rows** which is used to subset the `finance` data.
 
 ```{r}
 # Show duplicate rows
@@ -140,25 +144,47 @@ duplicated_rows <- finance[duplicated(finance),]
 glimpse(duplicated_rows)
 ```
 
-EDIT BELOW
-
-In this code snippet, we first use the **`duplicated()`** function to identify the duplicate rows in the **`finance`** data frame.
-This function returns a logical vector indicating whether each row is a duplicate of a previous row in the data frame. We can then use this logical vector to subset the data frame and show the duplicate rows.
-Next, we store them in a new data frame called **`duplicated_rows`**. We then print **`duplicated_rows`** to show the duplicate rows.
+-   **`unique()`** function is used to remove the duplicate rows form `finance` data
 
 ```{r}
 # Remove duplicate rows
 finance <- unique(finance)
 ```
 
-Next, we remove the duplicate rows from the original **`finance`** data frame using the **`unique()`** function. This function returns a data frame with only the unique rows in the original data frame. We save the result back to the **`finance`** data frame to update it with the unique rows.
-
-Do a final check if there are still duplicated rows using `any()` function.
+-   Perform a final check to verify that there are no more duplicate using `any()` function
 
 ```{r}
 any(duplicated(finance))
 ```
 
-`ptcp` dataset;
+### `ptcp` dataset issues:
 
--   **participantId** should be converted from `<dbl>` format to `<chr>` format.
+-   **participantId** should be converted from `<dbl>` format to `<chr>` format
+
+-   **householdSize** should be converted from `<dbl>`{style="caret-color: white;"} format to `<fct>`{style="caret-color: white;"} format. It does not make sense to have 2.5 persons.
+
+-   **age** should be converted from `<dbl>`{style="caret-color: white;"} format to `<int>`{style="caret-color: white;"} format.
+
+-   **educationLevel** should be converted from `<chr>` to `<fct>` . It should also be ordered according to 'Low', 'HighSchoolOrCollege', 'Bachelors' and 'Graduate'.
+
+The code chunk below does the following:
+
+-   `as.character` and `as.factor` functions are used to convert **participantId** to `<chr>` , **householdSize** to `<fct>` and **age** to `<int>`.
+
+-   `factor(educationLevel, levels=c("Low", "HighSchoolOrCollege", "Bachelors", "Graduate")))` not only converts **educationLevel** to factor, but also order the values inside.
+
+```{r}
+# convert to factor
+ptcp <- ptcp %>% mutate(participantId = as.character(participantId))
+ptcp <- ptcp %>% mutate(householdSize = as.factor(householdSize))
+
+# Convert educationLevel to factor and order accordingly
+ptcp <- ptcp %>% mutate(educationLevel = factor(educationLevel, levels=c("Low", "HighSchoolOrCollege", "Bachelors", "Graduate")))
+
+# convert age to int
+ptcp <- ptcp %>% mutate(age = as.integer(age))
+```
+
+```{r}
+glimpse(ptcp)
+```

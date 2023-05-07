@@ -339,7 +339,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#install-and-load-the-required-libraries" id="toc-install-and-load-the-required-libraries" class="nav-link" data-scroll-target="#install-and-load-the-required-libraries">2.1 Install and load the required libraries</a></li>
   <li><a href="#import-the-dataset" id="toc-import-the-dataset" class="nav-link" data-scroll-target="#import-the-dataset">2.2 Import the dataset</a></li>
-  <li><a href="#data-issues-and-wrangling" id="toc-data-issues-and-wrangling" class="nav-link" data-scroll-target="#data-issues-and-wrangling">2.3 Data Issues and wrangling</a></li>
+  <li><a href="#data-issues-and-wrangling" id="toc-data-issues-and-wrangling" class="nav-link" data-scroll-target="#data-issues-and-wrangling">2.3 Data Issues and wrangling</a>
+  <ul class="collapse">
+  <li><a href="#finance-dataset-issues" id="toc-finance-dataset-issues" class="nav-link" data-scroll-target="#finance-dataset-issues"><code>finance</code> dataset issues:</a></li>
+  <li><a href="#ptcp-dataset-issues" id="toc-ptcp-dataset-issues" class="nav-link" data-scroll-target="#ptcp-dataset-issues"><code>ptcp</code> dataset issues:</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -468,11 +472,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="data-issues-and-wrangling" class="level2">
 <h2 class="anchored" data-anchor-id="data-issues-and-wrangling">2.3 Data Issues and wrangling</h2>
 <p>I will discuss the issues in the datasets and proposed cleaning methods.</p>
-<p><code>finance</code> dataset:</p>
+<section id="finance-dataset-issues" class="level3">
+<h3 class="anchored" data-anchor-id="finance-dataset-issues"><code>finance</code> dataset issues:</h3>
 <ul>
 <li><p><strong>participantId</strong> should be converted from <code>&lt;dbl&gt;</code> format to <code>&lt;chr&gt;</code> format. It should be a categorical and not numerical data type.</p></li>
 <li><p><strong>timestamp</strong> should be converted from <code>&lt;dttm&gt;</code> format to <code>&lt;date&gt;</code> format as I will not be analysing time in this exercise.</p></li>
 <li><p>Negative values of <strong>amount</strong> that belong to the expenses categories should be converted to positive values. The amount will also be rounded to two decimal places.</p></li>
+</ul>
+<p>The code chunk below does the following:</p>
+<ul>
+<li><p>use the <strong><code>as.character()</code></strong> function to convert <strong>participantId</strong> to <code>&lt;chr&gt;</code> format</p></li>
+<li><p>create a new column <strong>month_year</strong> by extracting the year and month from the <strong>timestamp</strong> column using the <strong><code>format()</code></strong> function with the <strong><code>%Y-%m</code></strong> format specifier.</p></li>
+<li><p>use the <strong><code>abs()</code></strong> function to convert negative values <strong>amount</strong> to positive and round the values to 2 decimal places using the <strong><code>round()</code></strong> function.</p></li>
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert participantId to character</span></span>
@@ -487,10 +498,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">amount =</span> <span class="fu">abs</span>(amount),</span>
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">amount =</span> <span class="fu">round</span>(amount, <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>In the code chunk above:</p>
-<p>EDIT BELOW</p>
-<p>In this code snippet, we first load the <strong><code>dplyr</code></strong> package. Then, we use the <strong><code>mutate()</code></strong> function to convert the <strong><code>participantId</code></strong> column to character using the <strong><code>as.character()</code></strong> function. Next, we create a new column <strong><code>month_year</code></strong> by extracting the year and month from the <strong><code>timestamp</code></strong> column using the <strong><code>format()</code></strong> function with the <strong><code>%Y-%m</code></strong> format specifier. Finally, we use <strong><code>mutate()</code></strong> again to transform all negative values of the <strong><code>amount</code></strong> column to positive using the <strong><code>abs()</code></strong> function and round the <strong><code>amount</code></strong> column to 2 decimal places using the <strong><code>round()</code></strong> function.</p>
-<p>A check for duplicates using the <code>duplicated()</code> function reveals that there are 1,113 records of duplicates. The</p>
+<p>A check for duplicates using the <code>duplicated()</code> function reveals that there are 1,113 records of duplicates.</p>
+<ul>
+<li>The <strong><code>duplicated()</code></strong> function to identify the duplicate rows. It returns a logical vector indicating whether each row is a duplicate of a previous row in the data frame. We can then use this logical vector to subset the data frame and show the duplicate rows. The logical vector is stored in a filter <strong>duplicated_rows</strong> which is used to subset the <code>finance</code> data.</li>
+</ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Show duplicate rows</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>duplicated_rows <span class="ot">&lt;-</span> finance[<span class="fu">duplicated</span>(finance),]</span>
@@ -505,26 +516,64 @@ $ amount        &lt;dbl&gt; 554.99, 38.01, 554.99, 38.01, 556.55, 12.81, 554.99,
 $ month_year    &lt;chr&gt; "03-2022", "03-2022", "03-2022", "03-2022", "03-2022", "…</code></pre>
 </div>
 </div>
-<p>EDIT BELOW</p>
-<p>In this code snippet, we first use the <strong><code>duplicated()</code></strong> function to identify the duplicate rows in the <strong><code>finance</code></strong> data frame. This function returns a logical vector indicating whether each row is a duplicate of a previous row in the data frame. We can then use this logical vector to subset the data frame and show the duplicate rows. Next, we store them in a new data frame called <strong><code>duplicated_rows</code></strong>. We then print <strong><code>duplicated_rows</code></strong> to show the duplicate rows.</p>
+<ul>
+<li><strong><code>unique()</code></strong> function is used to remove the duplicate rows form <code>finance</code> data</li>
+</ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove duplicate rows</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>finance <span class="ot">&lt;-</span> <span class="fu">unique</span>(finance)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Next, we remove the duplicate rows from the original <strong><code>finance</code></strong> data frame using the <strong><code>unique()</code></strong> function. This function returns a data frame with only the unique rows in the original data frame. We save the result back to the <strong><code>finance</code></strong> data frame to update it with the unique rows.</p>
-<p>Do a final check if there are still duplicated rows using <code>any()</code> function.</p>
+<ul>
+<li>Perform a final check to verify that there are no more duplicate using <code>any()</code> function</li>
+</ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">any</span>(<span class="fu">duplicated</span>(finance))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] FALSE</code></pre>
 </div>
 </div>
-<p><code>ptcp</code> dataset;</p>
+</section>
+<section id="ptcp-dataset-issues" class="level3">
+<h3 class="anchored" data-anchor-id="ptcp-dataset-issues"><code>ptcp</code> dataset issues:</h3>
 <ul>
-<li><strong>participantId</strong> should be converted from <code>&lt;dbl&gt;</code> format to <code>&lt;chr&gt;</code> format.</li>
+<li><p><strong>participantId</strong> should be converted from <code>&lt;dbl&gt;</code> format to <code>&lt;chr&gt;</code> format</p></li>
+<li><p><strong>householdSize</strong> should be converted from <code style="caret-color: white;">&lt;dbl&gt;</code> format to <code style="caret-color: white;">&lt;fct&gt;</code> format. It does not make sense to have 2.5 persons.</p></li>
+<li><p><strong>age</strong> should be converted from <code style="caret-color: white;">&lt;dbl&gt;</code> format to <code style="caret-color: white;">&lt;int&gt;</code> format.</p></li>
+<li><p><strong>educationLevel</strong> should be converted from <code>&lt;chr&gt;</code> to <code>&lt;fct&gt;</code> . It should also be ordered according to ‘Low’, ‘HighSchoolOrCollege’, ‘Bachelors’ and ‘Graduate’.</p></li>
 </ul>
+<p>The code chunk below does the following:</p>
+<ul>
+<li><p><code>as.character</code> and <code>as.factor</code> functions are used to convert <strong>participantId</strong> to <code>&lt;chr&gt;</code> , <strong>householdSize</strong> to <code>&lt;fct&gt;</code> and <strong>age</strong> to <code>&lt;int&gt;</code>.</p></li>
+<li><p><code>factor(educationLevel, levels=c("Low", "HighSchoolOrCollege", "Bachelors", "Graduate")))</code> not only converts <strong>educationLevel</strong> to factor, but also order the values inside.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to factor</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>ptcp <span class="ot">&lt;-</span> ptcp <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">participantId =</span> <span class="fu">as.character</span>(participantId))</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>ptcp <span class="ot">&lt;-</span> ptcp <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">householdSize =</span> <span class="fu">as.factor</span>(householdSize))</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert educationLevel to factor and order accordingly</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>ptcp <span class="ot">&lt;-</span> ptcp <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">educationLevel =</span> <span class="fu">factor</span>(educationLevel, <span class="at">levels=</span><span class="fu">c</span>(<span class="st">"Low"</span>, <span class="st">"HighSchoolOrCollege"</span>, <span class="st">"Bachelors"</span>, <span class="st">"Graduate"</span>)))</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co"># convert age to int</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>ptcp <span class="ot">&lt;-</span> ptcp <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">age =</span> <span class="fu">as.integer</span>(age))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(ptcp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 1,011
+Columns: 7
+$ participantId  &lt;chr&gt; "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",…
+$ householdSize  &lt;fct&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3…
+$ haveKids       &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, T…
+$ age            &lt;int&gt; 36, 25, 35, 21, 43, 32, 26, 27, 20, 35, 48, 27, 34, 18,…
+$ educationLevel &lt;fct&gt; HighSchoolOrCollege, HighSchoolOrCollege, HighSchoolOrC…
+$ interestGroup  &lt;chr&gt; "H", "B", "A", "I", "H", "D", "I", "A", "G", "D", "D", …
+$ joviality      &lt;dbl&gt; 0.001626703, 0.328086500, 0.393469590, 0.138063446, 0.8…</code></pre>
+</div>
+</div>
 
 
+</section>
 </section>
 </section>
 

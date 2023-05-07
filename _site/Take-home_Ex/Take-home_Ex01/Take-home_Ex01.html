@@ -341,8 +341,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#import-the-dataset" id="toc-import-the-dataset" class="nav-link" data-scroll-target="#import-the-dataset">2.2 Import the dataset</a></li>
   <li><a href="#data-issues-and-wrangling" id="toc-data-issues-and-wrangling" class="nav-link" data-scroll-target="#data-issues-and-wrangling">2.3 Data Issues and wrangling</a>
   <ul class="collapse">
-  <li><a href="#finance-dataset-issues" id="toc-finance-dataset-issues" class="nav-link" data-scroll-target="#finance-dataset-issues"><code>finance</code> dataset issues:</a></li>
-  <li><a href="#ptcp-dataset-issues" id="toc-ptcp-dataset-issues" class="nav-link" data-scroll-target="#ptcp-dataset-issues"><code>ptcp</code> dataset issues:</a></li>
+  <li><a href="#finance-dataset-issues" id="toc-finance-dataset-issues" class="nav-link" data-scroll-target="#finance-dataset-issues">2.3.1 <code>finance</code> dataset issues:</a></li>
+  <li><a href="#ptcp-dataset-issues" id="toc-ptcp-dataset-issues" class="nav-link" data-scroll-target="#ptcp-dataset-issues">2.3.2 <code>ptcp</code> dataset issues:</a></li>
+  <li><a href="#convert-finance1-table-to-wide-format-and-perform-left-outer-join-with-ptcp1-table." id="toc-convert-finance1-table-to-wide-format-and-perform-left-outer-join-with-ptcp1-table." class="nav-link" data-scroll-target="#convert-finance1-table-to-wide-format-and-perform-left-outer-join-with-ptcp1-table.">2.3.3 Convert <code>finance1</code> table to wide format and perform left outer join with <code>ptcp1</code> table.</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -473,7 +474,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 class="anchored" data-anchor-id="data-issues-and-wrangling">2.3 Data Issues and wrangling</h2>
 <p>I will discuss the issues in the datasets and proposed cleaning methods.</p>
 <section id="finance-dataset-issues" class="level3">
-<h3 class="anchored" data-anchor-id="finance-dataset-issues"><code>finance</code> dataset issues:</h3>
+<h3 class="anchored" data-anchor-id="finance-dataset-issues">2.3.1 <code>finance</code> dataset issues:</h3>
 <ul>
 <li><p><strong>participantId</strong> should be converted from <code>&lt;dbl&gt;</code> format to <code>&lt;chr&gt;</code> format. It should be a categorical and not numerical data type.</p></li>
 <li><p><strong>timestamp</strong> should be converted from <code>&lt;dttm&gt;</code> format to <code>&lt;date&gt;</code> format as I will not be analysing time in this exercise.</p></li>
@@ -540,10 +541,10 @@ $ month_year    &lt;chr&gt; "03-2022", "03-2022", "03-2022", "03-2022", "03-2022
 </div></li>
 </ul>
 <p><strong>Other issues</strong></p>
-<p>When the <code>finance</code> dataset is groupby the <strong>date</strong> variable , it is noticed that the number of distinct participantID who took part in the survey was 1,011 in March 2022 and suddenly reduced to a constant value of 880 from April 2022 onwards. It seems to suggest that there are 131 residents who moved out of the city after March 2022.</p>
+<p>When the <code>finance</code> dataset is groupby the <strong>date</strong> variable , it is noticed that the number of distinct participantID who took part in the survey was 1,011 in March 2022 and suddenly reduced to a constant value of 880 from April 2022 onwards. It seems to suggest that there are 131 residents who moved out of the city at the end of March 2022.</p>
 <p>In the code chunk below:</p>
 <ul>
-<li><p>dataset is groupby date and the distinct count if participantID is generated using <code>n_distinct</code> function</p></li>
+<li><p>dataset is group-by <strong>date</strong> and the distinct count of <strong>participantID</strong> is generated using <code>n_distinct</code> function</p></li>
 <li><p>the <strong>missing</strong> dataframe is displayed below using <code>knitr::kable()</code> function</p></li>
 </ul>
 <div class="cell">
@@ -615,7 +616,7 @@ $ month_year    &lt;chr&gt; "03-2022", "03-2022", "03-2022", "03-2022", "03-2022
 </div>
 </div>
 <p>Since 11 out of 12 months of records are missing for these 131 residents, we will delete their records from the <code>finance</code> dataset.</p>
-<p>The code chunk below</p>
+<p>The code chunk below will extract the <strong>participantIds</strong> of residents whose records exists in March 22 but not in all April 22. The <strong>participantIds</strong> will be stored in a vector called <strong>missing_id_vector.</strong></p>
 <p>This code will filter the <strong><code>finance</code></strong> dataframe for rows with <strong><code>date</code></strong> equal to ‘2022-03-01’, and then perform an anti-join with a filtered dataframe containing rows with <strong><code>date</code></strong> equal to ‘2022-04-01’, based on the common <strong><code>participantId</code></strong> column. The resulting dataframe will only contain <strong><code>participantId</code></strong>s that are in ‘2022-03-01’ but not in ‘2022-04-01’. The <strong><code>select</code></strong> function is used to extract the <strong><code>participantId</code></strong> column from the resulting dataframe.</p>
 <p>In this code, we assign the result of your code to a variable named <strong><code>result</code></strong>. Then we use the <strong><code>pull()</code></strong> function to extract the <strong><code>participantId</code></strong> column from <strong><code>result</code></strong>. We pass the <strong><code>participantId</code></strong> column name as an argument to <strong><code>pull()</code></strong>. Next, we use the <strong><code>as.vector()</code></strong> function to convert the resulting tibble column to a vector. Finally, we assign the resulting vector to a variable named <strong><code>result_vector</code></strong> and print it. The resulting <strong><code>result_vector</code></strong> should be a numeric vector containing the unique <strong><code>participantId</code></strong> values from your code.</p>
 <div class="cell">
@@ -682,7 +683,7 @@ $ month_year    &lt;chr&gt; "03-2022", "03-2022", "03-2022", "03-2022", "03-2022
 </div>
 </section>
 <section id="ptcp-dataset-issues" class="level3">
-<h3 class="anchored" data-anchor-id="ptcp-dataset-issues"><code>ptcp</code> dataset issues:</h3>
+<h3 class="anchored" data-anchor-id="ptcp-dataset-issues">2.3.2 <code>ptcp</code> dataset issues:</h3>
 <ul>
 <li><p><strong>participantId</strong> should be converted from <code>&lt;dbl&gt;</code> format to <code>&lt;chr&gt;</code> format</p></li>
 <li><p><strong>householdSize</strong> should be converted from <code style="caret-color: white;">&lt;dbl&gt;</code> format to <code style="caret-color: white;">&lt;fct&gt;</code> format. It does not make sense to have 2.5 persons.</p></li>
@@ -705,6 +706,7 @@ $ month_year    &lt;chr&gt; "03-2022", "03-2022", "03-2022", "03-2022", "03-2022
 <span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co"># convert age to int</span></span>
 <span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>ptcp <span class="ot">&lt;-</span> ptcp <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">age =</span> <span class="fu">as.integer</span>(age))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>The columns format are all in order now.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(ptcp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -719,6 +721,492 @@ $ interestGroup  &lt;chr&gt; "H", "B", "A", "I", "H", "D", "I", "A", "G", "D", "
 $ joviality      &lt;dbl&gt; 0.001626703, 0.328086500, 0.393469590, 0.138063446, 0.8…</code></pre>
 </div>
 </div>
+<p>Use <code>distinct()</code> and <code>n_distinct()</code> to check on the number of unique participantIds in <code>ptcp</code> table.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>ptcp <span class="sc">%&gt;%</span> </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(participantId) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">n_distinct</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1011</code></pre>
+</div>
+</div>
+<p>Currently, the <code>ptcp</code> table still contain the demographic records of the 131 residents who moved out. Let us remove their records by using similar method used in removing the same records in <code>financial</code> table.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>ptcp1 <span class="ot">&lt;-</span> ptcp[<span class="sc">!</span>ptcp<span class="sc">$</span>participantId <span class="sc">%in%</span> missing_id_vector, ]</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>ptcp1 <span class="sc">%&gt;%</span> </span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(participantId) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">n_distinct</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 880</code></pre>
+</div>
+</div>
+<p>Both <code>finance1</code> and <code>ptcp1</code> tables now contains information about the same number of participantIds.</p>
+</section>
+<section id="convert-finance1-table-to-wide-format-and-perform-left-outer-join-with-ptcp1-table." class="level3">
+<h3 class="anchored" data-anchor-id="convert-finance1-table-to-wide-format-and-perform-left-outer-join-with-ptcp1-table.">2.3.3 Convert <code>finance1</code> table to wide format and perform left outer join with <code>ptcp1</code> table.</h3>
+<p>We will now convert the <code>finance1</code> dataframe from a long to a wide format. The code chunk below does the followingL</p>
+<ul>
+<li><p>group the data by <strong>participantId</strong> , <strong>date</strong> and <strong>category</strong> using the <strong><code>group_by</code></strong> function</p></li>
+<li><p>use the <code>sum</code> function to calculate the total monthly amount for each <strong>category</strong> per <strong>participantId</strong> per <strong>month</strong></p></li>
+<li><p>the <code>pivot_wider</code> function will convert the <strong>category</strong> column to wide format with total monthly values in the <strong>amount</strong> column.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>finance1_wide<span class="ot">&lt;-</span> finance1 <span class="sc">%&gt;%</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(participantId, date, category) <span class="sc">%&gt;%</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_amount =</span> <span class="fu">sum</span>(amount)) <span class="sc">%&gt;%</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> category, <span class="at">values_from =</span> total_amount)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10,560 × 8
+# Groups:   participantId, date [10,560]
+   participantId date       Education  Food Recreation Shelter   Wage
+   &lt;chr&gt;         &lt;date&gt;         &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+ 1 0             2022-03-01      38.0  268.      349.     555. 11932.
+ 2 0             2022-04-01      38.0  266.      219.     555.  8637.
+ 3 0             2022-05-01      38.0  265.      383.     555.  9048.
+ 4 0             2022-06-01      38.0  257.      466.     555.  9048.
+ 5 0             2022-07-01      38.0  270.     1069.     555.  8637.
+ 6 0             2022-08-01      38.0  262.      314.     555.  9459.
+ 7 0             2022-09-01      38.0  256.      295.     555.  9048.
+ 8 0             2022-10-01      38.0  267.       25.0    555.  8637.
+ 9 0             2022-11-01      38.0  261       377.     555.  9048.
+10 0             2022-12-01      38.0  266.      357.     555.  9048.
+# ℹ 10,550 more rows
+# ℹ 1 more variable: RentAdjustment &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+About finance1_wide table
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>finance_wide</code> is a table that has one row for each unique combination of <strong>participantId</strong> and <strong>month</strong> and one column for each unique category from the former <code>finance1</code> table.</p>
+</div>
+</div>
+<p>The code chunk below performs a left outer join with finance1_wide table (left) and ptcp1 table (right) with join key <strong>participantId</strong>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># left outer join</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>finance1_wide_ptcp1 <span class="ot">&lt;-</span> <span class="fu">left_join</span>(finance1_wide, ptcp1, <span class="at">by =</span> <span class="st">"participantId"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The cleansed finance1_wide_ptcp1 is displayed using <code style="caret-color: white;">knitr::kable()</code> function</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(finance1_wide_ptcp1,<span class="dv">24</span>), <span class="st">"simple"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;">participantId</th>
+<th style="text-align: left;">date</th>
+<th style="text-align: right;">Education</th>
+<th style="text-align: right;">Food</th>
+<th style="text-align: right;">Recreation</th>
+<th style="text-align: right;">Shelter</th>
+<th style="text-align: right;">Wage</th>
+<th style="text-align: right;">RentAdjustment</th>
+<th style="text-align: left;">householdSize</th>
+<th style="text-align: left;">haveKids</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: left;">educationLevel</th>
+<th style="text-align: left;">interestGroup</th>
+<th style="text-align: right;">joviality</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">2022-03-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">268.26</td>
+<td style="text-align: right;">348.68</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">11931.95</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">H</td>
+<td style="text-align: right;">0.0016267</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">2022-04-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">265.79</td>
+<td style="text-align: right;">219.42</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">8636.88</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">H</td>
+<td style="text-align: right;">0.0016267</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">2022-05-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">264.54</td>
+<td style="text-align: right;">382.99</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">9048.16</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">H</td>
+<td style="text-align: right;">0.0016267</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">2022-06-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">256.90</td>
+<td style="text-align: right;">465.67</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">9048.16</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">H</td>
+<td style="text-align: right;">0.0016267</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">2022-07-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">270.13</td>
+<td style="text-align: right;">1069.48</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">8636.88</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">H</td>
+<td style="text-align: right;">0.0016267</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">2022-08-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">261.76</td>
+<td style="text-align: right;">314.13</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">9459.44</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">H</td>
+<td style="text-align: right;">0.0016267</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">2022-09-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">256.04</td>
+<td style="text-align: right;">294.64</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">9048.16</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">H</td>
+<td style="text-align: right;">0.0016267</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">2022-10-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">266.67</td>
+<td style="text-align: right;">25.01</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">8636.88</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">H</td>
+<td style="text-align: right;">0.0016267</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">2022-11-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">261.00</td>
+<td style="text-align: right;">377.41</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">9048.16</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">H</td>
+<td style="text-align: right;">0.0016267</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">2022-12-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">265.98</td>
+<td style="text-align: right;">356.69</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">9048.16</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">H</td>
+<td style="text-align: right;">0.0016267</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">2023-01-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">264.97</td>
+<td style="text-align: right;">209.77</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">9048.16</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">H</td>
+<td style="text-align: right;">0.0016267</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">2023-02-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">239.05</td>
+<td style="text-align: right;">319.93</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">8225.60</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">H</td>
+<td style="text-align: right;">0.0016267</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">2022-03-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">289.00</td>
+<td style="text-align: right;">1047.91</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">10358.99</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">0.3280865</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">2022-04-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">256.66</td>
+<td style="text-align: right;">515.32</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">7589.61</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">0.3280865</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">2022-05-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">258.17</td>
+<td style="text-align: right;">358.55</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">7951.02</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">0.3280865</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">2022-06-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">261.04</td>
+<td style="text-align: right;">675.33</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">7951.02</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">0.3280865</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">2022-07-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">270.64</td>
+<td style="text-align: right;">505.12</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">7589.61</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">0.3280865</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">2022-08-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">270.88</td>
+<td style="text-align: right;">438.13</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">8312.43</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">0.3280865</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">2022-09-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">255.09</td>
+<td style="text-align: right;">387.97</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">7951.02</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">0.3280865</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">2022-10-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">264.66</td>
+<td style="text-align: right;">382.13</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">7589.61</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">0.3280865</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">2022-11-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">257.88</td>
+<td style="text-align: right;">627.93</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">7951.02</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">0.3280865</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">2022-12-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">283.84</td>
+<td style="text-align: right;">1077.56</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">7951.02</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">0.3280865</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">2023-01-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">266.38</td>
+<td style="text-align: right;">328.69</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">7951.02</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">0.3280865</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">2023-02-01</td>
+<td style="text-align: right;">38.01</td>
+<td style="text-align: right;">233.69</td>
+<td style="text-align: right;">292.78</td>
+<td style="text-align: right;">554.99</td>
+<td style="text-align: right;">7228.20</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: left;">HighSchoolOrCollege</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">0.3280865</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></li>
+</ul>
 
 
 </section>

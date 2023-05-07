@@ -102,7 +102,7 @@ any(is.na(ptcp))
 
 I will discuss the issues in the datasets and proposed cleaning methods.
 
-### `finance` dataset issues:
+### 2.3.1 `finance` dataset issues:
 
 -   **participantId** should be converted from `<dbl>` format to `<chr>` format. It should be a categorical and not numerical data type.
 
@@ -167,11 +167,11 @@ The last thing to do is to create a new colunm **date** that is in \<date\> form
 
 **Other issues**
 
-When the `finance` dataset is groupby the **date** variable , it is noticed that the number of distinct participantID who took part in the survey was 1,011 in March 2022 and suddenly reduced to a constant value of 880 from April 2022 onwards. It seems to suggest that there are 131 residents who moved out of the city after March 2022.
+When the `finance` dataset is groupby the **date** variable , it is noticed that the number of distinct participantID who took part in the survey was 1,011 in March 2022 and suddenly reduced to a constant value of 880 from April 2022 onwards. It seems to suggest that there are 131 residents who moved out of the city at the end of March 2022.
 
 In the code chunk below:
 
--   dataset is groupby date and the distinct count if participantID is generated using `n_distinct` function
+-   dataset is group-by **date** and the distinct count of **participantID** is generated using `n_distinct` function
 
 -   the **missing** dataframe is displayed below using `knitr::kable()` function
 
@@ -186,11 +186,9 @@ knitr::kable(missing_summary, "simple")
 
 Since 11 out of 12 months of records are missing for these 131 residents, we will delete their records from the `finance` dataset.
 
-The code chunk below
+The code chunk below will extract the **participantIds** of residents whose records exists in March 22 but not in all April 22. The **participantIds** will be stored in a vector called **missing_id_vector.**
 
 This code will filter the **`finance`** dataframe for rows with **`date`** equal to '2022-03-01', and then perform an anti-join with a filtered dataframe containing rows with **`date`** equal to '2022-04-01', based on the common **`participantId`** column. The resulting dataframe will only contain **`participantId`**s that are in '2022-03-01' but not in '2022-04-01'. The **`select`** function is used to extract the **`participantId`** column from the resulting dataframe.
-
-
 
 In this code, we assign the result of your code to a variable named **`result`**. Then we use the **`pull()`** function to extract the **`participantId`** column from **`result`**. We pass the **`participantId`** column name as an argument to **`pull()`**. Next, we use the **`as.vector()`** function to convert the resulting tibble column to a vector. Finally, we assign the resulting vector to a variable named **`result_vector`** and print it. The resulting **`result_vector`** should be a numeric vector containing the unique **`participantId`** values from your code.
 
@@ -236,7 +234,7 @@ finance1 %>%
   n_distinct()
 ```
 
-### `ptcp` dataset issues:
+### 2.3.2 `ptcp` dataset issues:
 
 -   **participantId** should be converted from `<dbl>` format to `<chr>` format
 
@@ -264,6 +262,69 @@ ptcp <- ptcp %>% mutate(educationLevel = factor(educationLevel, levels=c("Low", 
 ptcp <- ptcp %>% mutate(age = as.integer(age))
 ```
 
+The columns format are all in order now.
+
 ```{r}
 glimpse(ptcp)
 ```
+
+Use `distinct()` and `n_distinct()` to check on the number of unique participantIds in `ptcp` table.
+
+```{r}
+ptcp %>% 
+  distinct(participantId) %>% 
+  n_distinct()
+```
+
+Currently, the `ptcp` table still contain the demographic records of the 131 residents who moved out. Let us remove their records by using similar method used in removing the same records in `financial` table.
+
+```{r}
+ptcp1 <- ptcp[!ptcp$participantId %in% missing_id_vector, ]
+
+ptcp1 %>% 
+  distinct(participantId) %>% 
+  n_distinct()
+```
+
+Both `finance1` and `ptcp1` tables now contains information about the same number of participantIds.
+
+### 2.3.3 Convert `finance1` table to wide format and perform left outer join with `ptcp1` table.
+
+We will now convert the `finance1` dataframe from a long to a wide format. The code chunk below does the followingL
+
+-   group the data by **participantId** , **date** and **category** using the **`group_by`** function
+
+-   use the `sum` function to calculate the total monthly amount for each **category** per **participantId** per **month**
+
+-   the `pivot_wider` function will convert the **category** column to wide format with total monthly values in the **amount** column.
+
+    ```{r}
+    finance1_wide<- finance1 %>%
+      group_by(participantId, date, category) %>%
+      summarise(total_amount = sum(amount)) %>%
+      pivot_wider(names_from = category, values_from = total_amount)
+    ```
+
+    ```{r}
+    #| echo: false
+    finance1_wide
+    ```
+
+    ::: callout-note
+    ## About finance1_wide table
+
+    `finance_wide` is a table that has one row for each unique combination of **participantId** and **month** and one column for each unique category from the former `finance1` table.
+    :::
+
+    The code chunk below performs a left outer join with finance1_wide table (left) and ptcp1 table (right) with join key **participantId**.
+
+    ```{r}
+    # left outer join
+    finance1_wide_ptcp1 <- left_join(finance1_wide, ptcp1, by = "participantId")
+    ```
+
+    The cleansed finance1_wide_ptcp1 is displayed using `knitr::kable()`{style="caret-color: white;"} function
+
+    ```{r}
+    knitr::kable(head(finance1_wide_ptcp1,24), "simple") 
+    ```

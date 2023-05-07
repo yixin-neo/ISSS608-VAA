@@ -339,6 +339,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#install-and-load-the-required-libraries" id="toc-install-and-load-the-required-libraries" class="nav-link" data-scroll-target="#install-and-load-the-required-libraries">2.1 Install and load the required libraries</a></li>
   <li><a href="#import-the-dataset" id="toc-import-the-dataset" class="nav-link" data-scroll-target="#import-the-dataset">2.2 Import the dataset</a></li>
+  <li><a href="#data-issues-and-wrangling" id="toc-data-issues-and-wrangling" class="nav-link" data-scroll-target="#data-issues-and-wrangling">2.3 Data Issues and wrangling</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -380,13 +381,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>This exerises aims to reveal the demographic and financial characteristics of the city of Engagement, using appropriate <strong>static and interactive statistical graphics</strong> methods. It also requires a user-friendly and interactive solution that helps city managers and planners to explore the complex data in an engaging way and reveal hidden patterns.</p>
 <p>The dataset consists of a sample survey of 1000 representative residents that collects data related to their household demographic and spending patterns, among other things. There are primarily two datasets used in this exercise</p>
 <ul>
-<li>'FinancialJournal.csv": Contains 1513635 number of daily transaction records (different categories of income and expenses) over a period of twelve months from March 2022 to February 2023.</li>
+<li>’FinancialJournal.csv”: Contains 1513635 number of daily transaction records (different categories of income and expenses) over a period of twelve months from March 2022 to February 2023.</li>
 </ul>
 <!-- -->
 <ul>
-<li>'Particpants.csv" : Contains demographics information like household size, age, education level, interest groups, joviality index and whether each household has kids.</li>
+<li>’Particpants.csv” : Contains demographics information like household size, age, education level, interest groups, joviality index and whether each household has kids.</li>
 </ul>
-<p>In this exercise, each dataset will be cleansed separately and then joined by 'participantID' as primary key to form the final dataset used for further analysis.</p>
+<p>In this exercise, each dataset will be cleansed separately and then joined by ‘participantID’ as primary key to form the final dataset used for further analysis.</p>
 </section>
 <section id="section" class="level1">
 <h1></h1>
@@ -413,7 +414,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="import-the-dataset" class="level2">
 <h2 class="anchored" data-anchor-id="import-the-dataset">2.2 Import the dataset</h2>
-<p>The data is imported using <code>tidyverse</code>’s <code>readr::read_csv()</code> function and stored as finance variable.</p>
+<p>The datasets are imported using <code>tidyverse</code>’s <code>readr::read_csv()</code> function.</p>
+<p>’FinancialJournal.csv” is stored as <code>finance</code> variable.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>finance <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'data/FinancialJournal.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -430,8 +432,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 6             1 2022-03-01 00:00:00 Education  -38.0</code></pre>
 </div>
 </div>
+<p>Check for empty values in the <code>finance</code> table using the <code>is.na()</code> function.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ptcp <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'data/Participants.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">any</span>(<span class="fu">is.na</span>(finance))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+</div>
+<p>’Particpants.csv” is stored as <code>ptcp</code> variable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ptcp <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'data/Participants.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
@@ -447,6 +457,72 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 # ℹ 1 more variable: joviality &lt;dbl&gt;</code></pre>
 </div>
 </div>
+<p>Checking for empty values in <code>ptcp</code> table using the <code>is.na()</code>` function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">any</span>(<span class="fu">is.na</span>(ptcp))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+</div>
+</section>
+<section id="data-issues-and-wrangling" class="level2">
+<h2 class="anchored" data-anchor-id="data-issues-and-wrangling">2.3 Data Issues and wrangling</h2>
+<p>I will discuss the issues in the datasets and proposed cleaning methods.</p>
+<p><code>finance</code> dataset:</p>
+<ul>
+<li><p><strong>participantId</strong> should be converted from <code>&lt;dbl&gt;</code> format to <code>&lt;chr&gt;</code> format. It should be a categorical and not numerical data type.</p></li>
+<li><p><strong>timestamp</strong> should be converted from <code>&lt;dttm&gt;</code> format to <code>&lt;date&gt;</code> format as I will not be analysing time in this exercise.</p></li>
+<li><p>Negative values of <strong>amount</strong> that belong to the expenses categories should be converted to positive values. The amount will also be rounded to two decimal places.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert participantId to character</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>finance <span class="ot">&lt;-</span> finance <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">participantId =</span> <span class="fu">as.character</span>(participantId))</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract month and year from timestamp</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>finance <span class="ot">&lt;-</span> finance <span class="sc">%&gt;%</span> </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">month_year =</span> <span class="fu">format</span>(timestamp, <span class="st">"%m-%Y"</span>))</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform negative amounts to positive and round to 2 decimal places</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>finance <span class="ot">&lt;-</span> finance <span class="sc">%&gt;%</span> </span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">amount =</span> <span class="fu">abs</span>(amount),</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">amount =</span> <span class="fu">round</span>(amount, <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In the code chunk above:</p>
+<p>EDIT BELOW</p>
+<p>In this code snippet, we first load the <strong><code>dplyr</code></strong> package. Then, we use the <strong><code>mutate()</code></strong> function to convert the <strong><code>participantId</code></strong> column to character using the <strong><code>as.character()</code></strong> function. Next, we create a new column <strong><code>month_year</code></strong> by extracting the year and month from the <strong><code>timestamp</code></strong> column using the <strong><code>format()</code></strong> function with the <strong><code>%Y-%m</code></strong> format specifier. Finally, we use <strong><code>mutate()</code></strong> again to transform all negative values of the <strong><code>amount</code></strong> column to positive using the <strong><code>abs()</code></strong> function and round the <strong><code>amount</code></strong> column to 2 decimal places using the <strong><code>round()</code></strong> function.</p>
+<p>A check for duplicates using the <code>duplicated()</code> function reveals that there are 1,113 records of duplicates. The</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Show duplicate rows</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>duplicated_rows <span class="ot">&lt;-</span> finance[<span class="fu">duplicated</span>(finance),]</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(duplicated_rows)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 1,113
+Columns: 5
+$ participantId &lt;chr&gt; "0", "0", "1", "1", "2", "2", "3", "3", "4", "4", "5", "…
+$ timestamp     &lt;dttm&gt; 2022-03-01, 2022-03-01, 2022-03-01, 2022-03-01, 2022-03…
+$ category      &lt;chr&gt; "Shelter", "Education", "Shelter", "Education", "Shelter…
+$ amount        &lt;dbl&gt; 554.99, 38.01, 554.99, 38.01, 556.55, 12.81, 554.99, 38.…
+$ month_year    &lt;chr&gt; "03-2022", "03-2022", "03-2022", "03-2022", "03-2022", "…</code></pre>
+</div>
+</div>
+<p>EDIT BELOW</p>
+<p>In this code snippet, we first use the <strong><code>duplicated()</code></strong> function to identify the duplicate rows in the <strong><code>finance</code></strong> data frame. This function returns a logical vector indicating whether each row is a duplicate of a previous row in the data frame. We can then use this logical vector to subset the data frame and show the duplicate rows. Next, we store them in a new data frame called <strong><code>duplicated_rows</code></strong>. We then print <strong><code>duplicated_rows</code></strong> to show the duplicate rows.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove duplicate rows</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>finance <span class="ot">&lt;-</span> <span class="fu">unique</span>(finance)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, we remove the duplicate rows from the original <strong><code>finance</code></strong> data frame using the <strong><code>unique()</code></strong> function. This function returns a data frame with only the unique rows in the original data frame. We save the result back to the <strong><code>finance</code></strong> data frame to update it with the unique rows.</p>
+<p>Do a final check if there are still duplicated rows using <code>any()</code> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">any</span>(<span class="fu">duplicated</span>(finance))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+</div>
+<p><code>ptcp</code> dataset;</p>
+<ul>
+<li><strong>participantId</strong> should be converted from <code>&lt;dbl&gt;</code> format to <code>&lt;chr&gt;</code> format.</li>
+</ul>
 
 
 </section>

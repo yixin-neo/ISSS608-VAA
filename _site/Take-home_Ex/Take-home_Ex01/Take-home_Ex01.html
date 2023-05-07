@@ -532,6 +532,154 @@ $ month_year    &lt;chr&gt; "03-2022", "03-2022", "03-2022", "03-2022", "03-2022
 <pre><code>[1] FALSE</code></pre>
 </div>
 </div>
+<p>The last thing to do is to create a new colunm <strong>date</strong> that is in &lt;date&gt; format using the <code>as.Date</code> function.</p>
+<ul>
+<li><p>the paste0() function is used to concatenate “01-” with each value in the month_year column. This is because as.Date() requires a complete date in the format “dd-mm-yyyy”</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>finance<span class="sc">$</span>date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="fu">paste0</span>(<span class="st">"01-"</span>, finance<span class="sc">$</span>month_year), <span class="at">format =</span> <span class="st">"%d-%m-%Y"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+</ul>
+<p><strong>Other issues</strong></p>
+<p>When the <code>finance</code> dataset is groupby the <strong>date</strong> variable , it is noticed that the number of distinct participantID who took part in the survey was 1,011 in March 2022 and suddenly reduced to a constant value of 880 from April 2022 onwards. It seems to suggest that there are 131 residents who moved out of the city after March 2022.</p>
+<p>In the code chunk below:</p>
+<ul>
+<li><p>dataset is groupby date and the distinct count if participantID is generated using <code>n_distinct</code> function</p></li>
+<li><p>the <strong>missing</strong> dataframe is displayed below using <code>knitr::kable()</code> function</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>missing_summary <span class="ot">&lt;-</span> finance <span class="sc">%&gt;%</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(date) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n_distinct=</span><span class="fu">n_distinct</span>(participantId)) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="st">`</span><span class="at">Number of unique participantId</span><span class="st">`</span> <span class="ot">=</span> n_distinct)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(missing_summary, <span class="st">"simple"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;">date</th>
+<th style="text-align: right;">Number of unique participantId</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2022-03-01</td>
+<td style="text-align: right;">1011</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2022-04-01</td>
+<td style="text-align: right;">880</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2022-05-01</td>
+<td style="text-align: right;">880</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2022-06-01</td>
+<td style="text-align: right;">880</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2022-07-01</td>
+<td style="text-align: right;">880</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2022-08-01</td>
+<td style="text-align: right;">880</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2022-09-01</td>
+<td style="text-align: right;">880</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2022-10-01</td>
+<td style="text-align: right;">880</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2022-11-01</td>
+<td style="text-align: right;">880</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2022-12-01</td>
+<td style="text-align: right;">880</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2023-01-01</td>
+<td style="text-align: right;">880</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2023-02-01</td>
+<td style="text-align: right;">880</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Since 11 out of 12 months of records are missing for these 131 residents, we will delete their records from the <code>finance</code> dataset.</p>
+<p>The code chunk below</p>
+<p>This code will filter the <strong><code>finance</code></strong> dataframe for rows with <strong><code>date</code></strong> equal to ‘2022-03-01’, and then perform an anti-join with a filtered dataframe containing rows with <strong><code>date</code></strong> equal to ‘2022-04-01’, based on the common <strong><code>participantId</code></strong> column. The resulting dataframe will only contain <strong><code>participantId</code></strong>s that are in ‘2022-03-01’ but not in ‘2022-04-01’. The <strong><code>select</code></strong> function is used to extract the <strong><code>participantId</code></strong> column from the resulting dataframe.</p>
+<p>In this code, we assign the result of your code to a variable named <strong><code>result</code></strong>. Then we use the <strong><code>pull()</code></strong> function to extract the <strong><code>participantId</code></strong> column from <strong><code>result</code></strong>. We pass the <strong><code>participantId</code></strong> column name as an argument to <strong><code>pull()</code></strong>. Next, we use the <strong><code>as.vector()</code></strong> function to convert the resulting tibble column to a vector. Finally, we assign the resulting vector to a variable named <strong><code>result_vector</code></strong> and print it. The resulting <strong><code>result_vector</code></strong> should be a numeric vector containing the unique <strong><code>participantId</code></strong> values from your code.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>missing_id <span class="ot">&lt;-</span> finance <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(date <span class="sc">==</span> <span class="fu">as.Date</span>(<span class="st">'2022-03-01'</span>)) <span class="sc">%&gt;%</span> <span class="co"># filter for '2022-03-01' date</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(finance <span class="sc">%&gt;%</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>             <span class="fu">filter</span>(date <span class="sc">==</span> <span class="fu">as.Date</span>(<span class="st">'2022-04-01'</span>)), <span class="co"># filter for '2022-04-01' date</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">by =</span> <span class="st">'participantId'</span>) <span class="sc">%&gt;%</span> <span class="co"># anti-join by 'participantId'</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(participantId) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(participantId)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co"># extract participantId column as convert this column to vector.</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>missing_id_vector <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(<span class="fu">pull</span>(missing_id, participantId))</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>missing_id_vector </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] "44"  "127" "142" "154" "161" "256" "262" "267" "279" "285" "288" "298"
+ [13] "301" "346" "352" "356" "380" "382" "383" "384" "392" "406" "407" "509"
+ [25] "510" "512" "514" "523" "526" "539" "541" "553" "558" "567" "568" "572"
+ [37] "574" "575" "577" "580" "589" "595" "599" "602" "603" "604" "605" "611"
+ [49] "615" "617" "621" "628" "629" "634" "639" "641" "643" "647" "653" "655"
+ [61] "657" "658" "663" "668" "670" "756" "757" "760" "761" "762" "768" "771"
+ [73] "773" "774" "780" "785" "789" "790" "791" "792" "793" "794" "799" "802"
+ [85] "806" "808" "816" "817" "818" "824" "825" "827" "828" "831" "832" "834"
+ [97] "839" "842" "846" "847" "853" "855" "856" "858" "859" "860" "862" "864"
+[109] "867" "872" "875" "876" "883" "884" "885" "886" "887" "892" "896" "897"
+[121] "900" "901" "902" "907" "909" "911" "919" "920" "923" "924" "925"</code></pre>
+</div>
+</div>
+<p>Next, we will remove all records of the 131 potentially non-residents from the <code>finance</code> dataset .</p>
+<p>In the code chunk below:</p>
+<p>we use the <strong><code>%in%</code></strong> operator to check if each <strong><code>id</code></strong> value is contained in the missing_id_vector. Then we use the negation operator <strong><code>!</code></strong> to negate this condition, which gives us a logical vector indicating which rows in <strong><code>df1</code></strong> should be included in the filtered data frame. Finally, we use this logical vector to index <strong><code>df1</code></strong> and extract only the rows that satisfy the condition. The resulting filtered data frame will not contain the rows where the <strong><code>id</code></strong> values are 4 or 5.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>finance1 <span class="ot">&lt;-</span> finance[<span class="sc">!</span>finance<span class="sc">$</span>participantId <span class="sc">%in%</span> missing_id_vector, ]</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>finance1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,509,897 × 6
+   participantId timestamp           category  amount month_year date      
+   &lt;chr&gt;         &lt;dttm&gt;              &lt;chr&gt;      &lt;dbl&gt; &lt;chr&gt;      &lt;date&gt;    
+ 1 0             2022-03-01 00:00:00 Wage      2473.  03-2022    2022-03-01
+ 2 0             2022-03-01 00:00:00 Shelter    555.  03-2022    2022-03-01
+ 3 0             2022-03-01 00:00:00 Education   38.0 03-2022    2022-03-01
+ 4 1             2022-03-01 00:00:00 Wage      2047.  03-2022    2022-03-01
+ 5 1             2022-03-01 00:00:00 Shelter    555.  03-2022    2022-03-01
+ 6 1             2022-03-01 00:00:00 Education   38.0 03-2022    2022-03-01
+ 7 2             2022-03-01 00:00:00 Wage      2437.  03-2022    2022-03-01
+ 8 2             2022-03-01 00:00:00 Shelter    557.  03-2022    2022-03-01
+ 9 2             2022-03-01 00:00:00 Education   12.8 03-2022    2022-03-01
+10 3             2022-03-01 00:00:00 Wage      2367.  03-2022    2022-03-01
+# ℹ 1,509,887 more rows</code></pre>
+</div>
+</div>
+<p>We will double check that the records of 131 non-residents have been removed from <code>finance1</code> dataframe.</p>
+<p>in the code below</p>
+<p>we use the <strong><code>distinct()</code></strong> function to extract the distinct <strong><code>participantId</code></strong> values from <strong><code>finance1</code></strong>. We pass <strong><code>participantId</code></strong> as an argument to <strong><code>distinct()</code></strong> to extract only the unique values of this column. Finally, we use the <strong><code>n_distinct()</code></strong> function to count the number of distinct <strong><code>participantId</code></strong> values in the resulting tibble.</p>
+<p>The resulting <strong><code>distinct_count</code></strong> variable should contain the count of distinct <strong><code>participantId</code></strong> values in <strong><code>finance1</code></strong>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>finance1 <span class="sc">%&gt;%</span> </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(participantId) <span class="sc">%&gt;%</span> </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">n_distinct</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 880</code></pre>
+</div>
+</div>
 </section>
 <section id="ptcp-dataset-issues" class="level3">
 <h3 class="anchored" data-anchor-id="ptcp-dataset-issues"><code>ptcp</code> dataset issues:</h3>
@@ -547,18 +695,18 @@ $ month_year    &lt;chr&gt; "03-2022", "03-2022", "03-2022", "03-2022", "03-2022
 <li><p><code>factor(educationLevel, levels=c("Low", "HighSchoolOrCollege", "Bachelors", "Graduate")))</code> not only converts <strong>educationLevel</strong> to factor, but also order the values inside.</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to factor</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>ptcp <span class="ot">&lt;-</span> ptcp <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">participantId =</span> <span class="fu">as.character</span>(participantId))</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>ptcp <span class="ot">&lt;-</span> ptcp <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">householdSize =</span> <span class="fu">as.factor</span>(householdSize))</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert educationLevel to factor and order accordingly</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>ptcp <span class="ot">&lt;-</span> ptcp <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">educationLevel =</span> <span class="fu">factor</span>(educationLevel, <span class="at">levels=</span><span class="fu">c</span>(<span class="st">"Low"</span>, <span class="st">"HighSchoolOrCollege"</span>, <span class="st">"Bachelors"</span>, <span class="st">"Graduate"</span>)))</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co"># convert age to int</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>ptcp <span class="ot">&lt;-</span> ptcp <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">age =</span> <span class="fu">as.integer</span>(age))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to factor</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>ptcp <span class="ot">&lt;-</span> ptcp <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">participantId =</span> <span class="fu">as.character</span>(participantId))</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>ptcp <span class="ot">&lt;-</span> ptcp <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">householdSize =</span> <span class="fu">as.factor</span>(householdSize))</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert educationLevel to factor and order accordingly</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>ptcp <span class="ot">&lt;-</span> ptcp <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">educationLevel =</span> <span class="fu">factor</span>(educationLevel, <span class="at">levels=</span><span class="fu">c</span>(<span class="st">"Low"</span>, <span class="st">"HighSchoolOrCollege"</span>, <span class="st">"Bachelors"</span>, <span class="st">"Graduate"</span>)))</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co"># convert age to int</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>ptcp <span class="ot">&lt;-</span> ptcp <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">age =</span> <span class="fu">as.integer</span>(age))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(ptcp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(ptcp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 1,011
 Columns: 7

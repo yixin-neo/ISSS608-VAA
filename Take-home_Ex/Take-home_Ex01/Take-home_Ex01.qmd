@@ -1,5 +1,84 @@
 ---
 title: "Take-home_Ex01"
+author: "NeoYX"
+date: '7 May 2023'
+#date-modified: "`r Sys.Date()`"
+editor: visual
+execute: 
+  freeze: auto
+  warning: false
+  #echo: false
+  #message: false
+  html:
+    code-fold: True
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
 ---
 
-To be updated
+# 1. Task and Dataset
+
+This exerises aims to reveal the demographic and financial characteristics of the city of Engagement, using appropriate **static and interactive statistical graphics** methods. It also requires a user-friendly and interactive solution that helps city managers and planners to explore the complex data in an engaging way and reveal hidden patterns.
+
+The dataset consists of a sample survey of 1000 representative residents that collects data related to their household demographic and spending patterns, among other things. There are primarily two datasets used in this exercise
+
+-    \'FinancialJournal.csv\": Contains 1513635 number of daily transaction records (different categories of income and expenses) over a period of twelve months from March 2022 to February 2023.
+
+```{=html}
+<!-- -->
+```
+-    \'Particpants.csv\" : Contains demographics information like household size, age, education level, interest groups, joviality index and whether each household has kids.
+
+In this exercise, each dataset will be cleansed separately and then joined by \'participantID\' as primary key to form the final dataset used for further analysis.
+
+# 
+
+# 2. Data Preparation
+
+## 2.1 Install and load the required libraries
+
+The code chunk below uses `pacman::p_load()` to check if packages are installed. If they are, they will be launched into R. The packages installed are
+
+-   `plotly`: Used for creating interactive web-based graphs.
+
+-   `knitr`: Used for dynamic report generation
+
+-   `patchwork`: Used to combine plots
+
+-   `tidyverse`: A collection of core packages designed for data science, used extensively for data preparation and wrangling.
+
+-   `ggthemes`: Provide additional themes for `ggplot2`
+
+-   `ggstatsplot`: Used for creating graphics with details from statistical tests.
+
+-   `ggdist`: Used for visualising distribution and uncertainty
+
+-   
+
+-   
+
+```{r}
+pacman::p_load(plotly, knitr, patchwork, tidyverse, ggthemes, ggstatsplot, ggdist, png, gifski, nortest)
+```
+
+## 2.2 Import the dataset
+
+The data is imported using `tidyverse`'s `readr::read_csv()` function and stored as finance variable.
+
+```{r}
+finance <- read_csv('data/FinancialJournal.csv')
+```
+
+```{r}
+#| echo: false
+head(finance)
+```
+
+```{r}
+ptcp <- read_csv('data/Participants.csv')
+```
+
+```{r}
+#| echo: false
+head(ptcp)
+```

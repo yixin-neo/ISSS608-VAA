@@ -358,56 +358,24 @@ We will now convert the `finance1` dataframe from a long to a wide format. The c
     highlevel
     ```
 
-    ```{r}
-    ggplot(data=highlevel,
-           aes(x=date,
-               y=Income)) +
-      geom_bar(stat="identity")
-    ```
+The code chunk below...
 
-```{r}
-library(scales)
-
-h<-ggplot(highlevel) +
-  geom_segment( aes(x=date, xend=date, y=Income, yend=Expense), color="grey") +
-  geom_point( aes(x=date, y=Income), color=rgb(0.2,0.7,0.1,0.5), size=3 ) +
-  geom_point( aes(x=date, y=Expense), color=rgb(0.7,0.2,0.1,0.5), size=3 ) +
-  geom_line(aes(x=date, y=Saving), color=rgb(0.2,0.2,0.9,0.5), size=1) +
-  theme_light() +
-  theme(#legend.position = "none",
-        #panel.grid.major.y = element_line(color="grey", linetype="dashed"),
-        axis.line.y = element_line(color="black", size=0.5, linetype="solid"),
-        panel.grid.major.x = element_blank(),
-        panel.border = element_blank(),
-        axis.ticks.x = element_blank(),
-        #panel.grid.major = element_line(color = "grey", linetype = "dotted", size = 0.5),
-        axis.title.x=element_text(angle = 0,
-                                  vjust=0.9),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_x_date(date_breaks = '1 month',date_labels = "%b %Y") +
-  scale_y_continuous(limits = c(-2000000, 6500000), breaks=seq(-2000000, 6500000, 1000000), labels= comma) +
-  geom_hline(yintercept=0, color="black", size=0.5)+
-  xlab("") +
-  ylab("Amount")
-
-ggplotly(h)
-
-```
-
-\
+EXPLAIN
 
 rgb colour the first three arguments (red, green, and blue) , the last argument (alpha)
 
 ```{r}
+#| code-fold: true
 h<-ggplot(highlevel) +
   geom_segment( aes(x=date, xend=date, y=Income, yend=Expense, color="grey20"), size=0.6, alpha= 0.9) +
-  geom_point( aes(x=date, y=Income, color="Income", shape="Income" , size = Income))+#, size=2 ) +
-  geom_point( aes(x=date, y=Expense, color="Expense", shape="Expense", size = -Expense))+#, size=2 ) +
+  geom_point( aes(x=date, y=Income, color="Income", shape='Income', size = Income))+#, size=2 ) +
+  geom_point( aes(x=date, y=Expense, color="Expense", shape='Expense' , size = -Expense))+#, size=2 ) +
   geom_line(aes(x=date, y=Saving), color=rgb(0.2,0.2,0.9,0.9), size=1) +
   geom_text(aes(x=as.Date("2022-04-01"), y=max(Saving), label="Saving"), hjust=1, vjust=1, color=rgb(0.2,0.2,0.9,0.5), size=3.5) +
   
   theme_light() +
   theme(#legend.position = "none",
+    
         axis.line.y = element_line(color="black", size=0.2, linetype="solid"),
         panel.grid.major.x = element_blank(),
         panel.border = element_blank(),
@@ -420,8 +388,8 @@ h<-ggplot(highlevel) +
   
   scale_color_manual(values = c("Income" = rgb(0.2,0.7,0.1,0.9), "Expense" = rgb(0.7,0.2,0.1,0.9))) +
   scale_shape_manual(values = c("Income" = 16, "Expense" = 16)) +
-  labs(color="Variable", shape="Variable") +
-  guides(color = guide_legend(override.aes = list(size = 4))) +
+  labs(color="", shape="") +
+  guides(color = guide_legend(override.aes = list(size = 3))) +
   
   geom_hline(yintercept=0, color="black", size=0.2) +
   
@@ -430,7 +398,7 @@ h<-ggplot(highlevel) +
   ggtitle('City monthly total income, total expense and total savings')
 
 ggplotly(h,
-         tooltip = c("Income",
-                     "Expense",
-                     "Saving"))
+         tooltip = c('Income',
+         "Expense",
+         "Saving"))
 ```

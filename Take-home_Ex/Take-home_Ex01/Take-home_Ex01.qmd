@@ -519,11 +519,19 @@ ggplotly(q2,tooltip = c('labels','x','y'))
 
 From both plots above, March seems to be an exciting month where there is several anomalies observed. There are unsual spikes in wage, recreational and shelter spending.
 
+### 3.1.3 Interactive bubble plots of (Savings, Recreation, Shelter, Food and Jovality) against wage
+
+Pending
+
 ```{r}
+#| echo: False
+#| eval: False
 glimpse(finance1_wide_ptcp1)
 ```
 
 ```{r}
+#| echo: False
+#| eval: False
 ggplot(finance1_wide_ptcp1, aes(x = educationLevel, y = Wage)) +
   geom_boxplot() +
   labs(x = "Education Level", y = "Wage")+
@@ -531,13 +539,19 @@ facet_wrap(~date)
 ```
 
 ```{r}
+#| echo: False
+#| eval: False
 df_wage_march <- filter(finance1_wide_ptcp1, month(date) == 3) %>%
   select(Wage, educationLevel)
 head(df_wage_march)
 ```
 
 ```{r}
+#| echo: False
+#| eval: False
 ggplot(df_wage_march, aes(x = educationLevel, y = Wage)) +
+
+  geom_jitter(width = 0.1, height = 0, alpha = 0.5) +
   geom_boxplot() +
   labs(x = "Education Level", y = "Wage")
 
@@ -545,7 +559,7 @@ ggplot(df_wage_march, aes(x = educationLevel, y = Wage)) +
 
 ## 3.2 CDA
 
-## 3.2.1 Normality assumptions of annual wage 
+## 3.2.1 Normality assumptions of annual wage
 
 Preparing the dataframe needed:
 
@@ -592,13 +606,13 @@ qq+table_png
 From the Shapiro test , p-value \< 0.05 and we have enough statistical evidence to reject the null hypothesis and conclude that **Wage** does not follow the normal distribution. To compare whether there is significant difference in the median of wage between education levels, we must choose a non-parametric test.
 
 ### 
-3.2.2 Normality assumptions of annual wage 
+
+3.2.2 Comparison of Annual Wage by Education levels
 
 ```{r}
-min(annual$Wage)
-```
-
-```{r}
+#| code-fold: True
+#| fig-width: 8
+#| fig-aspect: fig-width*0.618
 ggbetweenstats(data = annual, x = educationLevel, y = Wage,
                xlab = "Education level", ylab = "Annual Wage",
                type = "np", pairwise.comparisons = TRUE, pairwise.display = "s", 
@@ -607,4 +621,65 @@ ggbetweenstats(data = annual, x = educationLevel, y = Wage,
   scale_y_continuous(limits = c(0, 300000)) +
    theme(axis.title.y=element_text(angle = 0,
                                   vjust=0.9))
+```
+
+From the results, all the pairwise comparison p-values \<0.05 and thus we can reject the null hypothesis and conclude that the median values across different educational levels are not the same.
+
+### 3.2.3 Correlation between Annual Shelter cost and Annual Wage
+
+We will use the non-parametric Spearman correlation analysis instead of Pearson correlation since the wage data is not normally distributed.
+
+```{r}
+#| code-fold: True
+#| fig-width: 10
+#| fig-height: 12
+low_correl <- ggscatterstats(data = annual |> filter(educationLevel == "Low"), 
+                           x = Wage, y = Shelter,
+                           type = "nonparametric") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  scale_x_continuous(limits = c(0, 70000), breaks=seq(0, 70000, 10000), labels= comma) + 
+  scale_y_continuous(limits = c(0, 20000), breaks=seq(0, 20000, 5000), labels= comma) +
+  
+  labs(title = "Low Education Status", 
+       x = "Annual Wage", y = "Annual Shelter fee") 
+
+
+high_correl <- ggscatterstats(data = annual |> filter(educationLevel == "HighSchoolOrCollege"), 
+                           x = Wage, y = Shelter,
+                           type = "nonparametric") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  scale_x_continuous(limits = c(0, 70000), breaks=seq(0, 70000, 10000), labels= comma) + 
+  scale_y_continuous(limits = c(0, 20000), breaks=seq(0, 20000, 5000), labels= comma) +
+  
+  labs(title = "High sch Education Status", 
+       x = "Annual Wage", y = "Annual Shelter fee") 
+
+
+bac_correl <- ggscatterstats(data = annual |> filter(educationLevel == "Bachelors"), 
+                           x = Wage, y = Shelter,
+                           type = "nonparametric") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  scale_x_continuous(limits = c(0, 70000), breaks=seq(0, 70000, 10000), labels= comma) + 
+  scale_y_continuous(limits = c(0, 20000), breaks=seq(0, 20000, 5000), labels= comma) +
+  
+  labs(title = "Degree Education Status", 
+       x = "Annual Wage", y = "Annual Shelter fee") 
+
+
+grad_correl <- ggscatterstats(data = annual |> filter(educationLevel == "Graduate"), 
+                           x = Wage, y = Shelter,
+                           type = "nonparametric") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  scale_x_continuous(limits = c(0, 70000), breaks=seq(0, 70000, 10000), labels= comma) + 
+  scale_y_continuous(limits = c(0, 20000), breaks=seq(0, 20000, 5000), labels= comma) +
+  
+  labs(title = "Graduate Education Status", 
+       x = "Annual Wage", y = "Annual Shelter fee") 
+
+
+p_correl <- (low_correl + high_correl) / (bac_correl + grad_correl) + plot_spacer()
+p_correl
+#+
+  #scale_x_continuous(limits = c(0, 1500000)) +
+  #scale_y_continuous(limits = c(50, 160))
 ```

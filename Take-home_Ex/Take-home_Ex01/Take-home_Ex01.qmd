@@ -339,9 +339,10 @@ We will now convert the `finance1` dataframe from a long to a wide format. The c
 
     In this exercise, I will explore the dataset from high level and then zoom into interesting patterns (if I can find any =))
 
-    We categorise Education, Food, Recreation, Shelter into **Expenses** while RentAdjustment, Wage are categorised into **Income**
+    We prepare the data require for the plot. Categorise Education, Food, Recreation, Shelter into **Expenses**. Wage belongs to **Income** category**.**
 
     ```{r}
+    #| code-fold: True
     highlevel <- finance1_wide_ptcp1 %>%
       group_by(date) %>%
       summarize(Education = sum(Education, na.rm = TRUE),
@@ -358,11 +359,15 @@ We will now convert the `finance1` dataframe from a long to a wide format. The c
     highlevel
     ```
 
-The code chunk below...
+**Design Considerations:**
 
-EXPLAIN
+I have ensured inking concepts (key words, lines, fill are darker) and gridlines are lighter in shade. In order to see the end of the geom_segments, the opacity of the geom_point objects are reduced via `alpha` argument. The vertical gridlines are disabled to avoid confusion with the vertical geom_segment lines.
 
-rgb colour the first three arguments (red, green, and blue) , the last argument (alpha)
+::: callout-note
+## rgb
+
+The first three arguments are (red, green, and blue) and the last argument (alpha)
+:::
 
 ```{r}
 #| code-fold: True
@@ -384,6 +389,7 @@ h<-ggplot(highlevel) +
         axis.title.y=element_text(angle = 0,
                                   vjust=0.9),
         axis.text.x = element_text(angle = 45, hjust = 1)) +
+  
   scale_x_date(date_breaks = '1 month',date_labels = "%b %Y") +
   scale_y_continuous(limits = c(-2000000, 6500000), breaks=seq(-2000000, 6500000, 1000000), labels= comma) +
   
@@ -399,136 +405,114 @@ h<-ggplot(highlevel) +
   ggtitle('City monthly total income, total expense and total savings')
 
 ggplotly(h,
-         tooltip = c('Income',
-         "Expense",
-         "Saving"))
+         tooltip = c('labels','x','y'))
 ```
 
-## 3.2 Zooming In: Multiple line chart of income and expenditures by month
+## 3.2 Zooming In: Interactive Line charts of income and expenditures by month
 
-the **`color`** aesthetic within each **`geom_line`** maps the name of the variable to a specific color. Then, the **`scale_color_manual`** function is used to assign the desired colors to each variable name.
+**Design considerations:**
 
--   **`size`** parameter in **`geom_line()`** is used to increase the line width.
+Due to the large difference in values between wage and other expenses, I have separated income and expense into two graphs. This will enable use to visualise the values of the expense clearly.
 
--   **`scale_linetype_manual()`** is used to set the linetype for Wage and RentAdjustment lines as "dashed".
+There are several manual adjustments that I made to the graph and the key ones are shown below:
 
--   **`labs()`** is used to change the axis labels.
+-   the **`color`** aesthetic within each **`geom_line`** maps the name of the variable to a specific color. Then, the **`scale_color_manual`** function is used to assign the desired colors to each variable name.
 
 -   **`scale_x_date()`** is used to display all the values in the x-axis with the date format "%Y-%m".
 
 -   **`scale_y_continuous()`** with **`labels = comma`** is used to format the y-axis labels with commas.
 
--   **`theme_bw()`** is used to set the plot background to white and remove the grid lines.
+-   **`theme_light()`** is used to set the plot background to white and remove the grid lines.
 
 -   **`element_line()`** is used to increase the axis line width.
 
--   **`legend.position = "bottom"`** is used to move the legend to the bottom of the plot.
+-   **`legend.position = "none"`** is used to remove the legend since they are labelled.
 
 -   **`legend.title = element_blank()`** is used to remove the legend title.
 
--   **`legend.text = element_text(size = 12)`** is used to increase the legend text size.
-
 ```{r}
-library(scales)
-
-q<-highlevel %>%
-  ggplot(aes(x = date)) +
-  geom_line(aes(y = Wage, color = "Wage", linetype = "Wage"), size = 0.5) +
-  geom_line(aes(y = RentAdjustment, color = "RentAdjustment", linetype = "RentAdjustment"), size = 0.5) +
-  geom_line(aes(y = Education, color = "Education"), size = 0.5) +
-  geom_line(aes(y = Recreation, color = "Recreation"), size = 0.5) +
-  geom_line(aes(y = Food, color = "Food"), size = 0.5, alpha=0.5) +
-  geom_line(aes(y = Shelter, color = "Shelter"), size = 0.5) +
-  scale_color_manual(values = c("Wage" = "red", "RentAdjustment" = "blue",
-                                "Education" = "green", "Recreation" = "purple",
-                                "Food" = "orange", "Shelter" = "gray")) +
-  scale_linetype_manual(values = c("Wage" = "dashed", "RentAdjustment" = "dashed"),
-                        guide = guide_legend(override.aes = list(size = 1.2))) +
-  labs(x = "Month", y = "Amount") +
-  scale_x_date(date_breaks = '1 month',date_labels = "%b %Y") +
-  geom_text(aes(x=as.Date("2022-04-01"), y=5800000, label="High wages \nobserved in \nMarch"), hjust=1, vjust=1, color='red', size=2.5) +
-  geom_text(aes(x=as.Date("2022-04-01"), y=1300000, label="Higher recreational \nspendings observed \nin March"), hjust=1, vjust=1, color='purple', size=2.5) +
-  scale_y_continuous(labels = comma) +
-  theme_bw(base_size = 12) +
-  theme(axis.title = element_text(size = 14, face = "bold"),
-        axis.text = element_text(size = 12),
-        axis.text.x = element_text(angle = 45, hjust = 1),
-        axis.line = element_line(size = 1),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_blank(),
-        legend.position = "right",
-        legend.title = element_blank(),
-        legend.text = element_text(size = 5)) +
-  
-  ggtitle("Multiple line chart of income and expenses")
-
-ggplotly(q)
-
-```
-
-```{r}
-#| fig-width: 8
-#| fig-height: 12
 #| code-fold: True
 library(scales)
 
 q1<-highlevel %>%
   ggplot(aes(x = date)) +
-  geom_line(aes(y = Wage, color = "Wage", linetype = "Wage"), size = 1) +
-  geom_line(aes(y = RentAdjustment, color = "RentAdjustment", linetype = "RentAdjustment"), size = 1) +
+  geom_line(aes(y = Wage, color = "Red", linetype = "Wage"), size = 1) +
+  #geom_line(aes(y = RentAdjustment, color = "RentAdjustment"), size = 1) +
   
-  scale_color_manual(values = c("Wage" = "red", "RentAdjustment" = "blue")) +
-  scale_linetype_manual(values = c("Wage" = "dashed", "RentAdjustment" = "dashed"),
-                        guide = guide_legend(override.aes = list(size = 1.2))) +
+  # annotating the plot
+  geom_text(aes(x=as.Date("2022-04-01"), y=6000000, label="High wages \nobserved in \nMarch"), hjust=1, vjust=1, color='black', size=2.5) +
+  geom_text(aes(x=as.Date("2022-12-01"), y=3800000, label="Wage"), hjust=1, vjust=1, color='red', size=2.5) +
+ # geom_text(aes(x=as.Date("2022-12-01"), y=280000, label="RentalAdjustment"), hjust=1, vjust=1, color='blue', size=2.5) +
+ # scale_color_manual(values = c("Wage" = "red", "RentAdjustment" = "blue")) +
+
+  # chart control
   labs(x = "Month", y = "Amount") +
   scale_x_date(date_breaks = '1 month',date_labels = "%b %Y") +
-  geom_text(aes(x=as.Date("2022-05-01"), y=6000000, label="High wages \nobserved in \nMarch"), hjust=1, vjust=1, color='red', size=2.5) +
+  scale_y_continuous(limits = c(0, 6500000), breaks=seq(0, 6500000, 1000000), labels= comma) +
+
  
-  scale_y_continuous(labels = comma) +
-  theme_bw(base_size = 12) +
-  theme(axis.title = element_text(size = 14, face = "bold"),
-        axis.text = element_text(size = 12),
+
+  theme_light(base_size = 12) +
+  theme(axis.title = element_text(size = 10 , face = "bold"),
+        axis.text = element_text(size = 10),
         axis.text.x = element_text(angle = 45, hjust = 1),
         axis.line = element_line(size = 1),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_line(colour='black'),
         panel.border = element_blank(),
-        legend.position = "right",
-        legend.title = element_blank(),
-        legend.text = element_text(size = 5)) 
+        legend.position = "none",
+        legend.title = element_blank()) +
+        #legend.text = element_text(size = 5)) + 
 
+  labs(title= 'Cumulative Income across Months',
+       x='Month',
+       y='Amount')
+
+ggplotly(q1,tooltip = c('labels','x','y'))
+```
+
+```{r}
+#| code-fold: True
 q2<-highlevel %>%
   ggplot(aes(x = date)) +
- 
-  geom_line(aes(y = Education, color = "Education"), size = 1) +
-  geom_line(aes(y = Recreation, color = "Recreation"), size = 1) +
-  geom_line(aes(y = Food, color = "Food"), size = 1, alpha=0.5) +
-  geom_line(aes(y = Shelter, color = "Shelter"), size = 1) +
+  geom_line(aes(y = Education, color = "Education"), size = 1,,alpha=0.8) +
+  geom_line(aes(y = Recreation, color = "Recreation"), size = 1,,alpha=0.8) +
+  geom_line(aes(y = Food, color = "Food"), size = 1, alpha=0.8) +
+  geom_line(aes(y = Shelter, color = "Shelter"), size = 1,alpha=0.8) +
   scale_color_manual(values = c("Education" = "green", "Recreation" = "purple",
-                                "Food" = "orange", "Shelter" = "gray")) +
+                                "Food" = "orange", "Shelter" = "blue")) +
   scale_linetype_manual(values = c("Wage" = "dashed", "RentAdjustment" = "dashed"),
                         guide = guide_legend(override.aes = list(size = 1.2))) +
+  
+  # annotating the plot
+  geom_text(aes(x=as.Date("2022-04-01"), y=640000, label="Higher recreationaland shelter \nspendings observed \nin March"), hjust=1, vjust=1, color='grey10',size=2.5) +
+  geom_text(aes(x=as.Date("2022-12-01"), y=600000, label="Shelter"), hjust=1, vjust=1, color='blue', size=2.5) +
+  geom_text(aes(x=as.Date("2022-12-01"), y=280000, label="Recreationa"), hjust=1, vjust=1, color='purple', size=2.5) +
+  geom_text(aes(x=as.Date("2022-12-01"), y=380000, label="Food"), hjust=1, vjust=1, color='orange', size=2.5) +
+  geom_text(aes(x=as.Date("2022-12-01"), y=50000, label="Education"), hjust=1, vjust=1, color='green', size=2.5) +
+  
+  # chart control
   labs(x = "Month", y = "Amount") +
   scale_x_date(date_breaks = '1 month',date_labels = "%b %Y") +
-  geom_text(aes(x=as.Date("2022-04-01"), y=700000, label="Higher recreational \nspendings observed \nin March"), hjust=1, vjust=1, color='purple', size=2.5) +
-  scale_y_continuous(labels = comma) +
-  theme_bw(base_size = 12) +
-  theme(axis.title = element_text(size = 14, face = "bold"),
-        axis.text = element_text(size = 12),
+  scale_y_continuous(limits = c(0, 650000), breaks=seq(0, 650000, 100000), labels= comma) +
+  
+  theme_light(base_size = 12) +
+  theme(axis.title = element_text(size = 10 , face = "bold"),
+        axis.text = element_text(size = 10),
         axis.text.x = element_text(angle = 45, hjust = 1),
         axis.line = element_line(size = 1),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_line(colour='black'),
         panel.border = element_blank(),
-        legend.position = "right",
+        legend.position = "none",
         legend.title = element_blank(),
         legend.text = element_text(size = 5)) + 
 
-  labs(x='Month',
+  labs(title= "Cumulative City Expenses across Months",
+       x='Month',
        y='Amount')
 
-q1 / q2
+ggplotly(q2,tooltip = c('labels','x','y'))
 ```
 
 ```{r}

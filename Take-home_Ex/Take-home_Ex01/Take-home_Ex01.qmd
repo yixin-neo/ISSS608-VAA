@@ -323,19 +323,15 @@ We will now convert the `finance1` dataframe from a long to a wide format. The c
     finance1_wide_ptcp1 <- left_join(finance1_wide, ptcp1, by = "participantId")
     ```
 
-    The cleansed finance1_wide_ptcp1 is displayed using `knitr::kable()`{style="caret-color: white;"} function
+    The first 12 rows of the cleansed finance1_wide_ptcp1 is displayed using `knitr::kable()`{style="caret-color: white;"} function. It contains 10,560 rows and 14 columns.
 
     ```{r}
-    knitr::kable(head(finance1_wide_ptcp1,24), "simple") 
-    ```
-
-    ```{r}
-    finance1_wide_ptcp1
+    knitr::kable(head(finance1_wide_ptcp1,12), "simple") 
     ```
 
     # 3. Visualisation
 
-    ## 3.1 High level EDA of city's monthly total income vs total expenses
+    ## 3.1 High level EDA: Lollipop and line plot of city's monthly total income vs total expenses
 
     In this exercise, I will explore the dataset from high level and then zoom into interesting patterns (if I can find any =))
 
@@ -351,12 +347,12 @@ We will now convert the `finance1` dataframe from a long to a wide format. The c
                 Shelter = sum(Shelter, na.rm = TRUE),
                 Wage = sum(Wage, na.rm = TRUE),
                 RentAdjustment = sum(RentAdjustment, na.rm = TRUE),
-                ExpenseP = sum(Education, Food, Recreation, Shelter),
-                Income = sum(Wage, RentAdjustment),
-                Saving = Income - ExpenseP,
-                Expense = ExpenseP * -1
+                ExpenseP = sum(Education, Food, Recreation, Shelter),  #<<<
+                Income = sum(Wage, RentAdjustment),                    #<<<
+                Saving = Income - ExpenseP,                            #<<<
+                Expense = ExpenseP * -1                                #<<<
                 )
-    highlevel
+    head(highlevel,5)
     ```
 
 **Design Considerations:**
@@ -412,7 +408,7 @@ ggplotly(h,
 
 **Design considerations:**
 
-Due to the large difference in values between wage and other expenses, I have separated income and expense into two graphs. This will enable use to visualise the values of the expense clearly.
+Due to the large difference in values between wage and other expenses, I have separated income and expense into two graphs. This will enable use to visualise the values of the expense clearly. For the second line plot, the type of expenses are directly labelled beside the lines instead of using a legend as it is more user-friendly this way.
 
 There are several manual adjustments that I made to the graph and the key ones are shown below:
 

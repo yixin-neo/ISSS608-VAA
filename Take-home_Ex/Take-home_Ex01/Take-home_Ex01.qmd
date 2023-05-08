@@ -52,12 +52,16 @@ The code chunk below uses `pacman::p_load()` to check if packages are installed.
 
 -   `ggdist`: Used for visualising distribution and uncertainty
 
+-   `rstatix`: Allows us to perform basic statistical tests, including t-test, Wilcoxon test, ANOVA, Kruskal-Wallis and correlation analyses.
+
+-   `gt` : starting from a tibble table, customise a table and export in various formats. Most importantly, it works with patch. We will save the tabular results from shapiro test as gt object and export using gtsave() into .png file later.
+
 -   
 
 -   
 
 ```{r}
-pacman::p_load(plotly, knitr, patchwork, tidyverse, ggthemes,hrbrthemes, ggiraph, ggstatsplot, ggdist, png, gifski, nortest)
+pacman::p_load(plotly, knitr, patchwork, tidyverse, ggthemes,hrbrthemes, ggiraph, ggstatsplot, ggdist, png, gifski, rstatix, gt, nortest)
 ```
 
 ## 2.2 Import the dataset
@@ -331,7 +335,9 @@ We will now convert the `finance1` dataframe from a long to a wide format. The c
 
     # 3. Visualisation
 
-    ## 3.1 High level EDA: Lollipop and line plot of city's monthly total income vs total expenses
+    ## 3.1 EDA
+
+    ### 3.1.1 Lollipop and line plot of city's monthly total income vs total expenses (high-level view)
 
     In this exercise, I will explore the dataset from high level and then zoom into interesting patterns (if I can find any =))
 
@@ -404,7 +410,7 @@ ggplotly(h,
          tooltip = c('labels','x','y'))
 ```
 
-## 3.2 Zooming In: Interactive Line charts of income and expenditures by month
+### 3.1.2 Interactive Line charts of income and expenditures by month (Zoom-in)
 
 **Design considerations:**
 
@@ -483,7 +489,7 @@ q2<-highlevel %>%
   # annotating the plot
   geom_text(aes(x=as.Date("2022-04-01"), y=640000, label="Higher recreationaland shelter \nspendings observed \nin March"), hjust=1, vjust=1, color='grey10',size=2.5) +
   geom_text(aes(x=as.Date("2022-12-01"), y=600000, label="Shelter"), hjust=1, vjust=1, color='blue', size=2.5) +
-  geom_text(aes(x=as.Date("2022-12-01"), y=280000, label="Recreationa"), hjust=1, vjust=1, color='purple', size=2.5) +
+  geom_text(aes(x=as.Date("2022-12-01"), y=280000, label="Recreational"), hjust=1, vjust=1, color='purple', size=2.5) +
   geom_text(aes(x=as.Date("2022-12-01"), y=380000, label="Food"), hjust=1, vjust=1, color='orange', size=2.5) +
   geom_text(aes(x=as.Date("2022-12-01"), y=50000, label="Education"), hjust=1, vjust=1, color='green', size=2.5) +
   
@@ -511,8 +517,10 @@ q2<-highlevel %>%
 ggplotly(q2,tooltip = c('labels','x','y'))
 ```
 
+From both plots above, March seems to be an exciting month where there is several anomalies observed. There are unsual spikes in wage, recreational and shelter spending.
+
 ```{r}
-finance1_wide_ptcp1
+glimpse(finance1_wide_ptcp1)
 ```
 
 ```{r}
@@ -525,7 +533,7 @@ facet_wrap(~date)
 ```{r}
 df_wage_march <- filter(finance1_wide_ptcp1, month(date) == 3) %>%
   select(Wage, educationLevel)
-df_wage_march
+head(df_wage_march)
 ```
 
 ```{r}
@@ -534,3 +542,48 @@ ggplot(df_wage_march, aes(x = educationLevel, y = Wage)) +
   labs(x = "Education Level", y = "Wage")
 
 ```
+
+## 3.2 CDA
+
+## 3.2.1 Distribution of annual wage 
+
+Preparing the dataframe needed:
+
+```{r}
+#| code-fold: True
+annual <- finance1_wide_ptcp1 %>% 
+  group_by(participantId, householdSize, haveKids, educationLevel, interestGroup, joviality) %>% 
+  summarize(Education = sum(Education, na.rm = TRUE),
+            Food = sum(Food, na.rm = TRUE),
+            Recreation = sum(Recreation, na.rm = TRUE),
+            Shelter = sum(Shelter, na.rm = TRUE),
+            Wage = sum(Wage, na.rm = TRUE),
+            RentAdjustment = sum(RentAdjustment, na.rm = TRUE)) 
+```
+
+::: callout-note
+Note that the **`na.rm = TRUE`** argument is used in the **`sum`** function to handle missing values in the columns during aggregation.
+:::
+
+We will first perform a test to confirm whether wage follows the normal distribution.
+
+*H0: The wage does not follow a normal distribution.*
+
+*H1: The wage follows a normal distribution.*
+
+```{r}
+qq <- ggplot(annual,
+       aes(sample=Wage)) +  #<<< use a new argument call sample: el scores
+  stat_qq() +
+  stat_qq_line()
+
+sw_t <- shapiro_test(annual$Wage)  %>% gt()  #<<< make into a gt format (will give a nice table)  shapiro.test is not used here as it gives output in another format.
+
+tmp <- tempfile(fileext = '.png') # create  temp table
+gtsave(sw_t, tmp)  # use gtsave() to save sw_t into tmp folder
+table_png <- png::readPNG(tmp, native = TRUE)
+
+qq+table_png
+```
+
+From the Shapiro test , p-value \< 0.05 and we have enough statistical evidence to reject the null hypothesis and conclude that **Wage** does not follow the normal distribution. To compare whether there is significant difference in the median of wage between education levels, we must choose a non-parametric test.

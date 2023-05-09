@@ -106,7 +106,7 @@ any(is.na(ptcp))
 
 I will discuss the issues in the datasets and proposed cleaning methods.
 
-### 2.3.1 `finance` dataset issues:
+### 2.3.1 **finance** dataset issues:
 
 -   **participantId** should be converted from `<dbl>` format to `<chr>` format. It should be a categorical and not numerical data type.
 
@@ -161,7 +161,7 @@ finance <- unique(finance)
 any(duplicated(finance))
 ```
 
-The last thing to do is to create a new colunm **date** that is in \<date\> format using the `as.Date` function.
+The last thing to do is to create a new column **date** that is in `<date>` format using the `as.Date` function.
 
 -   the paste0() function is used to concatenate "01-" with each value in the month_year column. This is because as.Date() requires a complete date in the format "dd-mm-yyyy"
 
@@ -171,7 +171,7 @@ The last thing to do is to create a new colunm **date** that is in \<date\> form
 
 **Other issues**
 
-When the `finance` dataset is groupby the **date** variable , it is noticed that the number of distinct participantID who took part in the survey was 1,011 in March 2022 and suddenly reduced to a constant value of 880 from April 2022 onwards. It seems to suggest that there are 131 residents who moved out of the city at the end of March 2022.
+When the `finance` dataset is group-by the **date** variable , it is noticed that the number of distinct participantID who took part in the survey was 1,011 in March 2022 and suddenly reduced to a constant value of 880 from April 2022 onwards. It seems to suggest that there are 131 residents who moved out of the city at the end of March 2022.
 
 In the code chunk below:
 
@@ -190,11 +190,13 @@ knitr::kable(missing_summary, "simple")
 
 Since 11 out of 12 months of records are missing for these 131 residents, we will delete their records from the `finance` dataset.
 
-The code chunk below will extract the **participantIds** of residents whose records exists in March 22 but not in all April 22. The **participantIds** will be stored in a vector called **missing_id_vector.**
+The code chunk below does the following:
 
-This code will filter the **`finance`** dataframe for rows with **`date`** equal to '2022-03-01', and then perform an anti-join with a filtered dataframe containing rows with **`date`** equal to '2022-04-01', based on the common **`participantId`** column. The resulting dataframe will only contain **`participantId`**s that are in '2022-03-01' but not in '2022-04-01'. The **`select`** function is used to extract the **`participantId`** column from the resulting dataframe.
+-   extract the **participantIds** of residents whose records exists in March 22 but not in all April 22 using the `anti-join` function
 
-In this code, we assign the result of your code to a variable named **`result`**. Then we use the **`pull()`** function to extract the **`participantId`** column from **`result`**. We pass the **`participantId`** column name as an argument to **`pull()`**. Next, we use the **`as.vector()`** function to convert the resulting tibble column to a vector. Finally, we assign the resulting vector to a variable named **`result_vector`** and print it. The resulting **`result_vector`** should be a numeric vector containing the unique **`participantId`** values from your code.
+-   pass the unique **`participantId`** column name as an argument to **`pull()`** and use the **`as.vector()`** function to convert the resulting tibble column to a vector
+
+-   resulting dataframe will only contain **`participantId`**s that are in '2022-03-01' but not in '2022-04-01' onwards. There are 131 of them.
 
 ```{r}
 
@@ -217,7 +219,9 @@ Next, we will remove all records of the 131 potentially non-residents from the `
 
 In the code chunk below:
 
-we use the **`%in%`** operator to check if each **`id`** value is contained in the missing_id_vector. Then we use the negation operator **`!`** to negate this condition, which gives us a logical vector indicating which rows in **`df1`** should be included in the filtered data frame. Finally, we use this logical vector to index **`df1`** and extract only the rows that satisfy the condition. The resulting filtered data frame will not contain the rows where the **`id`** values are 4 or 5.
+-   the **`%in%`** operator is to check if each **`id`** value is contained in the missing_id_vector
+
+-   the negation operator **`!`** ensures the resulting filtered data frame will not contain the rows where the **`id`** values are in missing_id_vector
 
 ```{r}
 finance1 <- finance[!finance$participantId %in% missing_id_vector, ]
@@ -226,11 +230,11 @@ finance1
 
 We will double check that the records of 131 non-residents have been removed from `finance1` dataframe.
 
-in the code below
+In the code below
 
-we use the **`distinct()`** function to extract the distinct **`participantId`** values from **`finance1`**. We pass **`participantId`** as an argument to **`distinct()`** to extract only the unique values of this column. Finally, we use the **`n_distinct()`** function to count the number of distinct **`participantId`** values in the resulting tibble.
+-   **`distinct()`** function to extract the distinct **`participantId`** values from **`finance1`**
 
-The resulting **`distinct_count`** variable should contain the count of distinct **`participantId`** values in **`finance1`**.
+-   the **`n_distinct()`** function will count the number of distinct **`participantId`** values in the resulting tibble
 
 ```{r}
 finance1 %>% 
@@ -238,7 +242,7 @@ finance1 %>%
   n_distinct()
 ```
 
-### 2.3.2 `ptcp` dataset issues:
+### 2.3.2 ptcp dataset issues:
 
 -   **participantId** should be converted from `<dbl>` format to `<chr>` format
 
@@ -294,7 +298,7 @@ Both `finance1` and `ptcp1` tables now contains information about the same numbe
 
 ### 2.3.3 Convert `finance1` table to wide format and perform left outer join with `ptcp1` table.
 
-We will now convert the `finance1` dataframe from a long to a wide format. The code chunk below does the followingL
+We will now convert the `finance1` dataframe from a long to a wide format. The code chunk below does the following:
 
 -   group the data by **participantId** , **date** and **category** using the **`group_by`** function
 
@@ -333,11 +337,11 @@ We will now convert the `finance1` dataframe from a long to a wide format. The c
     knitr::kable(head(finance1_wide_ptcp1,12), "simple") 
     ```
 
-    # 3. Visualisation
+    # 3 Visualisation
 
     ## 3.1 EDA
 
-    ### 3.1.1 Lollipop and line plot of city's monthly total income vs total expenses (high-level view)
+    ### 3.1.1 Interactive Lollipop and line plot of city's monthly total income vs total expenses (high-level view)
 
     In this exercise, I will explore the dataset from high level and then zoom into interesting patterns (if I can find any =))
 
@@ -364,12 +368,6 @@ We will now convert the `finance1` dataframe from a long to a wide format. The c
 **Design Considerations:**
 
 I have ensured inking concepts (key words, lines, fill are darker) and gridlines are lighter in shade. In order to see the end of the geom_segments, the opacity of the geom_point objects are reduced via `alpha` argument. The vertical gridlines are disabled to avoid confusion with the vertical geom_segment lines.
-
-::: callout-note
-## rgb
-
-The first three arguments are (red, green, and blue) and the last argument (alpha)
-:::
 
 ```{r}
 #| code-fold: True
@@ -410,7 +408,13 @@ ggplotly(h,
          tooltip = c('labels','x','y'))
 ```
 
-### 3.1.2 Interactive Line charts of income and expenditures by month (Zoom-in)
+::: callout-note
+The first three arguments of `rgb()` are (red, green, and blue) and the last argument (alpha)
+:::
+
+The plot above shows an obvious spike in Income and Expenses in the month of March. We will zoom into the different categories of expenses below.
+
+### 3.1.2 Zooming into Interactive Line charts of income and expenditures by month
 
 **Design considerations:**
 
@@ -422,13 +426,13 @@ There are several manual adjustments that I made to the graph and the key ones a
 
 -   **`scale_x_date()`** is used to display all the values in the x-axis with the date format "%Y-%m".
 
--   **`scale_y_continuous()`** with **`labels = comma`** is used to format the y-axis labels with commas.
+-   **`scale_y_continuous()`** with **`labels = comma`** is used to format the y-axis labels with commas, otherwise it will appear as index notation.
 
 -   **`theme_light()`** is used to set the plot background to white and remove the grid lines.
 
 -   **`element_line()`** is used to increase the axis line width.
 
--   **`legend.position = "none"`** is used to remove the legend since they are labelled.
+-   **`legend.position = "none"`** is used to remove the legend since they are manually labelled using `geom_text`.
 
 -   **`legend.title = element_blank()`** is used to remove the legend title.
 
@@ -439,21 +443,23 @@ library(scales)
 q1<-highlevel %>%
   ggplot(aes(x = date)) +
   geom_line(aes(y = Wage, color = "Red", linetype = "Wage"), size = 1) +
-  #geom_line(aes(y = RentAdjustment, color = "RentAdjustment"), size = 1) +
+
   
   # annotating the plot
-  geom_text(aes(x=as.Date("2022-04-01"), y=6000000, label="High wages \nobserved in \nMarch"), hjust=1, vjust=1, color='black', size=2.5) +
-  geom_text(aes(x=as.Date("2022-12-01"), y=3800000, label="Wage"), hjust=1, vjust=1, color='red', size=2.5) +
- # geom_text(aes(x=as.Date("2022-12-01"), y=280000, label="RentalAdjustment"), hjust=1, vjust=1, color='blue', size=2.5) +
- # scale_color_manual(values = c("Wage" = "red", "RentAdjustment" = "blue")) +
+  geom_text(aes(x=as.Date("2022-04-01"),
+                y=6000000,
+                label="High wages \nobserved in \nMarch"), 
+            hjust=1, vjust=1, color='black', size=2.5) +
+  geom_text(aes(x=as.Date("2022-12-01"), y=3800000, label="Wage"),
+            hjust=1, vjust=1,color='red', size=2.5) +
+
 
   # chart control
   labs(x = "Month", y = "Amount") +
   scale_x_date(date_breaks = '1 month',date_labels = "%b %Y") +
-  scale_y_continuous(limits = c(0, 6500000), breaks=seq(0, 6500000, 1000000), labels= comma) +
-
- 
-
+  scale_y_continuous(limits = c(0, 6500000), breaks=seq(0, 6500000, 1000000),
+                     labels= comma) +
+  
   theme_light(base_size = 12) +
   theme(axis.title = element_text(size = 10 , face = "bold"),
         axis.text = element_text(size = 10),
@@ -464,7 +470,7 @@ q1<-highlevel %>%
         panel.border = element_blank(),
         legend.position = "none",
         legend.title = element_blank()) +
-        #legend.text = element_text(size = 5)) + 
+
 
   labs(title= 'Cumulative Income across Months',
        x='Month',
@@ -768,3 +774,7 @@ jov <- ggplot(heat, aes(x = educationLevel)) +
 girafe(code = print(recre + jov),         
        width_svg = 8) 
 ```
+
+references:
+
+https://r-charts.com/correlation/heat-map-ggplot2/#:\~:text=Heat%20map%20with%20geom_tile,-A%20heap%20map&text=You%20can%20customize%20the%20border,%2C%20lwd%20and%20linetype%20%2C%20respectively.&text=In%20addition%2C%20you%20can%20add,argument%20of%20the%20aes%20function.

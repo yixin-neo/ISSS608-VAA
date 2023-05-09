@@ -737,7 +737,7 @@ Since Wage does not follow normal distribution, I will choose a non parametric t
 
 ```{r}
 #| code-fold: True
-#| fig-width: 8
+#| fig-width: 10
 #| fig-aspect: fig-width*0.618
 ggbetweenstats(data = annual, x = educationLevel, y = Wage,
                xlab = "Education level", ylab = "Annual Wage",
@@ -792,7 +792,7 @@ high_correl <- ggscatterstats(data = annual |> filter(educationLevel == "HighSch
                      breaks=seq(0, 20000, 5000), 
                      labels= comma) +
   
-  labs(title = "High sch Education Status", 
+  labs(title = "High Sch Education Status", 
        x = "Annual Wage", y = "Annual Shelter fee") 
 
 
@@ -829,9 +829,24 @@ grad_correl <- ggscatterstats(data = annual |> filter(educationLevel == "Graduat
 
 # combining plots using patchwork
 p_correl <- (low_correl + high_correl) / (bac_correl + grad_correl) + plot_spacer()
-p_correl
+p_correl + plot_annotation(title = "Correlation between Shelter spending and Annual Wage", 
+                           theme = theme(plot.title = element_text(size = 18),
+                                         plot.subtitle = element_text(size = 12)))
 
 ```
+
+H0: There is no \[monotonic\] association between the annual shelter fees and wage.
+
+H1: There is association between the annual shelter fees and wage.
+
+From the plots above, there are no strong correlation values above 0.7. only the 'low' and 'degree' education group have p-values \< 0.05 which shows that there is a significant association between shelter fee and wage.
+
+::: callout-note
+## Spearman correlation
+
+The Spearman correlation is not a linear correlation of the data, but a linear correlation of a transformed version of the data \-- specifically, the correlation of the rank-transformed data.
+Do not be mislead by the slope direction.
+:::
 
 ### 3.2.3 Correlation between joviality / recreational and Annual Wage
 

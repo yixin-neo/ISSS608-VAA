@@ -373,32 +373,57 @@ I have ensured inking concepts (key words, lines, fill are darker) and gridlines
 #| code-fold: True
 library(scales)
 h<-ggplot(highlevel) +
-  geom_segment( aes(x=date, xend=date, y=Income, yend=Expense, color="grey20"), size=0.6, alpha= 0.9) +
-  geom_point( aes(x=date, y=Income, color="Income", shape='Income', size = Income))+#, size=2 ) +
-  geom_point( aes(x=date, y=Expense, color="Expense", shape='Expense' , size = -Expense))+#, size=2 ) +
-  geom_line(aes(x=date, y=Saving), color=rgb(0.2,0.2,0.9,0.9), size=1) +
-  geom_text(aes(x=as.Date("2022-04-01"), y=max(Saving), label="Saving"), hjust=1, vjust=1, color=rgb(0.2,0.2,0.9,0.5), size=3.5) +
+  geom_segment(aes(x=date, 
+                   xend=date, 
+                   y=Income, 
+                   yend=Expense, 
+                   color="grey20"), 
+               size=0.6, 
+               alpha= 0.9) +
+  geom_point(aes(x=date,
+                 y=Income, 
+                 color="Income", 
+                 shape='Income', 
+                 size = Income))+
+  geom_point(aes(x=date, 
+                 y=Expense, 
+                 color="Expense", 
+                 shape='Expense', 
+                 size = -Expense)) +
+  geom_line(aes(x=date, 
+                y=Saving), 
+            color=rgb(0.2,0.2,0.9,0.9), 
+            size=1) +
+  geom_text(aes(x=as.Date("2022-04-01"), 
+                y=max(Saving), 
+                label="Saving"),
+            hjust=1, 
+            vjust=1, 
+            color=rgb(0.2,0.2,0.9,0.5), 
+            size=3.5) +
+  geom_hline(yintercept=0, color="black", size=0.2) +
   
-  theme_light() +
-  theme(#legend.position = "none",
-    
-        axis.line.y = element_line(color="black", size=0.2, linetype="solid"),
-        panel.grid.major.x = element_blank(),
-        panel.border = element_blank(),
-        axis.ticks.x = element_blank(),
-        axis.title.y=element_text(angle = 0,
-                                  vjust=0.9),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
-  
-  scale_x_date(date_breaks = '1 month',date_labels = "%b %Y") +
-  scale_y_continuous(limits = c(-2000000, 6500000), breaks=seq(-2000000, 6500000, 1000000), labels= comma) +
-  
-  scale_color_manual(values = c("Income" = rgb(0.2,0.7,0.1,0.9), "Expense" = rgb(0.7,0.2,0.1,0.9))) +
+  # colours
+  scale_color_manual(values = c("Income" = rgb(0.2,0.7,0.1,0.9), 
+                                "Expense" = rgb(0.7,0.2,0.1,0.9))) +
   scale_shape_manual(values = c("Income" = 16, "Expense" = 16)) +
   labs(color="", shape="") +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   
-  geom_hline(yintercept=0, color="black", size=0.2) +
+  # axes scale control
+  scale_x_date(date_breaks = '1 month',date_labels = "%b %Y") +
+  scale_y_continuous(limits = c(-2000000, 6500000), 
+                     breaks=seq(-2000000, 6500000, 1000000), 
+                     labels= comma) +
+  
+  theme_light() +
+  theme(axis.line.y = element_line(color="black", size=0.2, linetype="solid"),
+        panel.grid.major.x = element_blank(),
+        panel.border = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.y=element_text(angle = 0, vjust=0.9),
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  
   
   xlab("") +
   ylab("Amount") +
@@ -454,7 +479,7 @@ q1<-highlevel %>%
             hjust=1, vjust=1,color='red', size=2.5) +
 
 
-  # chart control
+  # scale control
   labs(x = "Month", y = "Amount") +
   scale_x_date(date_breaks = '1 month',date_labels = "%b %Y") +
   scale_y_continuous(limits = c(0, 6500000), breaks=seq(0, 6500000, 1000000),
@@ -487,22 +512,32 @@ q2<-highlevel %>%
   geom_line(aes(y = Recreation, color = "Recreation"), size = 0.7,,alpha=0.8) +
   geom_line(aes(y = Food, color = "Food"), size = 0.7, alpha=0.8) +
   geom_line(aes(y = Shelter, color = "Shelter"), size = 0.7,alpha=0.8) +
-  scale_color_manual(values = c("Education" = "green", "Recreation" = "purple",
-                                "Food" = "orange", "Shelter" = "blue")) +
-  scale_linetype_manual(values = c("Wage" = "dashed", "RentAdjustment" = "dashed"),
-                        guide = guide_legend(override.aes = list(size = 1.2))) +
+  
+  scale_color_manual(values = c("Education" = "green", 
+                                "Recreation" = "purple",
+                                "Food" = "orange", 
+                                "Shelter" = "blue")) +
+
   
   # annotating the plot
-  geom_text(aes(x=as.Date("2022-04-01"), y=640000, label="Higher recreationaland shelter \nspendings observed \nin March"), hjust=1, vjust=1, color='grey10',size=2.5) +
-  geom_text(aes(x=as.Date("2022-12-01"), y=600000, label="Shelter"), hjust=1, vjust=1, color='blue', size=2.5) +
-  geom_text(aes(x=as.Date("2022-12-01"), y=280000, label="Recreational"), hjust=1, vjust=1, color='purple', size=2.5) +
-  geom_text(aes(x=as.Date("2022-12-01"), y=380000, label="Food"), hjust=1, vjust=1, color='orange', size=2.5) +
-  geom_text(aes(x=as.Date("2022-12-01"), y=50000, label="Education"), hjust=1, vjust=1, color='green', size=2.5) +
+  geom_text(aes(x=as.Date("2022-05-01"), y=630000, 
+                label="Higher recreational and shelter \nspendings in March"), 
+            hjust=1, vjust=1, color='grey10',size=2.5) +
+  geom_text(aes(x=as.Date("2022-12-01"), y=600000, label="Shelter"), 
+            hjust=1, vjust=1, color='blue', size=2.5) +
+  geom_text(aes(x=as.Date("2022-12-01"), y=280000, label="Recreational"), 
+            hjust=1, vjust=1, color='purple', size=2.5) +
+  geom_text(aes(x=as.Date("2022-12-01"), y=380000, label="Food"), 
+            hjust=1, vjust=1, color='orange', size=2.5) +
+  geom_text(aes(x=as.Date("2022-12-01"), y=50000, label="Education"), 
+            hjust=1, vjust=1, color='green', size=2.5) +
   
   # chart control
   labs(x = "Month", y = "Amount") +
   scale_x_date(date_breaks = '1 month',date_labels = "%b %Y") +
-  scale_y_continuous(limits = c(0, 650000), breaks=seq(0, 650000, 100000), labels= comma) +
+  scale_y_continuous(limits = c(0, 650000), 
+                     breaks=seq(0, 650000, 100000), 
+                     labels= comma) +
   
   theme_light(base_size = 12) +
   theme(axis.title = element_text(size = 10 , face = "bold"),
@@ -523,17 +558,114 @@ q2<-highlevel %>%
 ggplotly(q2,tooltip = c('labels','x','y'))
 ```
 
-From both plots above, March seems to be an exciting month where there is several anomalies observed. There are unsual spikes in wage, recreational and shelter spending.
+From both plots above, March seems to be an exciting month where there is several anomalies observed. There are unusual spikes in wage, recreational and shelter spending.
 
-### 3.1.3 Interactive bubble plots of (Savings, Recreation, Shelter, Food and Jovality) against wage
+### 3.1.3 Interactive Heatmap of annual recreation spending and joviality index 
 
-Pending
+Create another table **annual** that contains aggregated amounts of income and expenses per participant.
 
 ```{r}
-#| echo: False
-#| eval: False
-glimpse(finance1_wide_ptcp1)
+#| code-fold: True
+annual <- finance1_wide_ptcp1 %>% 
+  group_by(participantId, householdSize, haveKids, educationLevel, interestGroup, joviality) %>% 
+  summarize(Education = sum(Education, na.rm = TRUE),
+            Food = sum(Food, na.rm = TRUE),
+            Recreation = sum(Recreation, na.rm = TRUE),
+            Shelter = sum(Shelter, na.rm = TRUE),
+            Wage = sum(Wage, na.rm = TRUE),
+            RentAdjustment = sum(RentAdjustment, na.rm = TRUE)) 
 ```
+
+::: callout-note
+Note that the **`na.rm = TRUE`** argument is used in the **`sum`** function to handle missing values in the columns during aggregation.
+:::
+
+Next, prepare the data needed to generate a heatmap of annual recreational spendings by interest group and education level.
+
+```{r}
+#| code-fold: True
+heat <- annual %>% 
+  group_by(educationLevel, interestGroup) %>% 
+  summarise(recre_median=median(Recreation),
+            jov_median = median(joviality))
+```
+
+We are ready to plot the heatmap.
+
+```{r}
+#| code-fold: True
+recre <- ggplot(heat, aes(x = educationLevel)) +
+  geom_tile_interactive(aes(y = interestGroup,
+                            fill = recre_median,
+                            tooltip=recre_median),
+                        color = "black",
+                        lwd = 0.2,
+                        linetype = 1) +
+  scale_fill_gradient(low = "white", high = "blue") +
+  labs(x = "Education  level", y = "Interest Group", fill = "Recreational (median)") +
+  coord_fixed() +
+  theme_few() +
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_blank(),
+        axis.title.y=element_text(angle = 0,
+                                  vjust =0.9,
+                                  size = 10,
+                                  face='bold'),
+        axis.title.x=element_text(size = 10,
+                                   face='bold'),
+        axis.text.x = element_text(angle = 45,
+                                   hjust = 1,
+                                   size = 10),
+        legend.key.size = unit(0.35, "cm"),
+        legend.title = element_text(size = 8,
+                                    face='bold'),
+        legend.text = element_text(size=8),
+        plot.title = element_text(size = 12,
+                                  face='bold')) +
+  labs(title = 'Annual Recreation spending')
+
+
+jov <- ggplot(heat, aes(x = educationLevel)) +
+  geom_tile_interactive(aes(y = interestGroup,
+                            fill = jov_median,
+                            tooltip=jov_median),
+                        color = "black",
+                        lwd = 0.2,
+                        linetype = 1) +
+  scale_fill_gradient(low = "white", high = "orange") +
+  labs(x = "Education  level", y = "Interest Group", fill = "Joviality Index (median)") +
+  coord_fixed() +
+  theme_few() +
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_blank(),
+        axis.title.y=element_text(angle = 0,
+                                  vjust =0.9,
+                                  size = 10,
+                                  face='bold'),
+        axis.title.x=element_text(size = 10,
+                                   face='bold'),
+        axis.text.x = element_text(angle = 45,
+                                   hjust = 1,
+                                   size = 10),
+        legend.key.size = unit(0.35, "cm"),
+        legend.title = element_text(size = 8,
+                                    face='bold'),
+        legend.text = element_text(size=8),
+        plot.title = element_text(size = 12,
+                                  face='bold')) +
+  labs(title = 'Joviality Index')
+
+girafe(code = print(recre + jov),         
+       width_svg = 8) 
+```
+
+From the plot above, we are able to see the link between different education levels and their interests group. Hovering the mouse above the heatmaps will reveal the annual recreation spending and joviality index in the tooltip. The median joviality index is chosen as median is a point where the maximum distance between the smallest and highest spending or index is reduced.
+
+I will be performing CDA to compare the annual recreation spends in joviality index across education levels below.
+
+### 3.1.4 Interactive bubble plots of (Savings, Recreation, Shelter, Food and Jovality) against wage
+
+Pending
 
 ```{r}
 #| echo: False
@@ -567,24 +699,6 @@ ggplot(df_wage_march, aes(x = educationLevel, y = Wage)) +
 
 ### 3.2.1 Normality assumptions of annual wage
 
-Preparing the dataframe needed:
-
-```{r}
-#| code-fold: True
-annual <- finance1_wide_ptcp1 %>% 
-  group_by(participantId, householdSize, haveKids, educationLevel, interestGroup, joviality) %>% 
-  summarize(Education = sum(Education, na.rm = TRUE),
-            Food = sum(Food, na.rm = TRUE),
-            Recreation = sum(Recreation, na.rm = TRUE),
-            Shelter = sum(Shelter, na.rm = TRUE),
-            Wage = sum(Wage, na.rm = TRUE),
-            RentAdjustment = sum(RentAdjustment, na.rm = TRUE)) 
-```
-
-::: callout-note
-Note that the **`na.rm = TRUE`** argument is used in the **`sum`** function to handle missing values in the columns during aggregation.
-:::
-
 We will first perform a test to confirm whether wage follows the normal distribution.
 
 *H0: The wage does not follow a normal distribution.*
@@ -592,8 +706,10 @@ We will first perform a test to confirm whether wage follows the normal distribu
 *H1: The wage follows a normal distribution.*
 
 ```{r}
+#| code-fold: True
 qq <- ggplot(annual,
        aes(sample=Wage)) +  #<<< use a new argument call sample: el scores
+  
   stat_qq() +
   stat_qq_line() +
   ggtitle("QQ plot with Shapiro-Wilk test results")  # add plot title
@@ -693,87 +809,6 @@ p_correl
 ### 3.2.3 Correlation between joviality / recreational and Annual Wage
 
 after 3.2.2 education and jovailiaty?
-
-First prepare the data needed to generate a heatmap of annual recreational spendings by interest group and education level.
-
-```{r}
-#| code-fold: True
-heat <- annual %>% 
-  group_by(educationLevel, interestGroup) %>% 
-  summarise(recre_median=median(Recreation),
-            jov_median = median(joviality))
-```
-
-The code chunk below
-
-EXPLAIN
-
-```{r}
-#| code-fold: True
-recre <- ggplot(heat, aes(x = educationLevel)) +
-  geom_tile_interactive(aes(y = interestGroup,
-                            fill = recre_median,
-                            tooltip=recre_median),
-                        color = "black",
-                        lwd = 0.2,
-                        linetype = 1) +
-  scale_fill_gradient(low = "white", high = "blue") +
-  labs(x = "Education  level", y = "Interest Group", fill = "Recreational (median)") +
-  coord_fixed() +
-  theme_few() +
-  theme(panel.border = element_blank(),
-        panel.grid.major = element_blank(),
-        axis.title.y=element_text(angle = 0,
-                                  vjust =0.9,
-                                  size = 10,
-                                  face='bold'),
-        axis.title.x=element_text(size = 10,
-                                   face='bold'),
-        axis.text.x = element_text(angle = 45,
-                                   hjust = 1,
-                                   size = 10),
-        legend.key.size = unit(0.35, "cm"),
-        legend.title = element_text(size = 8,
-                                    face='bold'),
-        legend.text = element_text(size=8),
-        plot.title = element_text(size = 12,
-                                  face='bold')) +
-  labs(title = 'Annual Recreation spending')
-
-
-jov <- ggplot(heat, aes(x = educationLevel)) +
-  geom_tile_interactive(aes(y = interestGroup,
-                            fill = jov_median,
-                            tooltip=jov_median),
-                        color = "black",
-                        lwd = 0.2,
-                        linetype = 1) +
-  scale_fill_gradient(low = "white", high = "orange") +
-  labs(x = "Education  level", y = "Interest Group", fill = "Joviality Index (median)") +
-  coord_fixed() +
-  theme_few() +
-  theme(panel.border = element_blank(),
-        panel.grid.major = element_blank(),
-        axis.title.y=element_text(angle = 0,
-                                  vjust =0.9,
-                                  size = 10,
-                                  face='bold'),
-        axis.title.x=element_text(size = 10,
-                                   face='bold'),
-        axis.text.x = element_text(angle = 45,
-                                   hjust = 1,
-                                   size = 10),
-        legend.key.size = unit(0.35, "cm"),
-        legend.title = element_text(size = 8,
-                                    face='bold'),
-        legend.text = element_text(size=8),
-        plot.title = element_text(size = 12,
-                                  face='bold')) +
-  labs(title = 'Joviality Index')
-
-girafe(code = print(recre + jov),         
-       width_svg = 8) 
-```
 
 references:
 

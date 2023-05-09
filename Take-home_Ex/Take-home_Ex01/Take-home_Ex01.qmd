@@ -18,13 +18,11 @@ execute:
 
 # 1. Task and Dataset
 
-This exerises aims to reveal the demographic and financial characteristics of the city of Engagement, using appropriate **static and interactive statistical graphics** methods. It also requires a user-friendly and interactive solution that helps city managers and planners to explore the complex data in an engaging way and reveal hidden patterns.
+This exerise aims to reveal the demographic and financial characteristics of the city of Engagement, using appropriate **static and interactive statistical graphics** methods. It also requires a user-friendly and interactive solution that helps city managers and planners to explore the complex data in an engaging way and reveal hidden patterns.
 
 The dataset consists of a sample survey of 1000 representative residents that collects data related to their household demographic and spending patterns, among other things. There are primarily two datasets used in this exercise
 
 -   'FinancialJournal.csv": Contains 1513635 number of daily transaction records (different categories of income and expenses) over a period of twelve months from March 2022 to February 2023.
-
-<!-- -->
 
 -   'Particpants.csv" : Contains demographics information like household size, age, education level, interest groups, joviality index and whether each household has kids.
 
@@ -560,7 +558,7 @@ ggplotly(q2,tooltip = c('labels','x','y'))
 
 From both plots above, March seems to be an exciting month where there is several anomalies observed. There are unusual spikes in wage, recreational and shelter spending.
 
-### 3.1.3 Interactive Heatmap of annual recreation spending and joviality index 
+### 3.1.3 Interactive Heatmap of annual recreation spending and joviality index
 
 Create another table **annual** that contains aggregated amounts of income and expenses per participant.
 
@@ -729,9 +727,9 @@ qq+table_png
 
 From the Shapiro test , p-value \< 0.05 and we have enough statistical evidence to reject the null hypothesis and conclude that **Wage** does not follow the normal distribution.
 
-### 3.2.2 Comparison of Annual Wage by Education levels
+### 3.2.2 One-way Anova plots to compare Wage/Recreation/Joviality across Education levels
 
-Does a person earn more if he/she is more highly educated in the city?
+#### (1) Does a person earn more if he/she is more highly educated in the city?
 
 Since Wage does not follow normal distribution, I will choose a non parametric test to compare whether there is significant difference in the median of wage between education levels.
 
@@ -753,7 +751,136 @@ ggbetweenstats(data = annual, x = educationLevel, y = Wage,
 
 For 4 categories of education levels, we can have a total of 4C2 = k(k-1)/2 (=6) possible combinations of pairs.
 
-From the results, all six pairwise comparison p-values \<0.05 and thus we can reject the null hypothesis and conclude that the median wages across all different educational levels are not the same.
+From the results, all six pairwise comparison p-values are less than 0.05 and thus we can reject the null hypothesis and conclude that the median wages across all different educational levels are all different from one another.
+
+#### (1.1) Visualising the uncertainty of point estimates
+
+```{r}
+#| code-fold: True
+annual %>%
+  ggplot(aes(x = educationLevel, y = Wage)) +
+  
+  #Using stat_pointinterval to plot the points and intervals
+  stat_pointinterval(.width = c(0.95,0.99),
+  .point = median,
+  .interval = qi,
+  aes(interval_color=stat(level)),
+  show.legend = FALSE) +
+  
+  #Defining the color of the intervals 
+  scale_color_manual(
+    values = c("blue", "darkblue"),
+    aesthetics = "interval_color") +
+  
+  #Title, subtitle, and caption
+  labs(
+    title = "Visualising confidence intervals of median math score",
+    subtitle = "Median Point + Multiple-interval plot, 95% and 99%",
+    x = "Education  level", y = "Wage") +
+  
+  theme_ipsum() +
+  
+  theme(axis.title.y=element_text(angle = 0, 
+                                  vjust=0.9, 
+                                  size = 10, 
+                                  face='bold'),
+        axis.title.x=element_text(size = 10,
+                                   face='bold'),
+        plot.title = element_text(size = 12,
+                                  face='bold'),
+        panel.border = element_blank(),
+        panel.grid.major = element_blank())
+```
+
+The error bar for mean Median Wage is the longest for Graduate education level and this could be due to outliers in this category.
+
+#### (2) Is there a significant difference in the median of recreational spending across education levels?
+
+Perform a test to confirm whether recreational spending follows the normal distribution.
+
+```{r}
+#| code-fold: True
+qq <- ggplot(annual,
+       aes(sample=Recreation)) + 
+  
+  stat_qq() +
+  stat_qq_line() +
+  ggtitle("QQ plot with Shapiro-Wilk test results")  
+
+sw_t <- shapiro_test(annual$Recreation) %>% 
+  as_tibble() %>% 
+  mutate(variable = "Recreation Spending")%>% gt()  
+
+tmp <- tempfile(fileext = '.png') # create  temp table
+gtsave(sw_t, tmp)  # use gtsave() to save sw_t into tmp folder
+table_png <- png::readPNG(tmp, native = TRUE)
+
+qq+table_png
+```
+
+We have enough statistical evidence to reject the null hypothesis that recreational spending follows normal distribution. Use a non parametric test below to test for difference in median of recreation spending across education levels.
+
+```{r}
+#| code-fold: True
+#| fig-width: 10
+#| fig-aspect: fig-width*0.618
+ggbetweenstats(data = annual, x = educationLevel, y = Recreation,
+               xlab = "Education level", ylab = "Annual Recreation",
+               type = "np", pairwise.comparisons = TRUE, pairwise.display = "ns",
+               sort = "descending",
+               sort.fun = median,
+               mean.ci = T, p.adjust.method = "fdr",  conf.level = 0.95,
+               title = "Comparison of Median Annual Recreation spending across Education Levels") +
+  scale_y_continuous(limits = c(0, 20000)) +
+   theme(axis.title.y=element_text(angle = 0,
+                                  vjust=0.9))
+```
+
+From the results, all six pairwise comparison p-values are greater 0.05 and thus we do not have enough statistical evidence to reject the null hypothesis that the median recreation spending across all different educational levels are all different.
+
+#### (3) Is there a significant difference in median of the joviality index across education levels?
+
+Perform a test to confirm whether joviality index follows the normal distribution.
+
+```{r}
+#| code-fold: True
+qq <- ggplot(annual,
+       aes(sample=joviality)) + 
+  
+  stat_qq() +
+  stat_qq_line() +
+  ggtitle("QQ plot with Shapiro-Wilk test results")  
+
+sw_t <- shapiro_test(annual$joviality) %>% 
+  as_tibble() %>% 
+  mutate(variable = "Joviality Index")%>% gt()  
+
+tmp <- tempfile(fileext = '.png') # create  temp table
+gtsave(sw_t, tmp)  # use gtsave() to save sw_t into tmp folder
+table_png <- png::readPNG(tmp, native = TRUE)
+
+qq+table_png
+```
+
+We have enough statistical evidence to reject the null hypothesis that joviality index follows normal distribution. Use a non parametric test below to test for difference in median of joviality index across education levels.
+
+```{r}
+#| code-fold: True
+#| fig-width: 10
+#| fig-aspect: fig-width*0.618
+ggbetweenstats(data = annual, x = educationLevel, y = joviality,
+               xlab = "Education level", ylab = "Joviality Index",
+               type = "np", pairwise.comparisons = TRUE, pairwise.display = "ns",
+               sort = "descending",
+               sort.fun = median,
+               mean.ci = T, p.adjust.method = "fdr",  conf.level = 0.95,
+               title = "Comparison of Median Joviality index across Education Levels") +
+  scale_y_continuous(limits = c(0, 2)) +
+   theme(axis.title.y=element_text(angle = 0,
+                                  vjust=0.9))
+```
+
+From the results, only 2 pairwise comparison p-values \<0.05 and thus we can reject the null hypothesis for (High School & Graduate) and (High School & Bachelors) and conclude that the median Joviality index for these two pairs of education levels are different.
 
 ### 3.2.3 Correlation between Annual Shelter cost and Annual Wage
 
@@ -764,7 +891,7 @@ We will use the non-parametric Spearman correlation analysis instead of Pearson 
 ```{r}
 #| code-fold: True
 #| fig-width: 10
-#| fig-height: 12
+#| fig-height: 6
 low_correl <- ggscatterstats(data = annual |> filter(educationLevel == "Low"), 
                            x = Wage, y = Shelter,
                            type = "nonparametric") + 
@@ -839,19 +966,19 @@ H0: There is no \[monotonic\] association between the annual shelter fees and wa
 
 H1: There is association between the annual shelter fees and wage.
 
-From the plots above, there are no strong correlation values above 0.7. only the 'low' and 'degree' education group have p-values \< 0.05 which shows that there is a significant association between shelter fee and wage.
+From the plots above, there are no strong correlation values above 0.7. only the 'low' and 'degree' education group showed p-values less than 0.05 which shows that there is a significant association between shelter fee and wage. However, the correlation is weak between shelter spending and wage.
 
 ::: callout-note
-## Spearman correlation
+Spearman correlation
 
-The Spearman correlation is not a linear correlation of the data, but a linear correlation of a transformed version of the data \-- specifically, the correlation of the rank-transformed data.
-Do not be mislead by the slope direction.
+The Spearman correlation is not a linear correlation of the data, but a linear correlation of a transformed version of the data \-- specifically, the correlation of the rank-transformed data. Do not be mislead by the slope direction.
 :::
 
-### 3.2.3 Correlation between joviality / recreational and Annual Wage
+### 
 
-after 3.2.2 education and jovailiaty?
+# 4 References
 
-references:
+Heat Map with ggplot2. (2023). Retrieved May 9, 2023, from <https://r-charts.com/correlation/heat-map-ggplot2/#:~:text=Heat%20map%20with%20geom_tile,-A%20heap%20map&text=You%20can%20customize%20the%20border,%2C%20lwd%20and%20linetype%20%2C%20respectively.&text=In%20addition%2C%20you%20can%20add,argument%20of%20the%20aes%20function>.
 
-https://r-charts.com/correlation/heat-map-ggplot2/#:\~:text=Heat%20map%20with%20geom_tile,-A%20heap%20map&text=You%20can%20customize%20the%20border,%2C%20lwd%20and%20linetype%20%2C%20respectively.&text=In%20addition%2C%20you%20can%20add,argument%20of%20the%20aes%20function.
+
+Downward slope but Spearman correlation coefficient is positive (and vice versa). (2022, April 5). In Stack Exchange. Retrieved May 9, 2023, from <https://stats.stackexchange.com/questions/545516/downward-slope-but-spearman-correlation-coefficient-is-positive-and-vice-versa>

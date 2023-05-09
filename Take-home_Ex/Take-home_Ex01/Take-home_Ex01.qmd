@@ -659,9 +659,11 @@ girafe(code = print(recre + jov),
        width_svg = 8) 
 ```
 
-From the plot above, we are able to see the link between different education levels and their interests group. Hovering the mouse above the heatmaps will reveal the annual recreation spending and joviality index in the tooltip. The median joviality index is chosen as median is a point where the maximum distance between the smallest and highest spending or index is reduced.
+From the plot above, we are able to see the link between different education levels and their interests group. Hovering the mouse above the heatmaps will reveal the annual recreation spending and joviality index in the tooltip. The median joviality index is chosen because it is a point where the maximum distance between the smallest and highest spending or index is reduced. What inteeresting patterns can you see?
 
-I will be performing CDA to compare the annual recreation spends in joviality index across education levels below.
+I can see that interest group J has higher recreation spending as compared to the rest and residents from the 'low' education level are contributing to it. From the joviality heatmap on the right, I also notice the same group of people are happiest of all. It makes me wonder what interest group it is in real life.
+
+I will be performing CDA to compare the annual recreation spends in joviality index across education levels later.
 
 ### 3.1.4 Interactive bubble plots of (Savings, Recreation, Shelter, Food and Jovality) against wage
 
@@ -725,9 +727,13 @@ table_png <- png::readPNG(tmp, native = TRUE)
 qq+table_png
 ```
 
-From the Shapiro test , p-value \< 0.05 and we have enough statistical evidence to reject the null hypothesis and conclude that **Wage** does not follow the normal distribution. To compare whether there is significant difference in the median of wage between education levels, we must choose a non-parametric test.
+From the Shapiro test , p-value \< 0.05 and we have enough statistical evidence to reject the null hypothesis and conclude that **Wage** does not follow the normal distribution.
 
 ### 3.2.2 Comparison of Annual Wage by Education levels
+
+Does a person earn more if he/she is more highly educated in the city?
+
+Since Wage does not follow normal distribution, I will choose a non parametric test to compare whether there is significant difference in the median of wage between education levels.
 
 ```{r}
 #| code-fold: True
@@ -745,9 +751,13 @@ ggbetweenstats(data = annual, x = educationLevel, y = Wage,
                                   vjust=0.9))
 ```
 
-From the results, all the pairwise comparison p-values \<0.05 and thus we can reject the null hypothesis and conclude that the median values across different educational levels are not the same.
+For 4 categories of education levels, we can have a total of 4C2 = k(k-1)/2 (=6) possible combinations of pairs.
+
+From the results, all six pairwise comparison p-values \<0.05 and thus we can reject the null hypothesis and conclude that the median wages across all different educational levels are not the same.
 
 ### 3.2.3 Correlation between Annual Shelter cost and Annual Wage
+
+In this section, we will investigate if people who earn more will also spend more on shelter. We will also subset the data across education levels.
 
 We will use the non-parametric Spearman correlation analysis instead of Pearson correlation since the wage data is not normally distributed.
 
@@ -759,30 +769,44 @@ low_correl <- ggscatterstats(data = annual |> filter(educationLevel == "Low"),
                            x = Wage, y = Shelter,
                            type = "nonparametric") + 
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-  scale_x_continuous(limits = c(0, 70000), breaks=seq(0, 70000, 10000), labels= comma) + 
-  scale_y_continuous(limits = c(0, 20000), breaks=seq(0, 20000, 5000), labels= comma) +
+  scale_x_continuous(limits = c(0, 70000), 
+                     breaks=seq(0, 70000, 10000), 
+                     labels= comma) + 
+  scale_y_continuous(limits = c(0, 20000), 
+                     breaks=seq(0, 20000, 5000), 
+                     labels= comma) +
   
   labs(title = "Low Education Status", 
        x = "Annual Wage", y = "Annual Shelter fee") 
+
 
 
 high_correl <- ggscatterstats(data = annual |> filter(educationLevel == "HighSchoolOrCollege"), 
                            x = Wage, y = Shelter,
                            type = "nonparametric") + 
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-  scale_x_continuous(limits = c(0, 70000), breaks=seq(0, 70000, 10000), labels= comma) + 
-  scale_y_continuous(limits = c(0, 20000), breaks=seq(0, 20000, 5000), labels= comma) +
+  scale_x_continuous(limits = c(0, 70000), 
+                     breaks=seq(0, 70000, 10000), 
+                     labels= comma) + 
+  scale_y_continuous(limits = c(0, 20000), 
+                     breaks=seq(0, 20000, 5000), 
+                     labels= comma) +
   
   labs(title = "High sch Education Status", 
        x = "Annual Wage", y = "Annual Shelter fee") 
+
 
 
 bac_correl <- ggscatterstats(data = annual |> filter(educationLevel == "Bachelors"), 
                            x = Wage, y = Shelter,
                            type = "nonparametric") + 
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-  scale_x_continuous(limits = c(0, 70000), breaks=seq(0, 70000, 10000), labels= comma) + 
-  scale_y_continuous(limits = c(0, 20000), breaks=seq(0, 20000, 5000), labels= comma) +
+  scale_x_continuous(limits = c(0, 70000), 
+                     breaks=seq(0, 70000, 10000), 
+                     labels= comma) + 
+  scale_y_continuous(limits = c(0, 20000), 
+                     breaks=seq(0, 20000, 5000), 
+                     labels= comma) +
   
   labs(title = "Degree Education Status", 
        x = "Annual Wage", y = "Annual Shelter fee") 
@@ -792,18 +816,21 @@ grad_correl <- ggscatterstats(data = annual |> filter(educationLevel == "Graduat
                            x = Wage, y = Shelter,
                            type = "nonparametric") + 
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-  scale_x_continuous(limits = c(0, 70000), breaks=seq(0, 70000, 10000), labels= comma) + 
-  scale_y_continuous(limits = c(0, 20000), breaks=seq(0, 20000, 5000), labels= comma) +
+  scale_x_continuous(limits = c(0, 70000),
+                     breaks=seq(0, 70000, 10000), 
+                     labels= comma) + 
+  scale_y_continuous(limits = c(0, 20000),
+                     breaks=seq(0, 20000, 5000), 
+                     labels= comma) +
   
   labs(title = "Graduate Education Status", 
        x = "Annual Wage", y = "Annual Shelter fee") 
 
 
+# combining plots using patchwork
 p_correl <- (low_correl + high_correl) / (bac_correl + grad_correl) + plot_spacer()
 p_correl
-#+
-  #scale_x_continuous(limits = c(0, 1500000)) +
-  #scale_y_continuous(limits = c(50, 160))
+
 ```
 
 ### 3.2.3 Correlation between joviality / recreational and Annual Wage

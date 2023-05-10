@@ -20,7 +20,7 @@ execute:
 
 This exerise aims to reveal the demographic and financial characteristics of the city of Engagement, using appropriate **static and interactive statistical graphics** methods. It also requires a user-friendly and interactive solution that helps city managers and planners to explore the complex data in an engaging way and reveal hidden patterns.
 
-The dataset consists of a sample survey of 1000 representative residents that collects data related to their household demographic and spending patterns, among other things. There are primarily two datasets used in this exercise
+The dataset consists of a sample **survey** of 1000 representative residents that collects data related to their household demographic and spending patterns, among other things. There are primarily two datasets used in this exercise
 
 -   'FinancialJournal.csv": Contains 1513635 number of daily transaction records (different categories of income and expenses) over a period of twelve months from March 2022 to February 2023.
 
@@ -59,7 +59,7 @@ The code chunk below uses `pacman::p_load()` to check if packages are installed.
 -   
 
 ```{r}
-pacman::p_load(plotly, knitr, patchwork, tidyverse, ggthemes,hrbrthemes, ggiraph, ggstatsplot, ggdist, png, gifski, rstatix, gt, nortest)
+pacman::p_load(plotly, knitr, patchwork, tidyverse, ggthemes,hrbrthemes, ggiraph, ggstatsplot, ggdist, png, gifski, rstatix, gt)
 ```
 
 ## 2.2 Import the dataset
@@ -500,6 +500,37 @@ q1<-highlevel %>%
        y='Amount')
 
 ggplotly(q1,tooltip = c('labels','x','y'))
+```
+
+Examining the wages across the months closer using boxplots:
+
+```{r}
+#| code-fold: True
+#| fig-width: 12
+#| fig-asp: 0.618
+library(lubridate)
+
+df_wage_edu_month <- finance1_wide_ptcp1 %>%
+  mutate(month = month(date))
+
+df_wage_edu_month$month <- factor(month(finance1_wide_ptcp1$date), 
+                                  levels = c(3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2), 
+                                  labels = c("Mar 22", "Apr 22", "May 22", "Jun 22", "Jul 22", "Aug 22", "Sep 22", "Oct 22", "Nov 22", "Dec 22", "Jan 23", "Feb 23"))
+
+
+ggplot(df_wage_edu_month,
+       aes(x = month, y = Wage, fill = educationLevel)) +
+  geom_boxplot() +
+  labs(x = "Education Level", y = "Wage", fill = "Month") +
+  scale_fill_brewer(palette="RdBu") + 
+  theme_minimal() +
+  theme(legend.key.size = unit(0.2,'cm'),
+        legend.position="bottom",
+        axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+
 ```
 
 ```{r}
@@ -979,6 +1010,5 @@ The Spearman correlation is not a linear correlation of the data, but a linear c
 # 4 References
 
 Heat Map with ggplot2. (2023). Retrieved May 9, 2023, from <https://r-charts.com/correlation/heat-map-ggplot2/#:~:text=Heat%20map%20with%20geom_tile,-A%20heap%20map&text=You%20can%20customize%20the%20border,%2C%20lwd%20and%20linetype%20%2C%20respectively.&text=In%20addition%2C%20you%20can%20add,argument%20of%20the%20aes%20function>.
-
 
 Downward slope but Spearman correlation coefficient is positive (and vice versa). (2022, April 5). In Stack Exchange. Retrieved May 9, 2023, from <https://stats.stackexchange.com/questions/545516/downward-slope-but-spearman-correlation-coefficient-is-positive-and-vice-versa>

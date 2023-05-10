@@ -335,21 +335,56 @@ We will now convert the `finance1` dataframe from a long to a wide format. The c
     knitr::kable(head(finance1_wide_ptcp1,12), "simple") 
     ```
 
-    # 3 Visualisation
+# 3 Visualisation
 
-    ## 3.1 EDA
+## 3.1 Wage and categories of expenses
 
-    ### 3.1.1 Interactive Lollipop and line plot of city's monthly total income vs total expenses (high-level view)
+In this section, I will explore the dataset from high level and then zoom into interesting patterns (if I can find any =))
 
-    In this exercise, I will explore the dataset from high level and then zoom into interesting patterns (if I can find any =))
+## 3.2.1 Normality assumptions of annual wage
 
-    We prepare the data require for the plot. Categorise Education, Food, Recreation, Shelter into **Expenses**. Wage belongs to **Income** category**.**
+Before zooming into wages in March, we will first perform a test to confirm whether wage follows the normal distribution.
 
-    ```{r}
-    #| code-fold: True
-    highlevel <- finance1_wide_ptcp1 %>%
-      group_by(date) %>%
-      summarize(Education = sum(Education, na.rm = TRUE),
+H0: The wage does not follow a normal distribution.
+
+H1: The wage follows a normal distribution.
+
+```{r}
+#| code-fold: True
+set.seed(123) # for reproducibility
+sample_5000<- finance1_wide_ptcp1[sample(1:nrow(finance1_wide_ptcp1), 5000), ] # perform sampling as limit of shapiro test is 5000
+
+
+qq <- ggplot(sample_5000,
+       aes(sample=Wage)) +  #<<< use a new argument call sample: el scores
+  
+  stat_qq() +
+  stat_qq_line() +
+  ggtitle("QQ plot with Shapiro-Wilk test results")  # add plot title
+
+sw_t <- shapiro_test(sample_5000$Wage) %>% 
+  as_tibble() %>% 
+  mutate(variable = "Wage")%>% gt()  #<<< make into a gt format (will give a nice table)  shapiro.test is not used here as it gives output in another format.
+
+tmp <- tempfile(fileext = '.png') # create  temp table
+gtsave(sw_t, tmp)  # use gtsave() to save sw_t into tmp folder
+table_png <- png::readPNG(tmp, native = TRUE)
+
+qq+table_png
+
+```
+
+From the Shapiro test , p-value \< 0.05 and we have enough statistical evidence to reject the null hypothesis and conclude that Wage does not follow the normal distribution.
+
+### 3.1.2 Interactive Line charts of wages by month
+
+Preparing the data
+
+```{r}
+#| code-fold: True
+highlevel <- finance1_wide_ptcp1 %>%
+  group_by(date) %>%
+  summarize(Education = sum(Education, na.rm = TRUE),
                 Food = sum(Food, na.rm = TRUE),
                 Recreation = sum(Recreation, na.rm = TRUE),
                 Shelter = sum(Shelter, na.rm = TRUE),
@@ -360,100 +395,8 @@ We will now convert the `finance1` dataframe from a long to a wide format. The c
                 Saving = Income - ExpenseP,                            #<<<
                 Expense = ExpenseP * -1                                #<<<
                 )
-    head(highlevel,5)
-    ```
-
-**Design Considerations:**
-
-I have ensured inking concepts (key words, lines, fill are darker) and gridlines are lighter in shade. In order to see the end of the geom_segments, the opacity of the geom_point objects are reduced via `alpha` argument. The vertical gridlines are disabled to avoid confusion with the vertical geom_segment lines.
-
-```{r}
-#| code-fold: True
-library(scales)
-h<-ggplot(highlevel) +
-  geom_segment(aes(x=date, 
-                   xend=date, 
-                   y=Income, 
-                   yend=Expense, 
-                   color="grey20"), 
-               size=0.6, 
-               alpha= 0.9) +
-  geom_point(aes(x=date,
-                 y=Income, 
-                 color="Income", 
-                 shape='Income', 
-                 size = Income))+
-  geom_point(aes(x=date, 
-                 y=Expense, 
-                 color="Expense", 
-                 shape='Expense', 
-                 size = -Expense)) +
-  geom_line(aes(x=date, 
-                y=Saving), 
-            color=rgb(0.2,0.2,0.9,0.9), 
-            size=1) +
-  geom_text(aes(x=as.Date("2022-04-01"), 
-                y=max(Saving), 
-                label="Saving"),
-            hjust=1, 
-            vjust=1, 
-            color=rgb(0.2,0.2,0.9,0.5), 
-            size=3.5) +
-  geom_hline(yintercept=0, color="black", size=0.2) +
-  
-  # colours
-  scale_color_manual(values = c("Income" = rgb(0.2,0.7,0.1,0.9), 
-                                "Expense" = rgb(0.7,0.2,0.1,0.9))) +
-  scale_shape_manual(values = c("Income" = 16, "Expense" = 16)) +
-  labs(color="", shape="") +
-  guides(color = guide_legend(override.aes = list(size = 3))) +
-  
-  # axes scale control
-  scale_x_date(date_breaks = '1 month',date_labels = "%b %Y") +
-  scale_y_continuous(limits = c(-2000000, 6500000), 
-                     breaks=seq(-2000000, 6500000, 1000000), 
-                     labels= comma) +
-  
-  theme_light() +
-  theme(axis.line.y = element_line(color="black", size=0.2, linetype="solid"),
-        panel.grid.major.x = element_blank(),
-        panel.border = element_blank(),
-        axis.ticks.x = element_blank(),
-        axis.title.y=element_text(angle = 0, vjust=0.9),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
-  
-  
-  xlab("") +
-  ylab("Amount") +
-  ggtitle('City monthly total income, total expense and total savings')
-
-ggplotly(h,
-         tooltip = c('labels','x','y'))
+head(highlevel,5)
 ```
-
-::: callout-note
-The first three arguments of `rgb()` are (red, green, and blue) and the last argument (alpha)
-:::
-
-The plot above shows an obvious spike in Income and Expenses in the month of March. We will zoom into the different categories of expenses below.
-
-### 3.1.2  Interactive Line charts of income and expenditures by month
-
-There are several manual adjustments that I made to the graph and the key ones are shown below:
-
--   the **`color`** aesthetic within each **`geom_line`** maps the name of the variable to a specific color. Then, the **`scale_color_manual`** function is used to assign the desired colors to each variable name.
-
--   **`scale_x_date()`** is used to display all the values in the x-axis with the date format "%Y-%m".
-
--   **`scale_y_continuous()`** with **`labels = comma`** is used to format the y-axis labels with commas, otherwise it will appear as index notation.
-
--   **`theme_light()`** is used to set the plot background to white and remove the grid lines.
-
--   **`element_line()`** is used to increase the axis line width.
-
--   **`legend.position = "none"`** is used to remove the legend since they are manually labelled using `geom_text`.
-
--   **`legend.title = element_blank()`** is used to remove the legend title.
 
 ```{r}
 #| code-fold: True
@@ -497,41 +440,6 @@ q1<-highlevel %>%
 
 ggplotly(q1,tooltip = c('labels','x','y'))
 ```
-
-## 3.2.1 Normality assumptions of annual wage
-
-Before zooming into wages in March, we will first perform a test to confirm whether wage follows the normal distribution.
-
-H0: The wage does not follow a normal distribution.
-
-H1: The wage follows a normal distribution.
-
-```{r}
-#| code-fold: True
-set.seed(123) # for reproducibility
-sample_5000<- finance1_wide_ptcp1[sample(1:nrow(finance1_wide_ptcp1), 5000), ] # perform sampling as limit of shapiro test is 5000
-
-
-qq <- ggplot(sample_5000,
-       aes(sample=Wage)) +  #<<< use a new argument call sample: el scores
-  
-  stat_qq() +
-  stat_qq_line() +
-  ggtitle("QQ plot with Shapiro-Wilk test results")  # add plot title
-
-sw_t <- shapiro_test(sample_5000$Wage) %>% 
-  as_tibble() %>% 
-  mutate(variable = "Wage")%>% gt()  #<<< make into a gt format (will give a nice table)  shapiro.test is not used here as it gives output in another format.
-
-tmp <- tempfile(fileext = '.png') # create  temp table
-gtsave(sw_t, tmp)  # use gtsave() to save sw_t into tmp folder
-table_png <- png::readPNG(tmp, native = TRUE)
-
-qq+table_png
-
-```
-
-From the Shapiro test , p-value \< 0.05 and we have enough statistical evidence to reject the null hypothesis and conclude that Wage does not follow the normal distribution.
 
 Now lets examine the wages across the months closer using boxplots.
 
@@ -638,7 +546,7 @@ df_wage_edu_month %>%
 ```
 :::
 
-### Next Plot: Interactive  (pending coordinated) Line chart of expenditures by month
+### Next Plot: Interactive (pending coordinated) Line chart of expenditures by month
 
 Design considerations:
 

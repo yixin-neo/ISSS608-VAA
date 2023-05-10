@@ -352,10 +352,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#finance-dataset-issues" id="toc-finance-dataset-issues" class="nav-link" data-scroll-target="#finance-dataset-issues">2.3.1 <strong>finance</strong> dataset issues:</a></li>
   <li><a href="#ptcp-dataset-issues" id="toc-ptcp-dataset-issues" class="nav-link" data-scroll-target="#ptcp-dataset-issues">2.3.2 ptcp dataset issues:</a></li>
   <li><a href="#convert-finance1-table-to-wide-format-and-perform-left-outer-join-with-ptcp1-table." id="toc-convert-finance1-table-to-wide-format-and-perform-left-outer-join-with-ptcp1-table." class="nav-link" data-scroll-target="#convert-finance1-table-to-wide-format-and-perform-left-outer-join-with-ptcp1-table.">2.3.3 Convert <code>finance1</code> table to wide format and perform left outer join with <code>ptcp1</code> table.</a></li>
-  <li><a href="#interactive-line-charts-of-income-and-expenditures-by-month" id="toc-interactive-line-charts-of-income-and-expenditures-by-month" class="nav-link" data-scroll-target="#interactive-line-charts-of-income-and-expenditures-by-month">3.1.2 Interactive Line charts of income and expenditures by month</a></li>
   </ul></li>
+  </ul></li>
+  <li><a href="#visualisation" id="toc-visualisation" class="nav-link" data-scroll-target="#visualisation">3 Visualisation</a>
+  <ul class="collapse">
+  <li><a href="#wage-and-categories-of-expenses" id="toc-wage-and-categories-of-expenses" class="nav-link" data-scroll-target="#wage-and-categories-of-expenses">3.1 Wage and categories of expenses</a></li>
   <li><a href="#normality-assumptions-of-annual-wage" id="toc-normality-assumptions-of-annual-wage" class="nav-link" data-scroll-target="#normality-assumptions-of-annual-wage">3.2.1 Normality assumptions of annual wage</a>
   <ul class="collapse">
+  <li><a href="#interactive-line-charts-of-wages-by-month" id="toc-interactive-line-charts-of-wages-by-month" class="nav-link" data-scroll-target="#interactive-line-charts-of-wages-by-month">3.1.2 Interactive Line charts of wages by month</a></li>
   <li><a href="#next-plot-interactive-pending-coordinated-line-chart-of-expenditures-by-month" id="toc-next-plot-interactive-pending-coordinated-line-chart-of-expenditures-by-month" class="nav-link" data-scroll-target="#next-plot-interactive-pending-coordinated-line-chart-of-expenditures-by-month">Next Plot: Interactive (pending coordinated) Line chart of expenditures by month</a></li>
   <li><a href="#interactive-heatmap-of-annual-recreation-spending-and-joviality-index" id="toc-interactive-heatmap-of-annual-recreation-spending-and-joviality-index" class="nav-link" data-scroll-target="#interactive-heatmap-of-annual-recreation-spending-and-joviality-index">3.1.3 Interactive Heatmap of annual recreation spending and joviality index</a></li>
   </ul></li>
@@ -772,7 +776,7 @@ $ joviality      &lt;dbl&gt; 0.001626703, 0.328086500, 0.393469590, 0.138063446,
 <p>Both <code>finance1</code> and <code>ptcp1</code> tables now contains information about the same number of participantIds.</p>
 </section>
 <section id="convert-finance1-table-to-wide-format-and-perform-left-outer-join-with-ptcp1-table." class="level3">
-<h3 class="anchored">2.3.3 Convert <code>finance1</code> table to wide format and perform left outer join with <code>ptcp1</code> table.</h3>
+<h3 class="anchored" data-anchor-id="convert-finance1-table-to-wide-format-and-perform-left-outer-join-with-ptcp1-table.">2.3.3 Convert <code>finance1</code> table to wide format and perform left outer join with <code>ptcp1</code> table.</h3>
 <p>We will now convert the <code>finance1</code> dataframe from a long to a wide format. The code chunk below does the following:</p>
 <ul>
 <li><p>group the data by <strong>participantId</strong> , <strong>date</strong> and <strong>category</strong> using the <strong><code>group_by</code></strong> function</p></li>
@@ -1042,29 +1046,71 @@ Note
 </tbody>
 </table>
 </div>
-</div>
-<h1 id="visualisation">3 Visualisation</h1>
-<h2 id="eda" class="anchored" data-anchor-id="convert-finance1-table-to-wide-format-and-perform-left-outer-join-with-ptcp1-table.">3.1 EDA</h2>
-<h3 id="interactive-lollipop-and-line-plot-of-citys-monthly-total-income-vs-total-expenses-high-level-view" class="anchored">3.1.1 Interactive Lollipop and line plot of city’s monthly total income vs total expenses (high-level view)</h3>
-<p>In this exercise, I will explore the dataset from high level and then zoom into interesting patterns (if I can find any =))</p>
-<p>We prepare the data require for the plot. Categorise Education, Food, Recreation, Shelter into <strong>Expenses</strong>. Wage belongs to <strong>Income</strong> category<strong>.</strong></p>
+</div></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="visualisation" class="level1">
+<h1>3 Visualisation</h1>
+<section id="wage-and-categories-of-expenses" class="level2">
+<h2 class="anchored" data-anchor-id="wage-and-categories-of-expenses">3.1 Wage and categories of expenses</h2>
+<p>In this section, I will explore the dataset from high level and then zoom into interesting patterns (if I can find any =))</p>
+</section>
+<section id="normality-assumptions-of-annual-wage" class="level2">
+<h2 class="anchored" data-anchor-id="normality-assumptions-of-annual-wage">3.2.1 Normality assumptions of annual wage</h2>
+<p>Before zooming into wages in March, we will first perform a test to confirm whether wage follows the normal distribution.</p>
+<p>H0: The wage does not follow a normal distribution.</p>
+<p>H1: The wage follows a normal distribution.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>highlevel <span class="ot">&lt;-</span> finance1_wide_ptcp1 <span class="sc">%&gt;%</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(date) <span class="sc">%&gt;%</span></span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Education =</span> <span class="fu">sum</span>(Education, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">Food =</span> <span class="fu">sum</span>(Food, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">Recreation =</span> <span class="fu">sum</span>(Recreation, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">Shelter =</span> <span class="fu">sum</span>(Shelter, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">Wage =</span> <span class="fu">sum</span>(Wage, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">RentAdjustment =</span> <span class="fu">sum</span>(RentAdjustment, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">ExpenseP =</span> <span class="fu">sum</span>(Education, Food, Recreation, Shelter),  <span class="co">#&lt;&lt;&lt;</span></span>
-<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">Income =</span> <span class="fu">sum</span>(Wage, RentAdjustment),                    <span class="co">#&lt;&lt;&lt;</span></span>
-<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">Saving =</span> Income <span class="sc">-</span> ExpenseP,                            <span class="co">#&lt;&lt;&lt;</span></span>
-<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">Expense =</span> ExpenseP <span class="sc">*</span> <span class="sc">-</span><span class="dv">1</span>                                <span class="co">#&lt;&lt;&lt;</span></span>
-<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>            )</span>
-<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(highlevel,<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>) <span class="co"># for reproducibility</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>sample_5000<span class="ot">&lt;-</span> finance1_wide_ptcp1[<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(finance1_wide_ptcp1), <span class="dv">5000</span>), ] <span class="co"># perform sampling as limit of shapiro test is 5000</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>qq <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(sample_5000,</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">sample=</span>Wage)) <span class="sc">+</span>  <span class="co">#&lt;&lt;&lt; use a new argument call sample: el scores</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_qq</span>() <span class="sc">+</span></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_qq_line</span>() <span class="sc">+</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"QQ plot with Shapiro-Wilk test results"</span>)  <span class="co"># add plot title</span></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>sw_t <span class="ot">&lt;-</span> <span class="fu">shapiro_test</span>(sample_5000<span class="sc">$</span>Wage) <span class="sc">%&gt;%</span> </span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">variable =</span> <span class="st">"Wage"</span>)<span class="sc">%&gt;%</span> <span class="fu">gt</span>()  <span class="co">#&lt;&lt;&lt; make into a gt format (will give a nice table)  shapiro.test is not used here as it gives output in another format.</span></span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">'.png'</span>) <span class="co"># create  temp table</span></span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a><span class="fu">gtsave</span>(sw_t, tmp)  <span class="co"># use gtsave() to save sw_t into tmp folder</span></span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>table_png <span class="ot">&lt;-</span> png<span class="sc">::</span><span class="fu">readPNG</span>(tmp, <span class="at">native =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a>qq<span class="sc">+</span>table_png</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>From the Shapiro test , p-value &lt; 0.05 and we have enough statistical evidence to reject the null hypothesis and conclude that Wage does not follow the normal distribution.</p>
+<section id="interactive-line-charts-of-wages-by-month" class="level3">
+<h3 class="anchored" data-anchor-id="interactive-line-charts-of-wages-by-month">3.1.2 Interactive Line charts of wages by month</h3>
+<p>Preparing the data</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>highlevel <span class="ot">&lt;-</span> finance1_wide_ptcp1 <span class="sc">%&gt;%</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(date) <span class="sc">%&gt;%</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Education =</span> <span class="fu">sum</span>(Education, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">Food =</span> <span class="fu">sum</span>(Food, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">Recreation =</span> <span class="fu">sum</span>(Recreation, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">Shelter =</span> <span class="fu">sum</span>(Shelter, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">Wage =</span> <span class="fu">sum</span>(Wage, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">RentAdjustment =</span> <span class="fu">sum</span>(RentAdjustment, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">ExpenseP =</span> <span class="fu">sum</span>(Education, Food, Recreation, Shelter),  <span class="co">#&lt;&lt;&lt;</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>                <span class="at">Income =</span> <span class="fu">sum</span>(Wage, RentAdjustment),                    <span class="co">#&lt;&lt;&lt;</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">Saving =</span> Income <span class="sc">-</span> ExpenseP,                            <span class="co">#&lt;&lt;&lt;</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>                <span class="at">Expense =</span> ExpenseP <span class="sc">*</span> <span class="sc">-</span><span class="dv">1</span>                                <span class="co">#&lt;&lt;&lt;</span></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>                )</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(highlevel,<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 5 × 11
@@ -1077,106 +1123,7 @@ Note
 5 2022-07-01    11424. 313803.    329608. 558451. 3.49e6             0  1213285.
 # ℹ 3 more variables: Income &lt;dbl&gt;, Saving &lt;dbl&gt;, Expense &lt;dbl&gt;</code></pre>
 </div>
-</div></li>
-</ul>
-<p><strong>Design Considerations:</strong></p>
-<p>I have ensured inking concepts (key words, lines, fill are darker) and gridlines are lighter in shade. In order to see the end of the geom_segments, the opacity of the geom_point objects are reduced via <code>alpha</code> argument. The vertical gridlines are disabled to avoid confusion with the vertical geom_segment lines.</p>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>h<span class="ot">&lt;-</span><span class="fu">ggplot</span>(highlevel) <span class="sc">+</span></span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">x=</span>date, </span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">xend=</span>date, </span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y=</span>Income, </span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">yend=</span>Expense, </span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">color=</span><span class="st">"grey20"</span>), </span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>               <span class="at">size=</span><span class="fl">0.6</span>, </span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>               <span class="at">alpha=</span> <span class="fl">0.9</span>) <span class="sc">+</span></span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x=</span>date,</span>
-<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>                 <span class="at">y=</span>Income, </span>
-<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>                 <span class="at">color=</span><span class="st">"Income"</span>, </span>
-<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>                 <span class="at">shape=</span><span class="st">'Income'</span>, </span>
-<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>                 <span class="at">size =</span> Income))<span class="sc">+</span></span>
-<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x=</span>date, </span>
-<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>                 <span class="at">y=</span>Expense, </span>
-<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>                 <span class="at">color=</span><span class="st">"Expense"</span>, </span>
-<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>                 <span class="at">shape=</span><span class="st">'Expense'</span>, </span>
-<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>                 <span class="at">size =</span> <span class="sc">-</span>Expense)) <span class="sc">+</span></span>
-<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span>date, </span>
-<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>                <span class="at">y=</span>Saving), </span>
-<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a>            <span class="at">color=</span><span class="fu">rgb</span>(<span class="fl">0.2</span>,<span class="fl">0.2</span>,<span class="fl">0.9</span>,<span class="fl">0.9</span>), </span>
-<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a>            <span class="at">size=</span><span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">as.Date</span>(<span class="st">"2022-04-01"</span>), </span>
-<span id="cb37-25"><a href="#cb37-25" aria-hidden="true" tabindex="-1"></a>                <span class="at">y=</span><span class="fu">max</span>(Saving), </span>
-<span id="cb37-26"><a href="#cb37-26" aria-hidden="true" tabindex="-1"></a>                <span class="at">label=</span><span class="st">"Saving"</span>),</span>
-<span id="cb37-27"><a href="#cb37-27" aria-hidden="true" tabindex="-1"></a>            <span class="at">hjust=</span><span class="dv">1</span>, </span>
-<span id="cb37-28"><a href="#cb37-28" aria-hidden="true" tabindex="-1"></a>            <span class="at">vjust=</span><span class="dv">1</span>, </span>
-<span id="cb37-29"><a href="#cb37-29" aria-hidden="true" tabindex="-1"></a>            <span class="at">color=</span><span class="fu">rgb</span>(<span class="fl">0.2</span>,<span class="fl">0.2</span>,<span class="fl">0.9</span>,<span class="fl">0.5</span>), </span>
-<span id="cb37-30"><a href="#cb37-30" aria-hidden="true" tabindex="-1"></a>            <span class="at">size=</span><span class="fl">3.5</span>) <span class="sc">+</span></span>
-<span id="cb37-31"><a href="#cb37-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">0</span>, <span class="at">color=</span><span class="st">"black"</span>, <span class="at">size=</span><span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb37-32"><a href="#cb37-32" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb37-33"><a href="#cb37-33" aria-hidden="true" tabindex="-1"></a>  <span class="co"># colours</span></span>
-<span id="cb37-34"><a href="#cb37-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Income"</span> <span class="ot">=</span> <span class="fu">rgb</span>(<span class="fl">0.2</span>,<span class="fl">0.7</span>,<span class="fl">0.1</span>,<span class="fl">0.9</span>), </span>
-<span id="cb37-35"><a href="#cb37-35" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Expense"</span> <span class="ot">=</span> <span class="fu">rgb</span>(<span class="fl">0.7</span>,<span class="fl">0.2</span>,<span class="fl">0.1</span>,<span class="fl">0.9</span>))) <span class="sc">+</span></span>
-<span id="cb37-36"><a href="#cb37-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Income"</span> <span class="ot">=</span> <span class="dv">16</span>, <span class="st">"Expense"</span> <span class="ot">=</span> <span class="dv">16</span>)) <span class="sc">+</span></span>
-<span id="cb37-37"><a href="#cb37-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">color=</span><span class="st">""</span>, <span class="at">shape=</span><span class="st">""</span>) <span class="sc">+</span></span>
-<span id="cb37-38"><a href="#cb37-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">color =</span> <span class="fu">guide_legend</span>(<span class="at">override.aes =</span> <span class="fu">list</span>(<span class="at">size =</span> <span class="dv">3</span>))) <span class="sc">+</span></span>
-<span id="cb37-39"><a href="#cb37-39" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb37-40"><a href="#cb37-40" aria-hidden="true" tabindex="-1"></a>  <span class="co"># axes scale control</span></span>
-<span id="cb37-41"><a href="#cb37-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">'1 month'</span>,<span class="at">date_labels =</span> <span class="st">"%b %Y"</span>) <span class="sc">+</span></span>
-<span id="cb37-42"><a href="#cb37-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2000000</span>, <span class="dv">6500000</span>), </span>
-<span id="cb37-43"><a href="#cb37-43" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">seq</span>(<span class="sc">-</span><span class="dv">2000000</span>, <span class="dv">6500000</span>, <span class="dv">1000000</span>), </span>
-<span id="cb37-44"><a href="#cb37-44" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels=</span> comma) <span class="sc">+</span></span>
-<span id="cb37-45"><a href="#cb37-45" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb37-46"><a href="#cb37-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_light</span>() <span class="sc">+</span></span>
-<span id="cb37-47"><a href="#cb37-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.line.y =</span> <span class="fu">element_line</span>(<span class="at">color=</span><span class="st">"black"</span>, <span class="at">size=</span><span class="fl">0.2</span>, <span class="at">linetype=</span><span class="st">"solid"</span>),</span>
-<span id="cb37-48"><a href="#cb37-48" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb37-49"><a href="#cb37-49" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.border =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb37-50"><a href="#cb37-50" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb37-51"><a href="#cb37-51" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.y=</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>, <span class="at">vjust=</span><span class="fl">0.9</span>),</span>
-<span id="cb37-52"><a href="#cb37-52" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb37-53"><a href="#cb37-53" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb37-54"><a href="#cb37-54" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb37-55"><a href="#cb37-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span></span>
-<span id="cb37-56"><a href="#cb37-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Amount"</span>) <span class="sc">+</span></span>
-<span id="cb37-57"><a href="#cb37-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">'City monthly total income, total expense and total savings'</span>)</span>
-<span id="cb37-58"><a href="#cb37-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-59"><a href="#cb37-59" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplotly</span>(h,</span>
-<span id="cb37-60"><a href="#cb37-60" aria-hidden="true" tabindex="-1"></a>         <span class="at">tooltip =</span> <span class="fu">c</span>(<span class="st">'labels'</span>,<span class="st">'x'</span>,<span class="st">'y'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-7e2e9384d5b0ba92737e" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-7e2e9384d5b0ba92737e">{"x":{"data":[{"x":[19052,19052,null,19083,19083,null,19113,19113,null,19144,19144,null,19174,19174,null,19205,19205,null,19236,19236,null,19266,19266,null,19297,19297,null,19327,19327,null,19358,19358,null,19389,19389],"y":[6122113.9,-1612753.07,null,3470185.99,-1265312.08,null,3623068.09,-1219825.4,null,3608883.31,-1187570.94,null,3485799.42,-1213284.94,null,3763807.89,-1189655.46,null,3610504.14,-1174641.52,null,3483352.75,-1210151.18,null,3607156.48,-1160991.35,null,3627932.32,-1199574.64,null,3623061.39,-1194704.27,null,3292643.75,-1123458.51],"text":["date: 2022-03-01<br />Income: 6122114","date: 2022-03-01<br />Income: 6122114",null,"date: 2022-04-01<br />Income: 3470186","date: 2022-04-01<br />Income: 3470186",null,"date: 2022-05-01<br />Income: 3623068","date: 2022-05-01<br />Income: 3623068",null,"date: 2022-06-01<br />Income: 3608883","date: 2022-06-01<br />Income: 3608883",null,"date: 2022-07-01<br />Income: 3485799","date: 2022-07-01<br />Income: 3485799",null,"date: 2022-08-01<br />Income: 3763808","date: 2022-08-01<br />Income: 3763808",null,"date: 2022-09-01<br />Income: 3610504","date: 2022-09-01<br />Income: 3610504",null,"date: 2022-10-01<br />Income: 3483353","date: 2022-10-01<br />Income: 3483353",null,"date: 2022-11-01<br />Income: 3607156","date: 2022-11-01<br />Income: 3607156",null,"date: 2022-12-01<br />Income: 3627932","date: 2022-12-01<br />Income: 3627932",null,"date: 2023-01-01<br />Income: 3623061","date: 2023-01-01<br />Income: 3623061",null,"date: 2023-02-01<br />Income: 3292644","date: 2023-02-01<br />Income: 3292644"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(127,127,127,0.9)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[19052,19083,19113,19144,19174,19205,19236,19266,19297,19327,19358,19389],"y":[6122113.9,3470185.99,3623068.09,3608883.31,3485799.42,3763807.89,3610504.14,3483352.75,3607156.48,3627932.32,3623061.39,3292643.75],"text":["date: 2022-03-01<br />Income: 6122114","date: 2022-04-01<br />Income: 3470186","date: 2022-05-01<br />Income: 3623068","date: 2022-06-01<br />Income: 3608883","date: 2022-07-01<br />Income: 3485799","date: 2022-08-01<br />Income: 3763808","date: 2022-09-01<br />Income: 3610504","date: 2022-10-01<br />Income: 3483353","date: 2022-11-01<br />Income: 3607156","date: 2022-12-01<br />Income: 3627932","date: 2023-01-01<br />Income: 3623061","date: 2023-02-01<br />Income: 3292644"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(51,179,26,0.902)","opacity":1,"size":[22.6771653543307,16.7278126078653,17.1429289198985,17.1049576703205,16.770815468108,17.5139885787233,17.1093019451494,16.7640862046622,17.1003277272347,17.1559251624572,17.1429110101317,16.2283778003363],"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(51,179,26,0.902)"}},"hoveron":"points","name":"Income","legendgroup":"Income","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[19052,19083,19113,19144,19174,19205,19236,19266,19297,19327,19358,19389],"y":[-1612753.07,-1265312.08,-1219825.4,-1187570.94,-1213284.94,-1189655.46,-1174641.52,-1210151.18,-1160991.35,-1199574.64,-1194704.27,-1123458.51],"text":["date: 2022-03-01<br />Expense: -1612753","date: 2022-04-01<br />Expense: -1265312","date: 2022-05-01<br />Expense: -1219825","date: 2022-06-01<br />Expense: -1187571","date: 2022-07-01<br />Expense: -1213285","date: 2022-08-01<br />Expense: -1189655","date: 2022-09-01<br />Expense: -1174642","date: 2022-10-01<br />Expense: -1210151","date: 2022-11-01<br />Expense: -1160991","date: 2022-12-01<br />Expense: -1199575","date: 2023-01-01<br />Expense: -1194704","date: 2023-02-01<br />Expense: -1123459"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(179,51,26,0.902)","opacity":1,"size":[9.69195897202369,6.96299972571424,6.40341284320808,5.91971613273669,6.31280637814119,5.95423035125546,5.69177387711998,6.26822505882851,5.41704764518651,6.11147775959389,6.03563840790087,3.77952755905512],"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(179,51,26,0.902)"}},"hoveron":"points","name":"Expense","legendgroup":"Expense","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[19052,19083,19113,19144,19174,19205,19236,19266,19297,19327,19358,19389],"y":[4509360.83,2204873.91,2403242.69,2421312.37,2272514.48,2574152.43,2435862.62,2273201.57,2446165.13,2428357.68,2428357.12,2169185.24],"text":["date: 2022-03-01<br />Saving: 4509361","date: 2022-04-01<br />Saving: 2204874","date: 2022-05-01<br />Saving: 2403243","date: 2022-06-01<br />Saving: 2421312","date: 2022-07-01<br />Saving: 2272514","date: 2022-08-01<br />Saving: 2574152","date: 2022-09-01<br />Saving: 2435863","date: 2022-10-01<br />Saving: 2273202","date: 2022-11-01<br />Saving: 2446165","date: 2022-12-01<br />Saving: 2428358","date: 2023-01-01<br />Saving: 2428357","date: 2023-02-01<br />Saving: 2169185"],"type":"scatter","mode":"lines","line":{"width":3.77952755905512,"color":"rgba(51,51,230,0.902)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[19083,19083,19083,19083,19083,19083,19083,19083,19083,19083,19083,19083],"y":[4509360.83,4509360.83,4509360.83,4509360.83,4509360.83,4509360.83,4509360.83,4509360.83,4509360.83,4509360.83,4509360.83,4509360.83],"text":["Saving","Saving","Saving","Saving","Saving","Saving","Saving","Saving","Saving","Saving","Saving","Saving"],"hovertext":["as.Date(\"2022-04-01\"): 2022-04-01<br />max(Saving): 4509361","as.Date(\"2022-04-01\"): 2022-04-01<br />max(Saving): 4509361","as.Date(\"2022-04-01\"): 2022-04-01<br />max(Saving): 4509361","as.Date(\"2022-04-01\"): 2022-04-01<br />max(Saving): 4509361","as.Date(\"2022-04-01\"): 2022-04-01<br />max(Saving): 4509361","as.Date(\"2022-04-01\"): 2022-04-01<br />max(Saving): 4509361","as.Date(\"2022-04-01\"): 2022-04-01<br />max(Saving): 4509361","as.Date(\"2022-04-01\"): 2022-04-01<br />max(Saving): 4509361","as.Date(\"2022-04-01\"): 2022-04-01<br />max(Saving): 4509361","as.Date(\"2022-04-01\"): 2022-04-01<br />max(Saving): 4509361","as.Date(\"2022-04-01\"): 2022-04-01<br />max(Saving): 4509361","as.Date(\"2022-04-01\"): 2022-04-01<br />max(Saving): 4509361"],"textfont":{"size":13.2283464566929,"color":"rgba(51,51,230,0.502)"},"type":"scatter","mode":"text","hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[19035.15,19405.85],"y":[0,0],"text":"","type":"scatter","mode":"lines","line":{"width":0.755905511811024,"color":"rgba(0,0,0,1)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.7625570776256,"r":7.30593607305936,"b":39.2002401882598,"l":113.24200913242},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"City monthly total income, total expense and total savings","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[19035.15,19405.85],"tickmode":"array","ticktext":["Mar 2022","Apr 2022","May 2022","Jun 2022","Jul 2022","Aug 2022","Sep 2022","Oct 2022","Nov 2022","Dec 2022","Jan 2023","Feb 2023"],"tickvals":[19052,19083,19113,19144,19174,19205,19236,19266,19297,19327,19358,19389],"categoryorder":"array","categoryarray":["Mar 2022","Apr 2022","May 2022","Jun 2022","Jul 2022","Aug 2022","Sep 2022","Oct 2022","Nov 2022","Dec 2022","Jan 2023","Feb 2023"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-45,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-2425000,6925000],"tickmode":"array","ticktext":["-2,000,000","-1,000,000","0","1,000,000","2,000,000","3,000,000","4,000,000","5,000,000","6,000,000"],"tickvals":[-2000000,-1000000,0,1000000,2000000,3000000,4000000,5000000,6000000],"categoryorder":"array","categoryarray":["-2,000,000","-1,000,000","0","1,000,000","2,000,000","3,000,000","4,000,000","5,000,000","6,000,000"],"nticks":null,"ticks":"outside","tickcolor":"rgba(179,179,179,1)","ticklen":3.65296803652968,"tickwidth":0.33208800332088,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.265670402656704,"showgrid":true,"gridcolor":"rgba(222,222,222,1)","gridwidth":0.33208800332088,"zeroline":false,"anchor":"x","title":{"text":"Amount","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"title":{"text":"<br />Income","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"884c67c37e65":{"x":{},"y":{},"xend":{},"yend":{},"colour":{},"type":"scatter"},"884cd56576b":{"x":{},"y":{},"colour":{},"shape":{},"size":{}},"884c1ea245e":{"x":{},"y":{},"colour":{},"shape":{},"size":{}},"884c5b2134b0":{"x":{},"y":{}},"884c4f68286b":{"x":{},"y":{},"label":{}},"884c68a37bd2":{"yintercept":{}}},"cur_data":"884c67c37e65","visdat":{"884c67c37e65":["function (y) ","x"],"884cd56576b":["function (y) ","x"],"884c1ea245e":["function (y) ","x"],"884c5b2134b0":["function (y) ","x"],"884c4f68286b":["function (y) ","x"],"884c68a37bd2":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
-</div>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-caption-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The first three arguments of <code>rgb()</code> are (red, green, and blue) and the last argument (alpha)</p>
-</div>
-</div>
-<p>The plot above shows an obvious spike in Income and Expenses in the month of March. We will zoom into the different categories of expenses below.</p>
-</section>
-<section id="interactive-line-charts-of-income-and-expenditures-by-month" class="level3">
-<h3 class="anchored" data-anchor-id="interactive-line-charts-of-income-and-expenditures-by-month">3.1.2 Interactive Line charts of income and expenditures by month</h3>
-<p>There are several manual adjustments that I made to the graph and the key ones are shown below:</p>
-<ul>
-<li><p>the <strong><code>color</code></strong> aesthetic within each <strong><code>geom_line</code></strong> maps the name of the variable to a specific color. Then, the <strong><code>scale_color_manual</code></strong> function is used to assign the desired colors to each variable name.</p></li>
-<li><p><strong><code>scale_x_date()</code></strong> is used to display all the values in the x-axis with the date format “%Y-%m”.</p></li>
-<li><p><strong><code>scale_y_continuous()</code></strong> with <strong><code>labels = comma</code></strong> is used to format the y-axis labels with commas, otherwise it will appear as index notation.</p></li>
-<li><p><strong><code>theme_light()</code></strong> is used to set the plot background to white and remove the grid lines.</p></li>
-<li><p><strong><code>element_line()</code></strong> is used to increase the axis line width.</p></li>
-<li><p><strong><code>legend.position = "none"</code></strong> is used to remove the legend since they are manually labelled using <code>geom_text</code>.</p></li>
-<li><p><strong><code>legend.title = element_blank()</code></strong> is used to remove the legend title.</p></li>
-</ul>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -1221,46 +1168,10 @@ Note
 <span id="cb38-39"><a href="#cb38-39" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplotly</span>(q1,<span class="at">tooltip =</span> <span class="fu">c</span>(<span class="st">'labels'</span>,<span class="st">'x'</span>,<span class="st">'y'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-0832381bb1dccb18f54a" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-0832381bb1dccb18f54a">{"x":{"data":[{"x":[19052,19083,19113,19144,19174,19205,19236,19266,19297,19327,19358,19389],"y":[6068610.35,3468756.75,3623068.09,3608883.31,3485799.42,3763807.89,3610504.14,3483352.75,3607156.48,3627932.32,3623061.39,3292643.75],"text":["date: 2022-03-01<br />Wage: 6068610","date: 2022-04-01<br />Wage: 3468757","date: 2022-05-01<br />Wage: 3623068","date: 2022-06-01<br />Wage: 3608883","date: 2022-07-01<br />Wage: 3485799","date: 2022-08-01<br />Wage: 3763808","date: 2022-09-01<br />Wage: 3610504","date: 2022-10-01<br />Wage: 3483353","date: 2022-11-01<br />Wage: 3607156","date: 2022-12-01<br />Wage: 3627932","date: 2023-01-01<br />Wage: 3623061","date: 2023-02-01<br />Wage: 3292644"],"type":"scatter","mode":"lines","line":{"width":3.77952755905512,"color":"rgba(248,118,109,1)","dash":"solid"},"hoveron":"points","name":"(Red,Wage)","legendgroup":"(Red,Wage)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[19083,19083,19083,19083,19083,19083,19083,19083,19083,19083,19083,19083],"y":[6000000,6000000,6000000,6000000,6000000,6000000,6000000,6000000,6000000,6000000,6000000,6000000],"text":["High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March"],"hovertext":["as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06"],"textfont":{"size":9.4488188976378,"color":"rgba(0,0,0,1)"},"type":"scatter","mode":"text","hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[19327,19327,19327,19327,19327,19327,19327,19327,19327,19327,19327,19327],"y":[3800000,3800000,3800000,3800000,3800000,3800000,3800000,3800000,3800000,3800000,3800000,3800000],"text":["Wage","Wage","Wage","Wage","Wage","Wage","Wage","Wage","Wage","Wage","Wage","Wage"],"hovertext":["as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000"],"textfont":{"size":9.4488188976378,"color":"rgba(255,0,0,1)"},"type":"scatter","mode":"text","hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":46.2864259028643,"r":7.97011207970112,"b":57.1982804131844,"l":85.0145288501453},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":15.9402241594022},"title":{"text":"Cumulative Income across Months","font":{"color":"rgba(0,0,0,1)","family":"","size":19.1282689912827},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[19035.15,19405.85],"tickmode":"array","ticktext":["Mar 2022","Apr 2022","May 2022","Jun 2022","Jul 2022","Aug 2022","Sep 2022","Oct 2022","Nov 2022","Dec 2022","Jan 2023","Feb 2023"],"tickvals":[19052,19083,19113,19144,19174,19205,19236,19266,19297,19327,19358,19389],"categoryorder":"array","categoryarray":["Mar 2022","Apr 2022","May 2022","Jun 2022","Jul 2022","Aug 2022","Sep 2022","Oct 2022","Nov 2022","Dec 2022","Jan 2023","Feb 2023"],"nticks":null,"ticks":"outside","tickcolor":"rgba(179,179,179,1)","ticklen":3.98505603985056,"tickwidth":0.362277821804596,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-45,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":1.32835201328352,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"<b> Month <\/b>","font":{"color":"rgba(0,0,0,1)","family":"","size":13.2835201328352}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-325000,6825000],"tickmode":"array","ticktext":["0","1,000,000","2,000,000","3,000,000","4,000,000","5,000,000","6,000,000"],"tickvals":[0,1000000,2000000,3000000,4000000,5000000,6000000],"categoryorder":"array","categoryarray":["0","1,000,000","2,000,000","3,000,000","4,000,000","5,000,000","6,000,000"],"nticks":null,"ticks":"outside","tickcolor":"rgba(179,179,179,1)","ticklen":3.98505603985056,"tickwidth":0.362277821804596,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":1.32835201328352,"showgrid":true,"gridcolor":"rgba(222,222,222,1)","gridwidth":0.362277821804596,"zeroline":false,"anchor":"x","title":{"text":"<b> Amount <\/b>","font":{"color":"rgba(0,0,0,1)","family":"","size":13.2835201328352}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":2.06156048675734,"font":{"color":"rgba(0,0,0,1)","family":"","size":12.7521793275218}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"884c34ef870":{"x":{},"y":{},"colour":{},"linetype":{},"type":"scatter"},"884c69841cdc":{"x":{},"y":{},"label":{}},"884c68665032":{"x":{},"y":{},"label":{}}},"cur_data":"884c34ef870","visdat":{"884c34ef870":["function (y) ","x"],"884c69841cdc":["function (y) ","x"],"884c68665032":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-f10d14aaab4c6eec5ea0" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-f10d14aaab4c6eec5ea0">{"x":{"data":[{"x":[19052,19083,19113,19144,19174,19205,19236,19266,19297,19327,19358,19389],"y":[6068610.35,3468756.75,3623068.09,3608883.31,3485799.42,3763807.89,3610504.14,3483352.75,3607156.48,3627932.32,3623061.39,3292643.75],"text":["date: 2022-03-01<br />Wage: 6068610","date: 2022-04-01<br />Wage: 3468757","date: 2022-05-01<br />Wage: 3623068","date: 2022-06-01<br />Wage: 3608883","date: 2022-07-01<br />Wage: 3485799","date: 2022-08-01<br />Wage: 3763808","date: 2022-09-01<br />Wage: 3610504","date: 2022-10-01<br />Wage: 3483353","date: 2022-11-01<br />Wage: 3607156","date: 2022-12-01<br />Wage: 3627932","date: 2023-01-01<br />Wage: 3623061","date: 2023-02-01<br />Wage: 3292644"],"type":"scatter","mode":"lines","line":{"width":3.77952755905512,"color":"rgba(248,118,109,1)","dash":"solid"},"hoveron":"points","name":"(Red,Wage)","legendgroup":"(Red,Wage)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[19083,19083,19083,19083,19083,19083,19083,19083,19083,19083,19083,19083],"y":[6000000,6000000,6000000,6000000,6000000,6000000,6000000,6000000,6000000,6000000,6000000,6000000],"text":["High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March","High wages <br />observed in <br />March"],"hovertext":["as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06","as.Date(\"2022-04-01\"): 2022-04-01<br />y: 6e+06"],"textfont":{"size":9.4488188976378,"color":"rgba(0,0,0,1)"},"type":"scatter","mode":"text","hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[19327,19327,19327,19327,19327,19327,19327,19327,19327,19327,19327,19327],"y":[3800000,3800000,3800000,3800000,3800000,3800000,3800000,3800000,3800000,3800000,3800000,3800000],"text":["Wage","Wage","Wage","Wage","Wage","Wage","Wage","Wage","Wage","Wage","Wage","Wage"],"hovertext":["as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000","as.Date(\"2022-12-01\"): 2022-12-01<br />y: 3800000"],"textfont":{"size":9.4488188976378,"color":"rgba(255,0,0,1)"},"type":"scatter","mode":"text","hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":46.2864259028643,"r":7.97011207970112,"b":57.1982804131844,"l":85.0145288501453},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":15.9402241594022},"title":{"text":"Cumulative Income across Months","font":{"color":"rgba(0,0,0,1)","family":"","size":19.1282689912827},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[19035.15,19405.85],"tickmode":"array","ticktext":["Mar 2022","Apr 2022","May 2022","Jun 2022","Jul 2022","Aug 2022","Sep 2022","Oct 2022","Nov 2022","Dec 2022","Jan 2023","Feb 2023"],"tickvals":[19052,19083,19113,19144,19174,19205,19236,19266,19297,19327,19358,19389],"categoryorder":"array","categoryarray":["Mar 2022","Apr 2022","May 2022","Jun 2022","Jul 2022","Aug 2022","Sep 2022","Oct 2022","Nov 2022","Dec 2022","Jan 2023","Feb 2023"],"nticks":null,"ticks":"outside","tickcolor":"rgba(179,179,179,1)","ticklen":3.98505603985056,"tickwidth":0.362277821804596,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-45,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":1.32835201328352,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"<b> Month <\/b>","font":{"color":"rgba(0,0,0,1)","family":"","size":13.2835201328352}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-325000,6825000],"tickmode":"array","ticktext":["0","1,000,000","2,000,000","3,000,000","4,000,000","5,000,000","6,000,000"],"tickvals":[0,1000000,2000000,3000000,4000000,5000000,6000000],"categoryorder":"array","categoryarray":["0","1,000,000","2,000,000","3,000,000","4,000,000","5,000,000","6,000,000"],"nticks":null,"ticks":"outside","tickcolor":"rgba(179,179,179,1)","ticklen":3.98505603985056,"tickwidth":0.362277821804596,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":1.32835201328352,"showgrid":true,"gridcolor":"rgba(222,222,222,1)","gridwidth":0.362277821804596,"zeroline":false,"anchor":"x","title":{"text":"<b> Amount <\/b>","font":{"color":"rgba(0,0,0,1)","family":"","size":13.2835201328352}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":2.06156048675734,"font":{"color":"rgba(0,0,0,1)","family":"","size":12.7521793275218}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"548849877c0d":{"x":{},"y":{},"colour":{},"linetype":{},"type":"scatter"},"5488530e3168":{"x":{},"y":{},"label":{}},"5488cc243af":{"x":{},"y":{},"label":{}}},"cur_data":"548849877c0d","visdat":{"548849877c0d":["function (y) ","x"],"5488530e3168":["function (y) ","x"],"5488cc243af":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
-</section>
-</section>
-<section id="normality-assumptions-of-annual-wage" class="level2">
-<h2 class="anchored" data-anchor-id="normality-assumptions-of-annual-wage">3.2.1 Normality assumptions of annual wage</h2>
-<p>Before zooming into wages in March, we will first perform a test to confirm whether wage follows the normal distribution.</p>
-<p>H0: The wage does not follow a normal distribution.</p>
-<p>H1: The wage follows a normal distribution.</p>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>) <span class="co"># for reproducibility</span></span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>sample_5000<span class="ot">&lt;-</span> finance1_wide_ptcp1[<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(finance1_wide_ptcp1), <span class="dv">5000</span>), ] <span class="co"># perform sampling as limit of shapiro test is 5000</span></span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>qq <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(sample_5000,</span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">sample=</span>Wage)) <span class="sc">+</span>  <span class="co">#&lt;&lt;&lt; use a new argument call sample: el scores</span></span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_qq</span>() <span class="sc">+</span></span>
-<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_qq_line</span>() <span class="sc">+</span></span>
-<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"QQ plot with Shapiro-Wilk test results"</span>)  <span class="co"># add plot title</span></span>
-<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>sw_t <span class="ot">&lt;-</span> <span class="fu">shapiro_test</span>(sample_5000<span class="sc">$</span>Wage) <span class="sc">%&gt;%</span> </span>
-<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">variable =</span> <span class="st">"Wage"</span>)<span class="sc">%&gt;%</span> <span class="fu">gt</span>()  <span class="co">#&lt;&lt;&lt; make into a gt format (will give a nice table)  shapiro.test is not used here as it gives output in another format.</span></span>
-<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">'.png'</span>) <span class="co"># create  temp table</span></span>
-<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a><span class="fu">gtsave</span>(sw_t, tmp)  <span class="co"># use gtsave() to save sw_t into tmp folder</span></span>
-<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>table_png <span class="ot">&lt;-</span> png<span class="sc">::</span><span class="fu">readPNG</span>(tmp, <span class="at">native =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a>qq<span class="sc">+</span>table_png</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>From the Shapiro test , p-value &lt; 0.05 and we have enough statistical evidence to reject the null hypothesis and conclude that Wage does not follow the normal distribution.</p>
 <p>Now lets examine the wages across the months closer using boxplots.</p>
 <div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">March 22 to Feb 23</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">One way Anova plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">Error plots</a></li></ul>
@@ -1270,30 +1181,30 @@ Note
 <div class="cell" data-fig.asp="0.618">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>df_wage_edu_month <span class="ot">&lt;-</span> finance1_wide_ptcp1 <span class="sc">%&gt;%</span></span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">month =</span> <span class="fu">month</span>(date))</span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>df_wage_edu_month<span class="sc">$</span>month <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">month</span>(finance1_wide_ptcp1<span class="sc">$</span>date), </span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">10</span>, <span class="dv">11</span>, <span class="dv">12</span>, <span class="dv">1</span>, <span class="dv">2</span>), </span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Mar 22"</span>, <span class="st">"Apr 22"</span>, <span class="st">"May 22"</span>, <span class="st">"Jun 22"</span>, <span class="st">"Jul 22"</span>, <span class="st">"Aug 22"</span>, <span class="st">"Sep 22"</span>, <span class="st">"Oct 22"</span>, <span class="st">"Nov 22"</span>, <span class="st">"Dec 22"</span>, <span class="st">"Jan 23"</span>, <span class="st">"Feb 23"</span>))</span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_wage_edu_month,</span>
-<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> month, <span class="at">y =</span> Wage)) <span class="sc">+</span></span>
-<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(<span class="at">fill =</span> educationLevel)) <span class="sc">+</span></span>
-<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_summary</span>(<span class="at">fun.y =</span> <span class="st">"median"</span>, <span class="at">geom =</span> <span class="st">"point"</span>, <span class="at">color =</span> <span class="st">"red"</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Month"</span>, <span class="at">y =</span> <span class="st">"Wage"</span>, <span class="at">fill =</span> <span class="st">"Education Level"</span>) <span class="sc">+</span></span>
-<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"RdBu"</span>) <span class="sc">+</span> </span>
-<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key.size =</span> <span class="fu">unit</span>(<span class="fl">0.5</span>,<span class="st">'cm'</span>),</span>
-<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position=</span><span class="st">"bottom"</span>,</span>
-<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span> , <span class="at">face =</span> <span class="st">"bold"</span>),</span>
-<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>df_wage_edu_month <span class="ot">&lt;-</span> finance1_wide_ptcp1 <span class="sc">%&gt;%</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">month =</span> <span class="fu">month</span>(date))</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>df_wage_edu_month<span class="sc">$</span>month <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">month</span>(finance1_wide_ptcp1<span class="sc">$</span>date), </span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">10</span>, <span class="dv">11</span>, <span class="dv">12</span>, <span class="dv">1</span>, <span class="dv">2</span>), </span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Mar 22"</span>, <span class="st">"Apr 22"</span>, <span class="st">"May 22"</span>, <span class="st">"Jun 22"</span>, <span class="st">"Jul 22"</span>, <span class="st">"Aug 22"</span>, <span class="st">"Sep 22"</span>, <span class="st">"Oct 22"</span>, <span class="st">"Nov 22"</span>, <span class="st">"Dec 22"</span>, <span class="st">"Jan 23"</span>, <span class="st">"Feb 23"</span>))</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_wage_edu_month,</span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> month, <span class="at">y =</span> Wage)) <span class="sc">+</span></span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(<span class="at">fill =</span> educationLevel)) <span class="sc">+</span></span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_summary</span>(<span class="at">fun.y =</span> <span class="st">"median"</span>, <span class="at">geom =</span> <span class="st">"point"</span>, <span class="at">color =</span> <span class="st">"red"</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Month"</span>, <span class="at">y =</span> <span class="st">"Wage"</span>, <span class="at">fill =</span> <span class="st">"Education Level"</span>) <span class="sc">+</span></span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"RdBu"</span>) <span class="sc">+</span> </span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key.size =</span> <span class="fu">unit</span>(<span class="fl">0.5</span>,<span class="st">'cm'</span>),</span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position=</span><span class="st">"bottom"</span>,</span>
+<span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span> , <span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb39-21"><a href="#cb39-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="1152"></p>
+<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="1152"></p>
 </div>
 </div>
 </div>
@@ -1302,19 +1213,19 @@ Note
 <div class="cell" data-fig.asp="0.618">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggbetweenstats</span>(<span class="at">data =</span> df_wage_edu_month, <span class="at">x =</span> month, <span class="at">y =</span> Wage,</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">xlab =</span> <span class="st">"Month"</span>, <span class="at">ylab =</span> <span class="st">"Wage"</span>,</span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">type =</span> <span class="st">"np"</span>, <span class="at">pairwise.comparisons =</span> <span class="cn">TRUE</span>, <span class="at">pairwise.display =</span> <span class="st">"s"</span>,</span>
-<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">sort =</span> <span class="st">"descending"</span>,</span>
-<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">sort.fun =</span> median,</span>
-<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">mean.ci =</span> T, <span class="at">p.adjust.method =</span> <span class="st">"fdr"</span>,  <span class="at">conf.level =</span> <span class="fl">0.95</span>,</span>
-<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">title =</span> <span class="st">"Comparison of Median Wage across Months"</span>) <span class="sc">+</span></span>
-<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a> <span class="co"># scale_y_continuous(limits = c(0, 300000)) +</span></span>
-<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">theme</span>(<span class="at">axis.title.y=</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>,</span>
-<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">vjust=</span><span class="fl">0.9</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggbetweenstats</span>(<span class="at">data =</span> df_wage_edu_month, <span class="at">x =</span> month, <span class="at">y =</span> Wage,</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">xlab =</span> <span class="st">"Month"</span>, <span class="at">ylab =</span> <span class="st">"Wage"</span>,</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">type =</span> <span class="st">"np"</span>, <span class="at">pairwise.comparisons =</span> <span class="cn">TRUE</span>, <span class="at">pairwise.display =</span> <span class="st">"s"</span>,</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">sort =</span> <span class="st">"descending"</span>,</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">sort.fun =</span> median,</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">mean.ci =</span> T, <span class="at">p.adjust.method =</span> <span class="st">"fdr"</span>,  <span class="at">conf.level =</span> <span class="fl">0.95</span>,</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">title =</span> <span class="st">"Comparison of Median Wage across Months"</span>) <span class="sc">+</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a> <span class="co"># scale_y_continuous(limits = c(0, 300000)) +</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">theme</span>(<span class="at">axis.title.y=</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>,</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">vjust=</span><span class="fl">0.9</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="1152"></p>
+<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="1152"></p>
 </div>
 </div>
 </div>
@@ -1325,49 +1236,50 @@ Note
 <div class="cell" data-fig.asp="0.618">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>df_wage_edu_month <span class="sc">%&gt;%</span></span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month, <span class="at">y =</span> Wage)) <span class="sc">+</span></span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Using stat_pointinterval to plot the points and intervals</span></span>
-<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_pointinterval</span>(<span class="at">.width =</span> <span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.99</span>),</span>
-<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">.point =</span> median,</span>
-<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">.interval =</span> qi,</span>
-<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">interval_color=</span><span class="fu">stat</span>(level)),</span>
-<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Defining the color of the intervals </span></span>
-<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
-<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"blue"</span>, <span class="st">"darkblue"</span>),</span>
-<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">aesthetics =</span> <span class="st">"interval_color"</span>) <span class="sc">+</span></span>
-<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Title, subtitle, and caption</span></span>
-<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Visualising confidence intervals of median wage"</span>,</span>
-<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Median Point + Multiple-interval plot, 95% and 99%"</span>,</span>
-<span id="cb42-20"><a href="#cb42-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Months"</span>, <span class="at">y =</span> <span class="st">"Wage"</span>) <span class="sc">+</span></span>
-<span id="cb42-21"><a href="#cb42-21" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb42-22"><a href="#cb42-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_ipsum</span>() <span class="sc">+</span></span>
-<span id="cb42-23"><a href="#cb42-23" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb42-24"><a href="#cb42-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.title.y=</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>, </span>
-<span id="cb42-25"><a href="#cb42-25" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">vjust=</span><span class="fl">0.9</span>, </span>
-<span id="cb42-26"><a href="#cb42-26" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">size =</span> <span class="dv">10</span>, </span>
-<span id="cb42-27"><a href="#cb42-27" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">face=</span><span class="st">'bold'</span>),</span>
-<span id="cb42-28"><a href="#cb42-28" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.x=</span><span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>,</span>
-<span id="cb42-29"><a href="#cb42-29" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">face=</span><span class="st">'bold'</span>),</span>
-<span id="cb42-30"><a href="#cb42-30" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>,</span>
-<span id="cb42-31"><a href="#cb42-31" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">hjust =</span> <span class="dv">1</span>),</span>
-<span id="cb42-32"><a href="#cb42-32" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>,</span>
-<span id="cb42-33"><a href="#cb42-33" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">face=</span><span class="st">'bold'</span>),</span>
-<span id="cb42-34"><a href="#cb42-34" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.border =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb42-35"><a href="#cb42-35" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>df_wage_edu_month <span class="sc">%&gt;%</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month, <span class="at">y =</span> Wage)) <span class="sc">+</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Using stat_pointinterval to plot the points and intervals</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_pointinterval</span>(<span class="at">.width =</span> <span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.99</span>),</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">.point =</span> median,</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">.interval =</span> qi,</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">interval_color=</span><span class="fu">stat</span>(level)),</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Defining the color of the intervals </span></span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"blue"</span>, <span class="st">"darkblue"</span>),</span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">aesthetics =</span> <span class="st">"interval_color"</span>) <span class="sc">+</span></span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Title, subtitle, and caption</span></span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Visualising confidence intervals of median wage"</span>,</span>
+<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Median Point + Multiple-interval plot, 95% and 99%"</span>,</span>
+<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Months"</span>, <span class="at">y =</span> <span class="st">"Wage"</span>) <span class="sc">+</span></span>
+<span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_ipsum</span>() <span class="sc">+</span></span>
+<span id="cb41-23"><a href="#cb41-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-24"><a href="#cb41-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.title.y=</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>, </span>
+<span id="cb41-25"><a href="#cb41-25" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">vjust=</span><span class="fl">0.9</span>, </span>
+<span id="cb41-26"><a href="#cb41-26" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">size =</span> <span class="dv">10</span>, </span>
+<span id="cb41-27"><a href="#cb41-27" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">face=</span><span class="st">'bold'</span>),</span>
+<span id="cb41-28"><a href="#cb41-28" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.x=</span><span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>,</span>
+<span id="cb41-29"><a href="#cb41-29" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">face=</span><span class="st">'bold'</span>),</span>
+<span id="cb41-30"><a href="#cb41-30" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>,</span>
+<span id="cb41-31"><a href="#cb41-31" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">hjust =</span> <span class="dv">1</span>),</span>
+<span id="cb41-32"><a href="#cb41-32" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>,</span>
+<span id="cb41-33"><a href="#cb41-33" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">face=</span><span class="st">'bold'</span>),</span>
+<span id="cb41-34"><a href="#cb41-34" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.border =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb41-35"><a href="#cb41-35" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="1152"></p>
+<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="1152"></p>
 </div>
 </div>
 </div>
 </div>
 </div>
+</section>
 <section id="next-plot-interactive-pending-coordinated-line-chart-of-expenditures-by-month" class="level3">
 <h3 class="anchored" data-anchor-id="next-plot-interactive-pending-coordinated-line-chart-of-expenditures-by-month">Next Plot: Interactive (pending coordinated) Line chart of expenditures by month</h3>
 <p>Design considerations:</p>
@@ -1375,26 +1287,26 @@ Note
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> highlevel <span class="sc">%&gt;%</span></span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> date,<span class="at">y =</span> Shelter)) <span class="sc">+</span></span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">theme_clean</span>()</span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>e <span class="ot">&lt;-</span> highlevel <span class="sc">%&gt;%</span></span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> date,<span class="at">y =</span> Education)) <span class="sc">+</span></span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">theme_clean</span>()</span>
-<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> highlevel <span class="sc">%&gt;%</span></span>
-<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> date,<span class="at">y =</span> Food)) <span class="sc">+</span></span>
-<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">theme_clean</span>()</span>
-<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> highlevel <span class="sc">%&gt;%</span></span>
-<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> date,<span class="at">y =</span> Recreation)) <span class="sc">+</span></span>
-<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">theme_clean</span>()</span>
-<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a>(s <span class="sc">+</span>e) <span class="sc">/</span> (f<span class="sc">+</span>r)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> highlevel <span class="sc">%&gt;%</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> date,<span class="at">y =</span> Shelter)) <span class="sc">+</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">theme_clean</span>()</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>e <span class="ot">&lt;-</span> highlevel <span class="sc">%&gt;%</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> date,<span class="at">y =</span> Education)) <span class="sc">+</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">theme_clean</span>()</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> highlevel <span class="sc">%&gt;%</span></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> date,<span class="at">y =</span> Food)) <span class="sc">+</span></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">theme_clean</span>()</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> highlevel <span class="sc">%&gt;%</span></span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> date,<span class="at">y =</span> Recreation)) <span class="sc">+</span></span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">theme_clean</span>()</span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>(s <span class="sc">+</span>e) <span class="sc">/</span> (f<span class="sc">+</span>r)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid" width="672"></p>
+<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <ul>
@@ -1405,14 +1317,14 @@ Note
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>annual <span class="ot">&lt;-</span> finance1_wide_ptcp1 <span class="sc">%&gt;%</span> </span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(participantId, householdSize, haveKids, educationLevel, interestGroup, joviality) <span class="sc">%&gt;%</span> </span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Education =</span> <span class="fu">sum</span>(Education, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">Food =</span> <span class="fu">sum</span>(Food, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">Recreation =</span> <span class="fu">sum</span>(Recreation, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">Shelter =</span> <span class="fu">sum</span>(Shelter, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">Wage =</span> <span class="fu">sum</span>(Wage, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">RentAdjustment =</span> <span class="fu">sum</span>(RentAdjustment, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>annual <span class="ot">&lt;-</span> finance1_wide_ptcp1 <span class="sc">%&gt;%</span> </span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(participantId, householdSize, haveKids, educationLevel, interestGroup, joviality) <span class="sc">%&gt;%</span> </span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Education =</span> <span class="fu">sum</span>(Education, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">Food =</span> <span class="fu">sum</span>(Food, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">Recreation =</span> <span class="fu">sum</span>(Recreation, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">Shelter =</span> <span class="fu">sum</span>(Shelter, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">Wage =</span> <span class="fu">sum</span>(Wage, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">RentAdjustment =</span> <span class="fu">sum</span>(RentAdjustment, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="callout-note callout callout-style-default callout-captioned">
@@ -1462,19 +1374,19 @@ Note
 <div class="cell" data-fig.asp="0.618">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggbetweenstats</span>(<span class="at">data =</span> annual, <span class="at">x =</span> educationLevel, <span class="at">y =</span> Wage,</span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">xlab =</span> <span class="st">"Education level"</span>, <span class="at">ylab =</span> <span class="st">"Annual Wage"</span>,</span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">type =</span> <span class="st">"np"</span>, <span class="at">pairwise.comparisons =</span> <span class="cn">TRUE</span>, <span class="at">pairwise.display =</span> <span class="st">"s"</span>,</span>
-<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">sort =</span> <span class="st">"descending"</span>,</span>
-<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">sort.fun =</span> median,</span>
-<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">mean.ci =</span> T, <span class="at">p.adjust.method =</span> <span class="st">"fdr"</span>,  <span class="at">conf.level =</span> <span class="fl">0.95</span>,</span>
-<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">title =</span> <span class="st">"Comparison of Median Annual Wage across Education Levels"</span>) <span class="sc">+</span></span>
-<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">300000</span>)) <span class="sc">+</span></span>
-<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">theme</span>(<span class="at">axis.title.y=</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>,</span>
-<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">vjust=</span><span class="fl">0.9</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggbetweenstats</span>(<span class="at">data =</span> annual, <span class="at">x =</span> educationLevel, <span class="at">y =</span> Wage,</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">xlab =</span> <span class="st">"Education level"</span>, <span class="at">ylab =</span> <span class="st">"Annual Wage"</span>,</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">type =</span> <span class="st">"np"</span>, <span class="at">pairwise.comparisons =</span> <span class="cn">TRUE</span>, <span class="at">pairwise.display =</span> <span class="st">"s"</span>,</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">sort =</span> <span class="st">"descending"</span>,</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">sort.fun =</span> median,</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">mean.ci =</span> T, <span class="at">p.adjust.method =</span> <span class="st">"fdr"</span>,  <span class="at">conf.level =</span> <span class="fl">0.95</span>,</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">title =</span> <span class="st">"Comparison of Median Annual Wage across Education Levels"</span>) <span class="sc">+</span></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">300000</span>)) <span class="sc">+</span></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">theme</span>(<span class="at">axis.title.y=</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>,</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">vjust=</span><span class="fl">0.9</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid" width="960"></p>
+<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
 <p>For 4 categories of education levels, we can have a total of 4C2 = k(k-1)/2 (=6) possible combinations of pairs.</p>
@@ -1485,42 +1397,42 @@ Note
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>annual <span class="sc">%&gt;%</span></span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> educationLevel, <span class="at">y =</span> Wage)) <span class="sc">+</span></span>
-<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Using stat_pointinterval to plot the points and intervals</span></span>
-<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_pointinterval</span>(<span class="at">.width =</span> <span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.99</span>),</span>
-<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">.point =</span> median,</span>
-<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">.interval =</span> qi,</span>
-<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">interval_color=</span><span class="fu">stat</span>(level)),</span>
-<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Defining the color of the intervals </span></span>
-<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
-<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"blue"</span>, <span class="st">"darkblue"</span>),</span>
-<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">aesthetics =</span> <span class="st">"interval_color"</span>) <span class="sc">+</span></span>
-<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Title, subtitle, and caption</span></span>
-<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Visualising confidence intervals of median math score"</span>,</span>
-<span id="cb46-19"><a href="#cb46-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Median Point + Multiple-interval plot, 95% and 99%"</span>,</span>
-<span id="cb46-20"><a href="#cb46-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Education  level"</span>, <span class="at">y =</span> <span class="st">"Wage"</span>) <span class="sc">+</span></span>
-<span id="cb46-21"><a href="#cb46-21" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb46-22"><a href="#cb46-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_ipsum</span>() <span class="sc">+</span></span>
-<span id="cb46-23"><a href="#cb46-23" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb46-24"><a href="#cb46-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.title.y=</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>, </span>
-<span id="cb46-25"><a href="#cb46-25" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">vjust=</span><span class="fl">0.9</span>, </span>
-<span id="cb46-26"><a href="#cb46-26" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">size =</span> <span class="dv">10</span>, </span>
-<span id="cb46-27"><a href="#cb46-27" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">face=</span><span class="st">'bold'</span>),</span>
-<span id="cb46-28"><a href="#cb46-28" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.x=</span><span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>,</span>
-<span id="cb46-29"><a href="#cb46-29" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">face=</span><span class="st">'bold'</span>),</span>
-<span id="cb46-30"><a href="#cb46-30" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>,</span>
-<span id="cb46-31"><a href="#cb46-31" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">face=</span><span class="st">'bold'</span>),</span>
-<span id="cb46-32"><a href="#cb46-32" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.border =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb46-33"><a href="#cb46-33" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>annual <span class="sc">%&gt;%</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> educationLevel, <span class="at">y =</span> Wage)) <span class="sc">+</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Using stat_pointinterval to plot the points and intervals</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_pointinterval</span>(<span class="at">.width =</span> <span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.99</span>),</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">.point =</span> median,</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">.interval =</span> qi,</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">interval_color=</span><span class="fu">stat</span>(level)),</span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Defining the color of the intervals </span></span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"blue"</span>, <span class="st">"darkblue"</span>),</span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">aesthetics =</span> <span class="st">"interval_color"</span>) <span class="sc">+</span></span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Title, subtitle, and caption</span></span>
+<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb45-18"><a href="#cb45-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Visualising confidence intervals of median math score"</span>,</span>
+<span id="cb45-19"><a href="#cb45-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Median Point + Multiple-interval plot, 95% and 99%"</span>,</span>
+<span id="cb45-20"><a href="#cb45-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Education  level"</span>, <span class="at">y =</span> <span class="st">"Wage"</span>) <span class="sc">+</span></span>
+<span id="cb45-21"><a href="#cb45-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb45-22"><a href="#cb45-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_ipsum</span>() <span class="sc">+</span></span>
+<span id="cb45-23"><a href="#cb45-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb45-24"><a href="#cb45-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.title.y=</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>, </span>
+<span id="cb45-25"><a href="#cb45-25" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">vjust=</span><span class="fl">0.9</span>, </span>
+<span id="cb45-26"><a href="#cb45-26" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">size =</span> <span class="dv">10</span>, </span>
+<span id="cb45-27"><a href="#cb45-27" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">face=</span><span class="st">'bold'</span>),</span>
+<span id="cb45-28"><a href="#cb45-28" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.x=</span><span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>,</span>
+<span id="cb45-29"><a href="#cb45-29" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">face=</span><span class="st">'bold'</span>),</span>
+<span id="cb45-30"><a href="#cb45-30" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>,</span>
+<span id="cb45-31"><a href="#cb45-31" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">face=</span><span class="st">'bold'</span>),</span>
+<span id="cb45-32"><a href="#cb45-32" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.border =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb45-33"><a href="#cb45-33" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid" width="672"></p>
+<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>The error bar for mean Median Wage is the longest for Graduate education level and this could be due to outliers in this category.</p>
@@ -1531,44 +1443,44 @@ Note
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>qq <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(annual,</span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">sample=</span>Recreation)) <span class="sc">+</span> </span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_qq</span>() <span class="sc">+</span></span>
-<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_qq_line</span>() <span class="sc">+</span></span>
-<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"QQ plot with Shapiro-Wilk test results"</span>)  </span>
-<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>sw_t <span class="ot">&lt;-</span> <span class="fu">shapiro_test</span>(annual<span class="sc">$</span>Recreation) <span class="sc">%&gt;%</span> </span>
-<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">variable =</span> <span class="st">"Recreation Spending"</span>)<span class="sc">%&gt;%</span> <span class="fu">gt</span>()  </span>
-<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">'.png'</span>) <span class="co"># create  temp table</span></span>
-<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a><span class="fu">gtsave</span>(sw_t, tmp)  <span class="co"># use gtsave() to save sw_t into tmp folder</span></span>
-<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>table_png <span class="ot">&lt;-</span> png<span class="sc">::</span><span class="fu">readPNG</span>(tmp, <span class="at">native =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>qq<span class="sc">+</span>table_png</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>qq <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(annual,</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">sample=</span>Recreation)) <span class="sc">+</span> </span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_qq</span>() <span class="sc">+</span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_qq_line</span>() <span class="sc">+</span></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"QQ plot with Shapiro-Wilk test results"</span>)  </span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>sw_t <span class="ot">&lt;-</span> <span class="fu">shapiro_test</span>(annual<span class="sc">$</span>Recreation) <span class="sc">%&gt;%</span> </span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">variable =</span> <span class="st">"Recreation Spending"</span>)<span class="sc">%&gt;%</span> <span class="fu">gt</span>()  </span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">'.png'</span>) <span class="co"># create  temp table</span></span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a><span class="fu">gtsave</span>(sw_t, tmp)  <span class="co"># use gtsave() to save sw_t into tmp folder</span></span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a>table_png <span class="ot">&lt;-</span> png<span class="sc">::</span><span class="fu">readPNG</span>(tmp, <span class="at">native =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a>qq<span class="sc">+</span>table_png</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid" width="672"></p>
+<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>We have enough statistical evidence to reject the null hypothesis that recreational spending follows normal distribution. Use a non parametric test below to test for difference in median of recreation spending across education levels.</p>
 <div class="cell" data-fig.asp="0.618">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggbetweenstats</span>(<span class="at">data =</span> annual, <span class="at">x =</span> educationLevel, <span class="at">y =</span> Recreation,</span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">xlab =</span> <span class="st">"Education level"</span>, <span class="at">ylab =</span> <span class="st">"Annual Recreation"</span>,</span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">type =</span> <span class="st">"np"</span>, <span class="at">pairwise.comparisons =</span> <span class="cn">TRUE</span>, <span class="at">pairwise.display =</span> <span class="st">"ns"</span>,</span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">sort =</span> <span class="st">"descending"</span>,</span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">sort.fun =</span> median,</span>
-<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">mean.ci =</span> T, <span class="at">p.adjust.method =</span> <span class="st">"fdr"</span>,  <span class="at">conf.level =</span> <span class="fl">0.95</span>,</span>
-<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">title =</span> <span class="st">"Comparison of Median Annual Recreation spending across Education Levels"</span>) <span class="sc">+</span></span>
-<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">20000</span>)) <span class="sc">+</span></span>
-<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">theme</span>(<span class="at">axis.title.y=</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>,</span>
-<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">vjust=</span><span class="fl">0.9</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggbetweenstats</span>(<span class="at">data =</span> annual, <span class="at">x =</span> educationLevel, <span class="at">y =</span> Recreation,</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">xlab =</span> <span class="st">"Education level"</span>, <span class="at">ylab =</span> <span class="st">"Annual Recreation"</span>,</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">type =</span> <span class="st">"np"</span>, <span class="at">pairwise.comparisons =</span> <span class="cn">TRUE</span>, <span class="at">pairwise.display =</span> <span class="st">"ns"</span>,</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">sort =</span> <span class="st">"descending"</span>,</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">sort.fun =</span> median,</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">mean.ci =</span> T, <span class="at">p.adjust.method =</span> <span class="st">"fdr"</span>,  <span class="at">conf.level =</span> <span class="fl">0.95</span>,</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">title =</span> <span class="st">"Comparison of Median Annual Recreation spending across Education Levels"</span>) <span class="sc">+</span></span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">20000</span>)) <span class="sc">+</span></span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">theme</span>(<span class="at">axis.title.y=</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>,</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">vjust=</span><span class="fl">0.9</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid" width="960"></p>
+<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
 <p>From the results, all six pairwise comparison p-values are greater 0.05 and thus we do not have enough statistical evidence to reject the null hypothesis that the median recreation spending across all different educational levels are all different.</p>
@@ -1579,44 +1491,44 @@ Note
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>qq <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(annual,</span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">sample=</span>joviality)) <span class="sc">+</span> </span>
-<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_qq</span>() <span class="sc">+</span></span>
-<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_qq_line</span>() <span class="sc">+</span></span>
-<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"QQ plot with Shapiro-Wilk test results"</span>)  </span>
-<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>sw_t <span class="ot">&lt;-</span> <span class="fu">shapiro_test</span>(annual<span class="sc">$</span>joviality) <span class="sc">%&gt;%</span> </span>
-<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">variable =</span> <span class="st">"Joviality Index"</span>)<span class="sc">%&gt;%</span> <span class="fu">gt</span>()  </span>
-<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">'.png'</span>) <span class="co"># create  temp table</span></span>
-<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a><span class="fu">gtsave</span>(sw_t, tmp)  <span class="co"># use gtsave() to save sw_t into tmp folder</span></span>
-<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>table_png <span class="ot">&lt;-</span> png<span class="sc">::</span><span class="fu">readPNG</span>(tmp, <span class="at">native =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a>qq<span class="sc">+</span>table_png</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>qq <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(annual,</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">sample=</span>joviality)) <span class="sc">+</span> </span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_qq</span>() <span class="sc">+</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_qq_line</span>() <span class="sc">+</span></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"QQ plot with Shapiro-Wilk test results"</span>)  </span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>sw_t <span class="ot">&lt;-</span> <span class="fu">shapiro_test</span>(annual<span class="sc">$</span>joviality) <span class="sc">%&gt;%</span> </span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">variable =</span> <span class="st">"Joviality Index"</span>)<span class="sc">%&gt;%</span> <span class="fu">gt</span>()  </span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">'.png'</span>) <span class="co"># create  temp table</span></span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a><span class="fu">gtsave</span>(sw_t, tmp)  <span class="co"># use gtsave() to save sw_t into tmp folder</span></span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a>table_png <span class="ot">&lt;-</span> png<span class="sc">::</span><span class="fu">readPNG</span>(tmp, <span class="at">native =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a>qq<span class="sc">+</span>table_png</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-42-1.png" class="img-fluid" width="672"></p>
+<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>We have enough statistical evidence to reject the null hypothesis that joviality index follows normal distribution. Use a non parametric test below to test for difference in median of joviality index across education levels.</p>
 <div class="cell" data-fig.aspect="fig-width*0.618">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggbetweenstats</span>(<span class="at">data =</span> annual, <span class="at">x =</span> educationLevel, <span class="at">y =</span> joviality,</span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">xlab =</span> <span class="st">"Education level"</span>, <span class="at">ylab =</span> <span class="st">"Joviality Index"</span>,</span>
-<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">type =</span> <span class="st">"np"</span>, <span class="at">pairwise.comparisons =</span> <span class="cn">TRUE</span>, <span class="at">pairwise.display =</span> <span class="st">"ns"</span>,</span>
-<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">sort =</span> <span class="st">"descending"</span>,</span>
-<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">sort.fun =</span> median,</span>
-<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">mean.ci =</span> T, <span class="at">p.adjust.method =</span> <span class="st">"fdr"</span>,  <span class="at">conf.level =</span> <span class="fl">0.95</span>,</span>
-<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">title =</span> <span class="st">"Comparison of Median Joviality index across Education Levels"</span>) <span class="sc">+</span></span>
-<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">2</span>)) <span class="sc">+</span></span>
-<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">theme</span>(<span class="at">axis.title.y=</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>,</span>
-<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">vjust=</span><span class="fl">0.9</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggbetweenstats</span>(<span class="at">data =</span> annual, <span class="at">x =</span> educationLevel, <span class="at">y =</span> joviality,</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">xlab =</span> <span class="st">"Education level"</span>, <span class="at">ylab =</span> <span class="st">"Joviality Index"</span>,</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">type =</span> <span class="st">"np"</span>, <span class="at">pairwise.comparisons =</span> <span class="cn">TRUE</span>, <span class="at">pairwise.display =</span> <span class="st">"ns"</span>,</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">sort =</span> <span class="st">"descending"</span>,</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">sort.fun =</span> median,</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">mean.ci =</span> T, <span class="at">p.adjust.method =</span> <span class="st">"fdr"</span>,  <span class="at">conf.level =</span> <span class="fl">0.95</span>,</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">title =</span> <span class="st">"Comparison of Median Joviality index across Education Levels"</span>) <span class="sc">+</span></span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">2</span>)) <span class="sc">+</span></span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">theme</span>(<span class="at">axis.title.y=</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>,</span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">vjust=</span><span class="fl">0.9</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid" width="960"></p>
+<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-42-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
 <p>From the results, only 2 pairwise comparison p-values &lt;0.05 and thus we can reject the null hypothesis for (High School &amp; Graduate) and (High School &amp; Bachelors) and conclude that the median Joviality index for these two pairs of education levels are different.</p>
@@ -1626,79 +1538,79 @@ Note
 <h3 class="anchored" data-anchor-id="correlation-between-annual-shelter-cost-and-annual-wage">3.2.3 Correlation between Annual Shelter cost and Annual Wage</h3>
 <p>In this section, we will investigate if people who earn more will also spend more on shelter. We will also subset the data across education levels.</p>
 <p>We will use the non-parametric Spearman correlation analysis instead of Pearson correlation since the wage data is not normally distributed.</p>
-<div class="cell" data-fig.asp="0.618">
+<div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>low_correl <span class="ot">&lt;-</span> <span class="fu">ggscatterstats</span>(<span class="at">data =</span> annual <span class="sc">|&gt;</span> <span class="fu">filter</span>(educationLevel <span class="sc">==</span> <span class="st">"Low"</span>), </span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">x =</span> Wage, <span class="at">y =</span> Shelter,</span>
-<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">type =</span> <span class="st">"nonparametric"</span>) <span class="sc">+</span> </span>
-<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">hjust=</span><span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">70000</span>), </span>
-<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">70000</span>, <span class="dv">10000</span>), </span>
-<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels=</span> comma) <span class="sc">+</span> </span>
-<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">20000</span>), </span>
-<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">20000</span>, <span class="dv">5000</span>), </span>
-<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels=</span> comma) <span class="sc">+</span></span>
-<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Low Education Status"</span>, </span>
-<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Annual Wage"</span>, <span class="at">y =</span> <span class="st">"Annual Shelter fee"</span>) </span>
-<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a>high_correl <span class="ot">&lt;-</span> <span class="fu">ggscatterstats</span>(<span class="at">data =</span> annual <span class="sc">|&gt;</span> <span class="fu">filter</span>(educationLevel <span class="sc">==</span> <span class="st">"HighSchoolOrCollege"</span>), </span>
-<span id="cb51-18"><a href="#cb51-18" aria-hidden="true" tabindex="-1"></a>                           <span class="at">x =</span> Wage, <span class="at">y =</span> Shelter,</span>
-<span id="cb51-19"><a href="#cb51-19" aria-hidden="true" tabindex="-1"></a>                           <span class="at">type =</span> <span class="st">"nonparametric"</span>) <span class="sc">+</span> </span>
-<span id="cb51-20"><a href="#cb51-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">hjust=</span><span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb51-21"><a href="#cb51-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">70000</span>), </span>
-<span id="cb51-22"><a href="#cb51-22" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">70000</span>, <span class="dv">10000</span>), </span>
-<span id="cb51-23"><a href="#cb51-23" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels=</span> comma) <span class="sc">+</span> </span>
-<span id="cb51-24"><a href="#cb51-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">20000</span>), </span>
-<span id="cb51-25"><a href="#cb51-25" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">20000</span>, <span class="dv">5000</span>), </span>
-<span id="cb51-26"><a href="#cb51-26" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels=</span> comma) <span class="sc">+</span></span>
-<span id="cb51-27"><a href="#cb51-27" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb51-28"><a href="#cb51-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"High Sch Education Status"</span>, </span>
-<span id="cb51-29"><a href="#cb51-29" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Annual Wage"</span>, <span class="at">y =</span> <span class="st">"Annual Shelter fee"</span>) </span>
-<span id="cb51-30"><a href="#cb51-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-31"><a href="#cb51-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-32"><a href="#cb51-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-33"><a href="#cb51-33" aria-hidden="true" tabindex="-1"></a>bac_correl <span class="ot">&lt;-</span> <span class="fu">ggscatterstats</span>(<span class="at">data =</span> annual <span class="sc">|&gt;</span> <span class="fu">filter</span>(educationLevel <span class="sc">==</span> <span class="st">"Bachelors"</span>), </span>
-<span id="cb51-34"><a href="#cb51-34" aria-hidden="true" tabindex="-1"></a>                           <span class="at">x =</span> Wage, <span class="at">y =</span> Shelter,</span>
-<span id="cb51-35"><a href="#cb51-35" aria-hidden="true" tabindex="-1"></a>                           <span class="at">type =</span> <span class="st">"nonparametric"</span>) <span class="sc">+</span> </span>
-<span id="cb51-36"><a href="#cb51-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">hjust=</span><span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb51-37"><a href="#cb51-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">70000</span>), </span>
-<span id="cb51-38"><a href="#cb51-38" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">70000</span>, <span class="dv">10000</span>), </span>
-<span id="cb51-39"><a href="#cb51-39" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels=</span> comma) <span class="sc">+</span> </span>
-<span id="cb51-40"><a href="#cb51-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">20000</span>), </span>
-<span id="cb51-41"><a href="#cb51-41" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">20000</span>, <span class="dv">5000</span>), </span>
-<span id="cb51-42"><a href="#cb51-42" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels=</span> comma) <span class="sc">+</span></span>
-<span id="cb51-43"><a href="#cb51-43" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb51-44"><a href="#cb51-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Degree Education Status"</span>, </span>
-<span id="cb51-45"><a href="#cb51-45" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Annual Wage"</span>, <span class="at">y =</span> <span class="st">"Annual Shelter fee"</span>) </span>
-<span id="cb51-46"><a href="#cb51-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-47"><a href="#cb51-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-48"><a href="#cb51-48" aria-hidden="true" tabindex="-1"></a>grad_correl <span class="ot">&lt;-</span> <span class="fu">ggscatterstats</span>(<span class="at">data =</span> annual <span class="sc">|&gt;</span> <span class="fu">filter</span>(educationLevel <span class="sc">==</span> <span class="st">"Graduate"</span>), </span>
-<span id="cb51-49"><a href="#cb51-49" aria-hidden="true" tabindex="-1"></a>                           <span class="at">x =</span> Wage, <span class="at">y =</span> Shelter,</span>
-<span id="cb51-50"><a href="#cb51-50" aria-hidden="true" tabindex="-1"></a>                           <span class="at">type =</span> <span class="st">"nonparametric"</span>) <span class="sc">+</span> </span>
-<span id="cb51-51"><a href="#cb51-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">hjust=</span><span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb51-52"><a href="#cb51-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">70000</span>),</span>
-<span id="cb51-53"><a href="#cb51-53" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">70000</span>, <span class="dv">10000</span>), </span>
-<span id="cb51-54"><a href="#cb51-54" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels=</span> comma) <span class="sc">+</span> </span>
-<span id="cb51-55"><a href="#cb51-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">20000</span>),</span>
-<span id="cb51-56"><a href="#cb51-56" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">20000</span>, <span class="dv">5000</span>), </span>
-<span id="cb51-57"><a href="#cb51-57" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels=</span> comma) <span class="sc">+</span></span>
-<span id="cb51-58"><a href="#cb51-58" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb51-59"><a href="#cb51-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Graduate Education Status"</span>, </span>
-<span id="cb51-60"><a href="#cb51-60" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Annual Wage"</span>, <span class="at">y =</span> <span class="st">"Annual Shelter fee"</span>) </span>
-<span id="cb51-61"><a href="#cb51-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-62"><a href="#cb51-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-63"><a href="#cb51-63" aria-hidden="true" tabindex="-1"></a><span class="co"># combining plots using patchwork</span></span>
-<span id="cb51-64"><a href="#cb51-64" aria-hidden="true" tabindex="-1"></a>p_correl <span class="ot">&lt;-</span> (low_correl <span class="sc">+</span> high_correl) <span class="sc">/</span> (bac_correl <span class="sc">+</span> grad_correl) <span class="sc">+</span> <span class="fu">plot_spacer</span>()</span>
-<span id="cb51-65"><a href="#cb51-65" aria-hidden="true" tabindex="-1"></a>p_correl <span class="sc">+</span> <span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="st">"Correlation between Shelter spending and Annual Wage"</span>, </span>
-<span id="cb51-66"><a href="#cb51-66" aria-hidden="true" tabindex="-1"></a>                           <span class="at">theme =</span> <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">18</span>),</span>
-<span id="cb51-67"><a href="#cb51-67" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>low_correl <span class="ot">&lt;-</span> <span class="fu">ggscatterstats</span>(<span class="at">data =</span> annual <span class="sc">|&gt;</span> <span class="fu">filter</span>(educationLevel <span class="sc">==</span> <span class="st">"Low"</span>), </span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">x =</span> Wage, <span class="at">y =</span> Shelter,</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">type =</span> <span class="st">"nonparametric"</span>) <span class="sc">+</span> </span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">hjust=</span><span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">70000</span>), </span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">70000</span>, <span class="dv">10000</span>), </span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels=</span> comma) <span class="sc">+</span> </span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">20000</span>), </span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">20000</span>, <span class="dv">5000</span>), </span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels=</span> comma) <span class="sc">+</span></span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Low Education Status"</span>, </span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Annual Wage"</span>, <span class="at">y =</span> <span class="st">"Annual Shelter fee"</span>) </span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a>high_correl <span class="ot">&lt;-</span> <span class="fu">ggscatterstats</span>(<span class="at">data =</span> annual <span class="sc">|&gt;</span> <span class="fu">filter</span>(educationLevel <span class="sc">==</span> <span class="st">"HighSchoolOrCollege"</span>), </span>
+<span id="cb50-18"><a href="#cb50-18" aria-hidden="true" tabindex="-1"></a>                           <span class="at">x =</span> Wage, <span class="at">y =</span> Shelter,</span>
+<span id="cb50-19"><a href="#cb50-19" aria-hidden="true" tabindex="-1"></a>                           <span class="at">type =</span> <span class="st">"nonparametric"</span>) <span class="sc">+</span> </span>
+<span id="cb50-20"><a href="#cb50-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">hjust=</span><span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb50-21"><a href="#cb50-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">70000</span>), </span>
+<span id="cb50-22"><a href="#cb50-22" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">70000</span>, <span class="dv">10000</span>), </span>
+<span id="cb50-23"><a href="#cb50-23" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels=</span> comma) <span class="sc">+</span> </span>
+<span id="cb50-24"><a href="#cb50-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">20000</span>), </span>
+<span id="cb50-25"><a href="#cb50-25" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">20000</span>, <span class="dv">5000</span>), </span>
+<span id="cb50-26"><a href="#cb50-26" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels=</span> comma) <span class="sc">+</span></span>
+<span id="cb50-27"><a href="#cb50-27" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb50-28"><a href="#cb50-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"High Sch Education Status"</span>, </span>
+<span id="cb50-29"><a href="#cb50-29" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Annual Wage"</span>, <span class="at">y =</span> <span class="st">"Annual Shelter fee"</span>) </span>
+<span id="cb50-30"><a href="#cb50-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-31"><a href="#cb50-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-32"><a href="#cb50-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-33"><a href="#cb50-33" aria-hidden="true" tabindex="-1"></a>bac_correl <span class="ot">&lt;-</span> <span class="fu">ggscatterstats</span>(<span class="at">data =</span> annual <span class="sc">|&gt;</span> <span class="fu">filter</span>(educationLevel <span class="sc">==</span> <span class="st">"Bachelors"</span>), </span>
+<span id="cb50-34"><a href="#cb50-34" aria-hidden="true" tabindex="-1"></a>                           <span class="at">x =</span> Wage, <span class="at">y =</span> Shelter,</span>
+<span id="cb50-35"><a href="#cb50-35" aria-hidden="true" tabindex="-1"></a>                           <span class="at">type =</span> <span class="st">"nonparametric"</span>) <span class="sc">+</span> </span>
+<span id="cb50-36"><a href="#cb50-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">hjust=</span><span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb50-37"><a href="#cb50-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">70000</span>), </span>
+<span id="cb50-38"><a href="#cb50-38" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">70000</span>, <span class="dv">10000</span>), </span>
+<span id="cb50-39"><a href="#cb50-39" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels=</span> comma) <span class="sc">+</span> </span>
+<span id="cb50-40"><a href="#cb50-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">20000</span>), </span>
+<span id="cb50-41"><a href="#cb50-41" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">20000</span>, <span class="dv">5000</span>), </span>
+<span id="cb50-42"><a href="#cb50-42" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels=</span> comma) <span class="sc">+</span></span>
+<span id="cb50-43"><a href="#cb50-43" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb50-44"><a href="#cb50-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Degree Education Status"</span>, </span>
+<span id="cb50-45"><a href="#cb50-45" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Annual Wage"</span>, <span class="at">y =</span> <span class="st">"Annual Shelter fee"</span>) </span>
+<span id="cb50-46"><a href="#cb50-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-47"><a href="#cb50-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-48"><a href="#cb50-48" aria-hidden="true" tabindex="-1"></a>grad_correl <span class="ot">&lt;-</span> <span class="fu">ggscatterstats</span>(<span class="at">data =</span> annual <span class="sc">|&gt;</span> <span class="fu">filter</span>(educationLevel <span class="sc">==</span> <span class="st">"Graduate"</span>), </span>
+<span id="cb50-49"><a href="#cb50-49" aria-hidden="true" tabindex="-1"></a>                           <span class="at">x =</span> Wage, <span class="at">y =</span> Shelter,</span>
+<span id="cb50-50"><a href="#cb50-50" aria-hidden="true" tabindex="-1"></a>                           <span class="at">type =</span> <span class="st">"nonparametric"</span>) <span class="sc">+</span> </span>
+<span id="cb50-51"><a href="#cb50-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">hjust=</span><span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb50-52"><a href="#cb50-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">70000</span>),</span>
+<span id="cb50-53"><a href="#cb50-53" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">70000</span>, <span class="dv">10000</span>), </span>
+<span id="cb50-54"><a href="#cb50-54" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels=</span> comma) <span class="sc">+</span> </span>
+<span id="cb50-55"><a href="#cb50-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">20000</span>),</span>
+<span id="cb50-56"><a href="#cb50-56" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">20000</span>, <span class="dv">5000</span>), </span>
+<span id="cb50-57"><a href="#cb50-57" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels=</span> comma) <span class="sc">+</span></span>
+<span id="cb50-58"><a href="#cb50-58" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb50-59"><a href="#cb50-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Graduate Education Status"</span>, </span>
+<span id="cb50-60"><a href="#cb50-60" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Annual Wage"</span>, <span class="at">y =</span> <span class="st">"Annual Shelter fee"</span>) </span>
+<span id="cb50-61"><a href="#cb50-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-62"><a href="#cb50-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-63"><a href="#cb50-63" aria-hidden="true" tabindex="-1"></a><span class="co"># combining plots using patchwork</span></span>
+<span id="cb50-64"><a href="#cb50-64" aria-hidden="true" tabindex="-1"></a>p_correl <span class="ot">&lt;-</span> (low_correl <span class="sc">+</span> high_correl) <span class="sc">/</span> (bac_correl <span class="sc">+</span> grad_correl) <span class="sc">+</span> <span class="fu">plot_spacer</span>()</span>
+<span id="cb50-65"><a href="#cb50-65" aria-hidden="true" tabindex="-1"></a>p_correl <span class="sc">+</span> <span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="st">"Correlation between Shelter spending and Annual Wage"</span>, </span>
+<span id="cb50-66"><a href="#cb50-66" aria-hidden="true" tabindex="-1"></a>                           <span class="at">theme =</span> <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">18</span>),</span>
+<span id="cb50-67"><a href="#cb50-67" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-44-1.png" class="img-fluid" width="1152"></p>
+<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid" width="1152"></p>
 </div>
 </div>
 <p>H0: There is no [monotonic] association between the annual shelter fees and wage.</p>

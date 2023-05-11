@@ -590,6 +590,10 @@ r <- highlevel %>%
 
 -   Work in progress.. tidy up axis ticks, titles title
 
+    ```{r}
+    glimpse(highlevel)
+    ```
+
 ```{r}
 #| code-fold: True
 #| fig-width: 10
@@ -597,7 +601,7 @@ r <- highlevel %>%
 
 s <- highlevel %>%
   plot_ly(x = ~date, y = ~Shelter, type = 'scatter', mode = 'lines', name='Shelter') %>%
-  layout(title = 'Line chart of expenditures by month', 
+  layout(
          xaxis = list(title = "Date"), 
          yaxis = list(title = "Shelter"),
          plot_bgcolor = "#e5ecf6")
@@ -615,9 +619,21 @@ r <- highlevel %>%
   plot_ly(x = ~date, y = ~Recreation, type = 'scatter', mode = 'lines', name='Recreation') %>%
   layout(xaxis = list(title = "Date"), yaxis = list(title = "Recreation"))
 
-subplot(s, e, f, r, nrows = 2, margin = 0.1)
+#subplot(s, e, f, r,titleX=TRUE, titleY=TRUE, nrows = 2, margin = 0.1) %>% layout(title = "Custom Hover Text")
 
+subplot(s, e, f, r, titleX=TRUE, titleY=TRUE, nrows = 2, margin = 0.1) %>%
+  layout(title = "<b>Custom Hover Text<b>",
+         plot_bgcolor='#e5ecf6', 
+         xaxis = list( 
+           zerolinecolor = '#ffff', 
+           zerolinewidth = 2, 
+           gridcolor = 'ffff'), 
+         yaxis = list( 
+           zerolinecolor = '#ffff', 
+           zerolinewidth = 2, 
+           gridcolor = 'ffff'))
 
+#https://stackoverflow.com/questions/41324934/getting-separate-axis-labels-on-r-plotly-subplots#:~:text=To%20get%20x%2Daxis%20labels,%3D%20FALSE%20(the%20default)
 ```
 
 From all the plots above, March seems to be an exciting month where there is several anomalies observed. There are unusual spikes in wage, recreational and shelter spending.

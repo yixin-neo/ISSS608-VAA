@@ -378,7 +378,7 @@ From the Shapiro test , p-value \< 0.05 and we have enough statistical evidence 
 
 ### 3.1.2 Interactive Line charts of wages by month
 
-Preparing the data
+Preparing the data, creating a **highlevel** dataframe containing the rows date (month) and aggregated columns of expenses and wage only.
 
 ```{r}
 #| code-fold: True
@@ -397,6 +397,8 @@ highlevel <- finance1_wide_ptcp1 %>%
                 )
 head(highlevel,5)
 ```
+
+An interactive line chart showing us an overview of total income across months.
 
 ```{r}
 #| code-fold: True
@@ -443,10 +445,10 @@ ggplotly(q1,tooltip = c('labels','x','y'))
 
 ### 3.1.3 Boxplot, One-way Anova and Error Plot of wage across months
 
-Now lets examine the wages across the months closer using boxplots.
+Now we willl examine the distribution of wages across the months by education levels using boxplots.
 
 ::: panel-tabset
-#### March 22 to Feb 23
+#### Boxplots
 
 The boxplot is able to show the distribution of wages of the residents across all the months. Wage is much higher in March and possible reasons could be due to Harvest / Bonus month. Are the medians of the month wage significantly different from one another? (See next tab)
 
@@ -468,19 +470,20 @@ ggplot(df_wage_edu_month,
        aes(x = month, y = Wage)) +
   geom_boxplot(aes(fill = educationLevel)) +
   stat_summary(fun.y = "median", geom = "point", color = "red", size = 2) +
-  labs(x = "Month", y = "Wage", fill = "Education Level") +
+  labs(x = "Month", y = "Wage", fill = "Education Level", title='Wage Across education level by month') +
   scale_fill_brewer(palette="RdBu") + 
   theme_minimal() +
   theme(legend.key.size = unit(0.5,'cm'),
         legend.position="bottom",
         axis.title = element_text(size = 10 , face = "bold"),
+        axis.text = element_text(size = 10),
         axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
 #### One way Anova plot
 
-The plot below shows us the pairs of months where wage are significantly different. See the next tab to see the error plots.
+The plot below shows us the pairs of months where wage are significantly different. See the next tab to see the error plots. Median Wage of March is signnicficantly different from all the wages of the other months.
 
 ```{r}
 #| code-fold: True
@@ -500,7 +503,7 @@ ggbetweenstats(data = df_wage_edu_month, x = month, y = Wage,
 
 #### Error plots
 
-As we are analyzing survey data, each of our sample mean could vary from the actual population mean. Thus we have to visualise the margin of error. The higher the CI, the higher the margin of error.
+As we are analyzing survey data, each of our sample mean could vary from the actual population mean. Thus we have to visualize the margin of error. The higher the CI, the higher the margin of error.
 
 95% and 99% confidence intervals are constructed for the median wage for each month.
 
@@ -533,7 +536,9 @@ df_wage_edu_month %>%
   
   theme_ipsum() +
   
-  theme(axis.title.y=element_text(angle = 0, 
+  theme(axis.title = element_text(size = 10 , face = "bold"),
+        axis.text = element_text(size = 10),
+        axis.title.y=element_text(angle = 0, 
                                   vjust=0.9, 
                                   size = 10, 
                                   face='bold'),
@@ -548,51 +553,13 @@ df_wage_edu_month %>%
 ```
 :::
 
-### 3.1.4 Interactive (pending coordinated) Line chart of expenditures by month
+### 3.1.4 Interactive Line charts of expenditures by month
 
 Design considerations:
 
 Instead of combining Education, Recreation, Food and Shelter expense in one chart, I have plotted them on one chart each with different Y axis range. This will be enable us to visualise variability of amount across categories clearly.
 
-```{r}
-#| code-fold: True
-
-s <- highlevel %>%
-  ggplot(aes(x = date,y = Shelter)) +
-  geom_line() + 
-  # axes scale control
-  scale_y_continuous(limits = c(550000, 650000), 
-                     breaks=seq(550000, 650000, 50000), 
-                     labels= comma) +
-  theme_clean()
-
-
-e <- highlevel %>%
-  ggplot(aes(x = date,y = Education)) +
-  geom_line() + 
-  theme_clean()
-
-f <- highlevel %>%
-  ggplot(aes(x = date,y = Food)) +
-  geom_line() + theme_clean()
-
-r <- highlevel %>%
-  ggplot(aes(x = date,y = Recreation)) +
-  geom_line() +
-  scale_y_continuous(limits = c(250000, 650000), 
-                     breaks=seq(250000, 650000, 50000), 
-                     labels= comma)+
-  theme_clean()
-
-(s | e) / (f | r)
-
-```
-
 -   Work in progress.. tidy up axis ticks, titles title
-
-    ```{r}
-    glimpse(highlevel)
-    ```
 
 ```{r}
 #| code-fold: True
@@ -621,8 +588,8 @@ r <- highlevel %>%
 
 #subplot(s, e, f, r,titleX=TRUE, titleY=TRUE, nrows = 2, margin = 0.1) %>% layout(title = "Custom Hover Text")
 
-subplot(s, e, f, r, titleX=TRUE, titleY=TRUE, nrows = 2, margin = 0.1) %>%
-  layout(title = "<b>Custom Hover Text<b>",
+subplot(s, e, f, r, shareX=TRUE, titleY=TRUE, nrows = 2, margin = 0.1) %>%
+  layout(title = "<b>Annual expenses by month<b>",
          plot_bgcolor='#e5ecf6', 
          xaxis = list( 
            zerolinecolor = '#ffff', 
@@ -638,7 +605,9 @@ subplot(s, e, f, r, titleX=TRUE, titleY=TRUE, nrows = 2, margin = 0.1) %>%
 
 From all the plots above, March seems to be an exciting month where there is several anomalies observed. There are unusual spikes in wage, recreational and shelter spending.
 
-Next, lets plot a coordinated dotplot to studying the distribution of expenses since we have the individual data of participant, which we can aggregated into annual expense. First prepare the annual dataframe.
+Next, we will plot a coordinated dotplot to studying the distribution of expenses since we have the individual data of participant, which we can aggregated into annual expense.
+
+First prepare the **annual** dataframe that contains participantId, aggregated monthly amounts and their demographics data.
 
 ```{r}
 #| code-fold: True
@@ -650,16 +619,81 @@ annual <- finance1_wide_ptcp1 %>%
             Shelter = sum(Shelter, na.rm = TRUE),
             Wage = sum(Wage, na.rm = TRUE),
             RentAdjustment = sum(RentAdjustment, na.rm = TRUE)) 
+head(annual,3)
 ```
 
 ::: callout-note
 Note that the **`na.rm = TRUE`** argument is used in the **`sum`** function to handle missing values in the columns during aggregation.
 :::
 
-DOTPLOT CODES
+### 3.1.5 Coordinated interactive dotplot of expenses by category
+
+Hovering the cursor over the dots will show whether a participant have kids (True) or do not have kids.
 
 ```{r}
+#| code-fold: True
+#| fig-width: 10
+#| fig-asp: 0.618
+sdot <- ggplot(data=annual,
+            aes(x=Shelter)) +
+  geom_dotplot_interactive(aes(tooltip = haveKids,  #<<<
+                               data_id = haveKids),  #<<<
+                           stackgroups = TRUE,
+                           #binwidth = 2500,
+                           method = "histodot",
+                           dotsize= 0.2) +
+  scale_y_continuous(NULL,
+                     breaks= NULL) +  #null to suppress axis labels
+ 
+  theme_bw()
 
+edot <- ggplot(data=annual,
+            aes(x=Education)) +
+  geom_dotplot_interactive(aes(tooltip = haveKids,
+                               data_id = haveKids), 
+                           stackgroups = TRUE,
+                           #binwidth = 2500,
+                           method = "histodot",
+                           dotsize= 0.2) +
+  scale_y_continuous(NULL,
+                     breaks= NULL) +
+ 
+  theme_bw()
+
+fdot <- ggplot(data=annual,
+            aes(x=Food)) +
+  geom_dotplot_interactive(aes(tooltip = haveKids,
+                               data_id = haveKids), 
+                           stackgroups = TRUE,
+                           #binwidth = 2500,
+                           method = "histodot",
+                           dotsize= 0.2) +
+  scale_y_continuous(NULL,
+                     breaks= NULL) +
+ 
+  theme_bw()
+
+rdot <- ggplot(data=annual,
+            aes(x=Recreation)) +
+  geom_dotplot_interactive(aes(tooltip = haveKids,
+                               data_id = haveKids), 
+                           stackgroups = TRUE,
+                           #binwidth = 2500,
+                           method = "histodot",
+                           dotsize= 0.2) +
+  scale_y_continuous(NULL,
+                     breaks= NULL) +
+ 
+  theme_bw()
+
+girafe(code = print(sdot + edot + fdot + rdot), 
+       width_svg = 10,
+       height_svg = 10 *0.618,
+       options = list(                          #<<<
+         opts_hover(css='fill: blue;'),      #<<<
+         opts_hover_inv(css = 'opacity: 0.2;')  #<<<
+         )
+       )
 ```
 
 ```{r}

@@ -341,7 +341,7 @@ We will now convert the `finance1` dataframe from a long to a wide format. The c
 
 In this section, I will explore the dataset from high level and then zoom into interesting patterns (if I can find any =))
 
-## 3.2.1 Normality assumptions of annual wage
+### 3.1.1 Normality assumptions of annual wage
 
 Before zooming into wages in March, we will first perform a test to confirm whether wage follows the normal distribution.
 
@@ -384,12 +384,12 @@ Preparing the data
 #| code-fold: True
 highlevel <- finance1_wide_ptcp1 %>%
   group_by(date) %>%
-  summarize(Education = sum(Education, na.rm = TRUE),
-                Food = sum(Food, na.rm = TRUE),
-                Recreation = sum(Recreation, na.rm = TRUE),
-                Shelter = sum(Shelter, na.rm = TRUE),
-                Wage = sum(Wage, na.rm = TRUE),
-                RentAdjustment = sum(RentAdjustment, na.rm = TRUE),
+  summarize(Education = round(sum(Education, na.rm = TRUE)),
+                Food = round(sum(Food, na.rm = TRUE)),
+                Recreation = round(sum(Recreation, na.rm = TRUE)),
+                Shelter = round(sum(Shelter, na.rm = TRUE)),
+                Wage = round(sum(Wage, na.rm = TRUE)),
+                RentAdjustment = round(sum(RentAdjustment, na.rm = TRUE)),
                 ExpenseP = sum(Education, Food, Recreation, Shelter),  #<<<
                 Income = sum(Wage, RentAdjustment),                    #<<<
                 Saving = Income - ExpenseP,                            #<<<
@@ -440,6 +440,8 @@ q1<-highlevel %>%
 
 ggplotly(q1,tooltip = c('labels','x','y'))
 ```
+
+### 3.1.3 Boxplot, One-way Anova and Error Plot of wage across months
 
 Now lets examine the wages across the months closer using boxplots.
 
@@ -546,7 +548,7 @@ df_wage_edu_month %>%
 ```
 :::
 
-### Next Plot: Interactive (pending coordinated) Line chart of expenditures by month
+### 3.1.4 Interactive (pending coordinated) Line chart of expenditures by month
 
 Design considerations:
 
@@ -554,13 +556,21 @@ Instead of combining Education, Recreation, Food and Shelter expense in one char
 
 ```{r}
 #| code-fold: True
+
 s <- highlevel %>%
   ggplot(aes(x = date,y = Shelter)) +
-  geom_line() + theme_clean()
+  geom_line() + 
+  # axes scale control
+  scale_y_continuous(limits = c(550000, 650000), 
+                     breaks=seq(550000, 650000, 50000), 
+                     labels= comma) +
+  theme_clean()
+
 
 e <- highlevel %>%
   ggplot(aes(x = date,y = Education)) +
-  geom_line() + theme_clean()
+  geom_line() + 
+  theme_clean()
 
 f <- highlevel %>%
   ggplot(aes(x = date,y = Food)) +
@@ -568,12 +578,47 @@ f <- highlevel %>%
 
 r <- highlevel %>%
   ggplot(aes(x = date,y = Recreation)) +
-  geom_line() + theme_clean()
+  geom_line() +
+  scale_y_continuous(limits = c(250000, 650000), 
+                     breaks=seq(250000, 650000, 50000), 
+                     labels= comma)+
+  theme_clean()
 
-(s +e) / (f+r)
+(s | e) / (f | r)
+
 ```
 
 -   Work in progress.. tidy up axis ticks, titles title
+
+```{r}
+#| code-fold: True
+#| fig-width: 10
+#| fig-asp: 0.618
+
+s <- highlevel %>%
+  plot_ly(x = ~date, y = ~Shelter, type = 'scatter', mode = 'lines', name='Shelter') %>%
+  layout(title = 'Line chart of expenditures by month', 
+         xaxis = list(title = "Date"), 
+         yaxis = list(title = "Shelter"),
+         plot_bgcolor = "#e5ecf6")
+
+
+e <- highlevel %>%
+  plot_ly(x = ~date, y = ~Education, type = 'scatter', mode = 'lines', name='Education') %>%
+  layout(xaxis = list(title = "Date"), yaxis = list(title = "Education"))
+
+f <- highlevel %>%
+  plot_ly(x = ~date, y = ~Food, type = 'scatter', mode = 'lines', name='Food') %>%
+  layout(xaxis = list(title = "Date"), yaxis = list(title = "Food"))
+
+r <- highlevel %>%
+  plot_ly(x = ~date, y = ~Recreation, type = 'scatter', mode = 'lines', name='Recreation') %>%
+  layout(xaxis = list(title = "Date"), yaxis = list(title = "Recreation"))
+
+subplot(s, e, f, r, nrows = 2, margin = 0.1)
+
+
+```
 
 From all the plots above, March seems to be an exciting month where there is several anomalies observed. There are unusual spikes in wage, recreational and shelter spending.
 

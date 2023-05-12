@@ -1,0 +1,14 @@
+{
+  "hash": "02576611fd90bc777b39f92e5c8f2024",
+  "result": {
+    "markdown": "---\ntitle: \"In-class_Ex05\"\nauthor: \"NeoYX\"\ndate: '13 May 2023'\ndate-modified: \"2023-05-13\"\neditor: visual\nexecute: \n  freeze: auto\n  warning: false\n  #echo: false\n  #message: false\n  html:\n    code-fold: True\n    code-overflow: scroll\n    code-summary: \"Show the code\"\n    code-line-numbers: true\n---\n\n\nIn today's in class exercise,\n\n## Import libraries\n\nThe new libraries used today are :\n\n-   \n\n::: callout-note\n:::\n\n\n::: {.cell}\n\n```{.r .cell-code}\npacman::p_load(rstatix, gt, patchwork,tidyverse,nortest)\n```\n:::\n\n::: {.cell}\n\n```{.r .cell-code}\nexam <- read_csv('C:/yixin-neo/ISSS608-VAA/Hands-on_Ex/Hands-on_Ex05/data/Exam_data.csv')\n```\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

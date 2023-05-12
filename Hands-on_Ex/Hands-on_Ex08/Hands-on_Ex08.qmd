@@ -21,3 +21,109 @@ execute:
 #| fig-height: 6
 #| code-fold: True
 ```
+
+# **Lesson 5: Network Data Visualisation and Analysis**
+
+\*located inchapter 27 of Prof's [E-book](https://r4va.netlify.app/chap27.html)
+
+## Overview
+
+In this hands-on exercise, I will learn how to model, analyse and visualise network data using R.
+
+By the end of this hands-on exercise, I will be able to:
+
+-   create graph object data frames, manipulate them using appropriate functions of *dplyr*, *lubridate*, and *tidygraph*,
+
+-   build network graph visualisation using appropriate functions of *ggraph*,
+
+-   compute network geometrics using *tidygraph*,
+
+-   build advanced graph visualisation by incorporating the network geometrics, and
+
+-   build interactive network visualisation using *visNetwork* package.
+
+## 27.2 Getting Started
+
+### 27.2.1 Installing and launching R packages
+
+In this hands-on exercise, four network data modelling and visualisation packages will be installed and launched. They are igraph, tidygraph, ggraph and visNetwork. Beside these four packages, tidyverse and [lubridate](https://lubridate.tidyverse.org/), an R package specially designed to handle and wrangling **time** data will be installed and launched too.
+
+The code chunk:
+
+```{r}
+#| code-fold: True
+pacman::p_load(igraph, tidygraph, ggraph,
+               visNetwork, lubridate, clock,
+               tidyverse, graphlayouts,knitr)
+```
+
+## 27.3 The Data
+
+The data sets used in this hands-on exercise is from an oil exploration and extraction company. There are two data sets. One contains the nodes data and the other contains the edges (also know as link) data.
+
+### 27.3.1 The edges data
+
+-   *GAStech-email_edges.csv* which consists of two weeks of 9063 emails correspondances between 55 employees.
+
+![](https://r4va.netlify.app/chap27/img/image2.jpg)
+
+### 27.3.2 The nodes data
+
+-   *GAStech_email_nodes.csv* which consist of the names, department and title of the 55 employees.
+
+![](https://r4va.netlify.app/chap27/img/image1.jpg)
+
+### 27.3.3 Importing network data from files
+
+In this step, you will import GAStech_email_node.csv and GAStech_email_edges-v2.csv into RStudio environment by using `read_csv()` of **readr** package.
+
+```{r}
+GAStech_nodes <- read_csv('data/GAStech_email_node.csv')
+GAStech_edges <- read_csv('data/GAStech_email_edge-v2.csv')
+```
+
+### 27.3.4 Reviewing the imported data
+
+Next, we will examine the structure of the data frame using *glimpse()* of **dplyr**.
+
+```{r}
+glimpse(GAStech_edges)
+# list()
+# summary()
+# class ()
+
+```
+
+::: callout-warning
+The output report of GAStech_edges above reveals that the *SentDate* is treated as \"Character\" data type instead of *date* data type. We have to change the data type of *SentDate* field back to \"Date\"\" data type.
+:::
+
+### 27.3.5 Wrangling time
+
+```{r}
+GAStech_edges <- GAStech_edges %>% 
+  mutate(SentDate = dmy(SentDate)) %>% 
+  mutate(Weekday = wday(SentDate,
+                         label = TRUE,  # ordered factor if true
+                         abbr = FALSE))
+```
+
+::: callout-note
+## Learning from codes above
+
+-   both *dmy()* and *wday()* are functions of **lubridate** package. [lubridate](https://r4va.netlify.app/cran.r-project.org/web/packages/lubridate/vignettes/lubridate.html) is an R package that makes it easier to work with dates and times.
+
+-   *dmy()* transforms the SentDate to Date data type.
+
+-   *wday()* returns the day of the week as a decimal number (1-7) or an ordered factor (Monday, Tuesday,..) if label is TRUE. The argument abbr is FALSE keep the daya spells in full, i.e. Monday. The function will create a new column in the data.frame i.e. Weekday and the output of *wday()* will save in this newly created field.
+
+-   the values in the *Weekday* field are in ordinal scale.
+:::
+
+### 27.3.6 Reviewing the revised date fields
+
+Table below shows the data structure of the reformatted *GAStech_edges* data frame using knitr::kable() function
+
+```{r}
+knitr::kable(head(GAStech_edges,5), "simple")
+```

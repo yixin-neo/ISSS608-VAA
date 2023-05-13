@@ -87,6 +87,7 @@ GAStech_edges <- read_csv('data/GAStech_email_edge-v2.csv')
 Next, we will examine the structure of the data frame using *glimpse()* of **dplyr**.
 
 ```{r}
+#| code-fold: True
 glimpse(GAStech_edges)
 # list()
 # summary()
@@ -101,6 +102,7 @@ The output report of GAStech_edges above reveals that the *SentDate* is treated 
 ### 27.3.5 Wrangling time
 
 ```{r}
+#| code-fold: True
 GAStech_edges <- GAStech_edges %>% 
   mutate(SentDate = dmy(SentDate)) %>% 
   mutate(Weekday = wday(SentDate,
@@ -122,8 +124,214 @@ GAStech_edges <- GAStech_edges %>%
 
 ### 27.3.6 Reviewing the revised date fields
 
-Table below shows the data structure of the reformatted *GAStech_edges* data frame using knitr::kable() function
+Table below shows the data structure of the reformatted *GAStech_edges* with the correct data formats.
 
 ```{r}
-knitr::kable(head(GAStech_edges,5), "simple")
+#| echo: false
+glimpse(GAStech_edges)
+# knitr::kable(head(GAStech_edges,5), "simple")
+```
+
+### 27.3.7 Wrangling attributes
+
+A close examination of *GAStech_edges* data.frame reveals that it consists of individual e-mail flow records. This is not very useful for visualisation.
+
+In view of this, we will
+
+-   filter `Work related` emails
+
+-   group-by senders, receivers and day of week
+
+-   aggregate to get the total count of each unique combination of the above to get `Weight` as a new column
+
+-   filter twice to remove self-loops and edges that occurred only once
+
+-   **`ungroup()`** function is used to remove the grouping created by **`group_by()`** so that the resulting dataframe is not grouped by any variable(s) anymore. This is useful when we want to apply further operations or analysis to the individual rows of data rather than grouped results.
+
+The code chunk:
+
+```{r}
+#| code-fold: True
+GAStech_edges_aggregated <- GAStech_edges %>% 
+  filter(MainSubject=='Work related') %>% 
+  group_by(source, target, Weekday) %>% 
+  summarise(Weight = n()) %>% 
+  filter(source != target) %>% 
+  filter(Weight >1) %>% 
+  ungroup()
+```
+
+::: callout-note
+## Things to learn from code above
+
+-   four functions from **dplyr** package are used. They are: *filter()*, *group()*, *summarise()*, and *ungroup()*.
+
+-   The output data.frame is called **GAStech_edges_aggregated**.
+
+-   A new field called *Weight* has been added in GAStech_edges_aggregated.
+:::
+
+### 27.3.8 Reviewing the revised edges file
+
+Table below shows the data structure of the reformatted *GAStech_edges_aggregated* data frame
+
+```{r}
+#| echo: false
+glimpse(GAStech_edges_aggregated)
+```
+
+## 27.4 Creating network objects using **tidygraph**
+
+In this section, Iwill learn how to create a graph data model by using **tidygraph** package. It provides a tidy API for graph/network manipulation. While network data itself is not tidy, it can be envisioned as two tidy tables, one for node data and one for edge data. `tidygraph` provides a way
+
+-   to switch between the two tables and provides dplyr verbs for manipulating them.
+
+-   to access to a lot of graph algorithms with return values that facilitate their use in a tidy workflow.
+
+Before getting started, please read these two articles:
+
+-   [Introducing tidygraph](https://www.data-imaginist.com/2017/introducing-tidygraph/)
+
+-   [tidygraph 1.1 - A tidy hope](https://www.data-imaginist.com/2018/tidygraph-1-1-a-tidy-hope/)
+
+### 27.4.1 The **tbl_graph** object
+
+Two functions of **tidygraph** package can be used to create network objects, they are:
+
+-   [`tbl_graph()`](https://tidygraph.data-imaginist.com/reference/tbl_graph.html) **creates** a **tbl_graph** network object from nodes and edges data.
+
+-   [`as_tbl_graph()`](https://tidygraph.data-imaginist.com/reference/tbl_graph.html) **converts** network data and objects to a **tbl_graph** network. Below are network data and objects supported by `as_tbl_graph()`
+
+    -   a node data.frame and an edge data.frame,
+
+    -   data.frame, list, matrix from base,
+
+    -   igraph from igraph,
+
+    -   network from network,
+
+    -   dendrogram and hclust from stats,
+
+    -   Node from data.tree,
+
+    -   phylo and evonet from ape, and
+
+    -   graphNEL, graphAM, graphBAM from graph (in Bioconductor).
+
+### 27.4.2 The **dplyr** verbs in **tidygraph**
+
+-   *activate()* verb from **tidygraph** serves as a switch between tibbles for nodes and edges. All dplyr verbs applied to **tbl_graph** object are applied to the active tibble.
+
+![](https://r4va.netlify.app/chap27/img/image3.jpg){width="756"}
+
+-   In the above the *.N()* function is used to gain access to the node data while manipulating the edge data. Similarly *.E()* will give you the edge data and *.G()* will give you the **tbl_graph** object itself.
+
+-   **`%>% mutate(Species = ifelse(leaf, as.character(iris$Species)[label], NA))`** - This line adds a new column called **`Species`** to the **`nodes`** data frame. The **`ifelse()`** function assigns a value to this column based on whether the node is a leaf or not. If it is a leaf, the value is taken from the **`label`** column of the **`iris$Species`** data frame (which contains the actual species names), and if it is not a leaf, the value is set to **`NA`**.
+
+-   **`%>% mutate(to_setose = .N()$Species[to] == 'setosa')`** - This line adds a new column called **`to_setose`** to the **`edges`** data frame. The **`ifelse()`** function assigns a value to this column based on whether the target node of each edge is a member of the **`setosa`** species or not. The **`to`** variable refers to the index of the target node in the **`nodes`** data frame, and the **`.N()`** function allows access to the **`Species`** column of the **`nodes`** data frame.
+
+### 27.4.3 Using `tbl_graph()` to build tidygraph data model.
+
+In this section, you will use `tbl_graph()` of **tinygraph** package to build an tidygraph\'s network graph data.frame.
+
+Before typing the codes, you are recommended to review to reference guide of [`tbl_graph()`](https://tidygraph.data-imaginist.com/reference/tbl_graph.html)
+
+```{r}
+GAStech_graph<- tbl_graph(nodes=GAStech_nodes,
+                          edges = GAStech_edges_aggregated,
+                          directed = TRUE)
+```
+
+### 27.4.4 Reviewing the output tidygraph\'s graph object
+
+```{r}
+GAStech_graph
+```
+
+-   The output above reveals that *GAStech_graph* is a tbl_graph object with 54 nodes and 4541 edges.
+
+-   The command also prints the first six rows of \"Node Data\" and the first three of \"Edge Data\".
+
+-   It states that the Node Data is **active (Node data is on top of Edge data)**. The notion of an active tibble within a tbl_graph object makes it possible to manipulate the data in one tibble at a time.
+
+### 27.4.6 Changing the active object
+
+The nodes tibble data frame is activated by default, but you can change which tibble data frame is active with the *activate()* function. Thus, if we wanted to rearrange the rows in the edges tibble to list those with the highest \"weight\" first, we could use *activate()* and then *arrange()*.
+
+For example,
+
+```{r}
+GAStech_graph %>% 
+  activate(edges) %>% 
+  arrange(desc(Weight))
+```
+
+Visit the reference guide of [*activate()*](https://tidygraph.data-imaginist.com/reference/activate.html) to find out more about the function.
+
+## 27.5 Plotting Static Network Graphs with **ggraph** package
+
+[**ggraph**](https://ggraph.data-imaginist.com/) is an extension of **ggplot2**, making it easier to carry over basic ggplot skills to the design of network graphs.
+
+As in all network graph, there are three main aspects to a **ggraph**\'s network graph, they are:
+
+-   [nodes](https://cran.r-project.org/web/packages/ggraph/vignettes/Nodes.html),
+
+-   [edges](https://cran.r-project.org/web/packages/ggraph/vignettes/Edges.html) and
+
+-   [layouts](https://cran.r-project.org/web/packages/ggraph/vignettes/Layouts.html).
+
+For a comprehensive discussion of each of this aspect of graph, please refer to their respective vignettes provided.
+
+### 27.5.1 Plotting a basic network graph
+
+The code chunk below uses [*ggraph()*](https://ggraph.data-imaginist.com/reference/ggraph.html), [*geom-edge_link()*](https://ggraph.data-imaginist.com/reference/geom_edge_link.html) and [*geom_node_point()*](https://ggraph.data-imaginist.com/reference/geom_node_point.html) to plot a network graph by using *GAStech_graph*. Before getting started, it is advisable to read their respective reference guide at least once.
+
+```{r}
+ggraph(GAStech_graph) +  #<<< GAStech_graph is a tbl_graph object
+  geom_edge_link() +
+  geom_node_point()
+```
+
+::: callout-note
+## Things to learn from code chunk above
+
+-   The basic plotting function is `ggraph()`, which takes the data to be used for the graph and the type of layout desired. Both of the arguments for `ggraph()` are built around *igraph*. Therefore, `ggraph()` canaccept either an *igraph* object or a *tbl_graph* object.
+
+-   **`igraph`** uses an adjacency matrix or an edge list and is more focused on traditional graph theory algorithms and operations.
+
+    In an edge list, each row represents an edge, with the first two columns containing the indices of the nodes that the edge connects.
+
+-   **`tidygraph`** uses a **`tbl_graph`** object, which is a tidy data frame representation of a graph. The **`nodes`** and **`edges`** data frames contain the metadata about the nodes and edges, respectively, and can be manipulated using the **`dplyr`** syntax
+:::
+
+### 27.5.2 Changing the default network graph theme
+
+In this section, use [*theme_graph()*](https://ggraph.data-imaginist.com/reference/theme_graph.html) to remove the x and y axes. Before getting started, it is advisable to read it\'s reference guide at least once.
+
+```{r}
+g <- ggraph(GAStech_graph) +  #<<< GAStech_graph is a tbl_graph object
+  geom_edge_link(aes()) +
+  geom_node_point(aes())
+
+g + theme_graph()
+```
+
+::: callout-note
+## Things to learn form codes above
+
+-   **ggraph** introduces a special ggplot theme that provides better defaults for network graphs than the normal ggplot defaults. `theme_graph()`, besides removing axes, grids, and border, changes the font to Arial Narrow (this can be overridden).
+
+```{=html}
+<!-- -->
+```
+-   The ggraph theme can be set for a series of plots with the `set_graph_style()` command run before the graphs are plotted or by using `theme_graph()` in the individual plots.
+:::
+
+```{r}
+g <- ggraph(GAStech_graph) +  #<<< GAStech_graph is a tbl_graph object
+  geom_edge_link(aes(colour ='grey50'),show.legend = FALSE) +  #<< refer to ggraph documentation
+  geom_node_point(aes(colour ='grey40'))
+
+g + theme_graph(background = 'grey10',
+                text_colour = 'orange')
 ```

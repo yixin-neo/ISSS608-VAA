@@ -20,13 +20,13 @@ format:
 ::: callout-note
 **Edge data** should be organised as such: (can use dplyr methods)
 
-First column: Source id (FK to Node second column) - compulsory
+First column: Source id (FK to Node second column)  - compulsory
 
-Second column: Target id (FK to Node second column) - compulsory
+Second column: Target id (FK to Node second column)  - compulsory
 
 **Node data**
 
-First column: ID - compulsory
+First column: ID  - compulsory
 
 Second column: Label (contains all the distinct values of source and target in Edge data) (only need if Id are all integers) (what is present in edge data must exists in Labels of node data, must not be missing in node data)
 :::
@@ -70,11 +70,4 @@ MC1_nodes <- as_tibble(MC1$nodes) %>%
 MC1_edges <- as_tibble(MC1$links) %>% 
   select(source,target,type,weight,key)  
 # can exclude dataste column as they all contain the same values.
-```
-
-Back to GAStech dataset
-
-```{r}
-GAStech_nodes <- read_csv("C:/yixin-neo/ISSS608-VAA/Hands-on_Ex/Hands-on_Ex08/data/GAStech_email_node.csv")
-GAStech_edges <- read_csv('C:/yixin-neo/ISSS608-VAA/Hands-on_Ex/Hands-on_Ex08/data/GAStech_email_edge-v2.csv')
 ```

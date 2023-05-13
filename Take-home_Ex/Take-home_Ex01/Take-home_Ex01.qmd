@@ -341,7 +341,7 @@ In this section, I will explore the dataset from high level and then zoom into i
 
 ### 3.1.1 Normality assumptions of annual wage
 
-Before zooming into wages in March, we will first perform a test to confirm whether wage follows the normal distribution.
+Before zooming into wages in March, we will first perform a test to confirm whether wages in March follows the normal distribution.
 
 H0: The wage does not follow a normal distribution.
 
@@ -349,20 +349,20 @@ H1: The wage follows a normal distribution.
 
 ```{r}
 #| code-fold: True
-set.seed(123) # for reproducibility
-sample_5000<- finance1_wide_ptcp1[sample(1:nrow(finance1_wide_ptcp1), 5000), ] # perform sampling as limit of shapiro test is 5000
 
+march_records <- finance1_wide_ptcp1 %>% 
+               filter(date == as.Date("2022-03-01"))
 
-qq <- ggplot(sample_5000,
-       aes(sample=Wage)) +  #<<< use a new argument call sample: el scores
+qq <- ggplot(march_records,
+             aes(sample=Wage)) +
   
   stat_qq() +
   stat_qq_line() +
   ggtitle("QQ plot with Shapiro-Wilk test results")  # add plot title
 
-sw_t <- shapiro_test(sample_5000$Wage) %>% 
+sw_t <- shapiro_test(march_records$Wage) %>% 
   as_tibble() %>% 
-  mutate(variable = "Wage")%>% gt()  #<<< make into a gt format (will give a nice table)  shapiro.test is not used here as it gives output in another format.
+  mutate(variable = "Wage in March")%>% gt()  #<<< make into a gt format (will give a nice table)  shapiro.test is not used here as it gives output in another format.
 
 tmp <- tempfile(fileext = '.png') # create  temp table
 gtsave(sw_t, tmp)  # use gtsave() to save sw_t into tmp folder
@@ -372,7 +372,7 @@ qq+table_png
 
 ```
 
-From the Shapiro test , p-value \< 0.05 and we have enough statistical evidence to reject the null hypothesis and conclude that Wage does not follow the normal distribution.
+From the Shapiro test , p-value \< 0.05 and we have enough statistical evidence to reject the null hypothesis and conclude that Wage in March does not follow the normal distribution.
 
 ### 3.1.2 Interactive Line charts of wages by month
 
@@ -483,7 +483,11 @@ ggplot(df_wage_edu_month,
 
 #### One way Anova plot
 
-The plot below shows us the pairs of months where wage are significantly different. Median Wage of March is significantly different from all the wages of the other months. Check the next tab to see the error plots.
+Since the wages in March does not follow a normal distribution, we will use a non parametric test for testing. (As long as one of the wage distribution across the months do not follow normal distribution, choose non-parametric test).
+
+The plot below shows us the pairs of months where wage are significantly different. The plot shows that Median Wage of March is significantly different from all the wages of the other months.
+
+Check the next tab to see the error plots.
 
 ```{r}
 #| code-fold: True
@@ -729,7 +733,33 @@ ggplot(annual,
 
 #### 3.2.1.4 One- way Anova plot
 
-Since Wage does not follow normal distribution, I will choose a non parametric test to compare whether there is significant difference in the median of wage between education levels.
+First, check whether wages across education levels conforms to normality.
+
+```{r}
+#| code-fold: True
+
+low_records <- annual %>% 
+               filter(educationLevel=='Low')
+qq <- ggplot(low_records,
+             aes(sample=Wage)) + 
+  
+  stat_qq() +
+  stat_qq_line() +
+  ggtitle("QQ plot with Shapiro-Wilk test results")  
+
+sw_t <- shapiro_test(low_records$Wage) %>% 
+  as_tibble() %>% 
+  mutate(variable = "Wage for 'Low' EducationLevel") %>% gt()  
+
+tmp <- tempfile(fileext = '.png') # create  temp table
+gtsave(sw_t, tmp)  # use gtsave() to save sw_t into tmp folder
+table_png <- png::readPNG(tmp, native = TRUE)
+
+qq+table_png
+
+```
+
+Since p value is less than 0.05, we have enough statistical evidence to reject the null hypothesis and conclude that wages of the participants belong to 'Low" educationLevel do not follow normal distribution. Hence I will choose a non parametric test to compare whether there is significant difference in the median of wage between education levels.
 
 ```{r}
 #| code-fold: True
@@ -823,16 +853,16 @@ Perform a test to confirm whether joviality index follows the normal distributio
 
 ```{r}
 #| code-fold: True
-qq <- ggplot(annual,
-       aes(sample=joviality)) + 
+qq <- ggplot(low_records,
+             aes(sample=joviality)) + 
   
   stat_qq() +
   stat_qq_line() +
   ggtitle("QQ plot with Shapiro-Wilk test results")  
 
-sw_t <- shapiro_test(annual$joviality) %>% 
+sw_t <- shapiro_test(low_records$joviality) %>% 
   as_tibble() %>% 
-  mutate(variable = "Joviality Index")%>% gt()  
+  mutate(variable = "Joviality Index of 'Low' educationlevel")%>% gt()  
 
 tmp <- tempfile(fileext = '.png') # create  temp table
 gtsave(sw_t, tmp)  # use gtsave() to save sw_t into tmp folder
@@ -841,7 +871,7 @@ table_png <- png::readPNG(tmp, native = TRUE)
 qq+table_png
 ```
 
-We have enough statistical evidence to reject the null hypothesis that joviality index follows normal distribution. Use a non parametric test below to test for difference in median of joviality index across education levels.
+P-value is less than 0.05. We have enough statistical evidence to reject the null hypothesis that joviality index of 'Low' Educationlevel follows normal distribution. Use a non parametric test below to test for difference in median of joviality index across education levels.
 
 #### 3.2.2.2 One way Anova plot
 

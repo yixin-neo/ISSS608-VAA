@@ -240,7 +240,7 @@ Two functions of **tidygraph** package can be used to create network objects, th
 
 ### 27.4.3 Using `tbl_graph()` to build tidygraph data model.
 
-In this section, I will use `tbl_graph()` of **tinygraph** package to build an tidygraph's network graph data.frame.
+In this section, I will use `tbl_graph()` of [**tidygraph**](https://tidygraph.data-imaginist.com/reference/index.html)package to build an tidygraph's network graph data.frame.
 
 Before typing the codes, review to reference guide of [`tbl_graph()`](https://tidygraph.data-imaginist.com/reference/tbl_graph.html)
 
@@ -334,7 +334,7 @@ In this section, use [*theme_graph()*](https://ggraph.data-imaginist.com/referen
 
 ```{r}
 g <- ggraph(GAStech_graph) +  #<<< GAStech_graph is a tbl_graph object
-  geom_edge_link(aes(alpha=0.2, colour=Weekday)) +
+  geom_edge_link(aes()) +
   geom_node_point(aes())
 
 g + theme_graph()
@@ -344,10 +344,15 @@ g + theme_graph()
 ## Things to learn form codes above
 
 -   **ggraph** introduces a special ggplot theme that provides better defaults for network graphs than the normal ggplot defaults. `theme_graph()`, besides removing axes, grids, and border, changes the font to Arial Narrow (this can be overridden).
+-   The ggraph theme can be set for **a series of plots** with the `set_graph_style()` command run before the graphs are plotted or by using `theme_graph()` in the **individual plots**.
+:::
 
-<!-- -->
+```{r}
+class(g)
+```
 
--   The ggraph theme can be set for a series of plots with the `set_graph_style()` command run before the graphs are plotted or by using `theme_graph()` in the individual plots.
+::: callout-note
+Object **g** is a tbl graph object and is a dataframe with nodes, edges, and plot characteristics information. This dataframe changes everytime I overwrite **g**
 :::
 
 ```{r}
@@ -408,6 +413,8 @@ g + theme_graph()
 In the code chunk below, the thickness of the edges will be mapped with the *Weight* variable. [geom_edge_link](https://www.rdocumentation.org/packages/ggraph/versions/2.1.0/topics/geom_edge_link) search individually
 
 ```{r}
+#| fig-width: 8
+#| fig-asp: 0.618
 g <- ggraph(GAStech_graph, layout='nicely') +  #<<< refer to ggraph_layout link above
   geom_edge_link(aes(width=Weight, alpha= 0.2)) +  #<< thickness by weight and change alpha
   scale_edge_width(range = c(0.1, 5)) +  #<< control max size of edge , else my plot is ugly
@@ -435,6 +442,8 @@ The code chuck below assign colour to the nodes manually without hard-coding. I 
 -   **`scale_color_manual()`** function is used to apply the color mapping to the Department nodes.
 
 ```{r}
+#| fig-width: 8
+#| fig-asp: 0.618
 library(RColorBrewer)
 
 # Get unique departments from data
@@ -459,6 +468,8 @@ j
 If choose to hard code, refer to the code chunk below. I have tried 'star' layout , wonder if the red adminstrative node in the middle is related to high centrality?
 
 ```{r}
+#| fig-width: 8
+#| fig-asp: 0.618
 ggraph(GAStech_graph, layout='star') + 
      geom_edge_link(aes()) +
      geom_node_point(aes(colour=Department), size =4) +
@@ -475,6 +486,8 @@ ggraph(GAStech_graph, layout='star') +
 I have tried to color code the edges by Weekday. However this graph is hard to interpret due to overplotting. We should try to facet by Weekday instead.
 
 ```{r}
+#| fig-width: 8
+#| fig-asp: 0.618
 g <- ggraph(GAStech_graph) +  #<<< GAStech_graph is a tbl_graph object
   geom_edge_link(aes(alpha=0.2, colour=Weekday)) +
   geom_node_point()
@@ -499,7 +512,9 @@ There are three functions in ggraph to implement faceting, they are:
 In the code chunk below, [*facet_edges()*](https://ggraph.data-imaginist.com/reference/facet_edges.html) is used. Before getting started, it is advisable for you to read it's reference guide at least once. Also can refer to [*ggraph()*](https://ggraph.data-imaginist.com/reference/ggraph.html).
 
 ```{r}
-set_graph_style()
+#| fig-width: 8
+#| fig-asp: 0.618
+set_graph_style()   #<< using this command provide plot settings for next few plots
 
 g <- ggraph(GAStech_graph, 
             layout = "nicely") + 
@@ -512,11 +527,27 @@ g <- ggraph(GAStech_graph,
 g + facet_edges(~Weekday)
 ```
 
+::: callout-note
+## set_graph_style() defaults
+
+Refer to [thomas85github_theme_graph](https://github.com/thomasp85/ggraph/blob/main/R/theme_graph.R)
+
+-   set_graph_style
+
+(family = 'Arial Narrow', face = 'plain', size = 11,
+
+text_size = 11, text_colour = 'black', ...)
+
+-   unset_graph_style() -- to reset the graph style to default
+:::
+
 ### 27.6.2 Working with *facet_edges(): change legend position*
 
 The code chunk below uses *theme()* to change the position of the legend.
 
 ```{r}
+#| fig-width: 8
+#| fig-asp: 0.618
 set_graph_style()
 
 g<- ggraph(GAStech_graph,
@@ -530,4 +561,152 @@ g<- ggraph(GAStech_graph,
                    
                    
 g + facet_edges(~Weekday)
+```
+
+### 27.6.3 A framed facet graph
+
+The code chunk below adds frame to each graph.
+
+```{r}
+#| fig-width: 8
+#| fig-asp: 0.618
+set_graph_style()
+
+g<- ggraph(GAStech_graph,
+           layout='nicely') +
+  geom_edge_link(aes(width=Weight),
+                 alpha = 0.2) +
+  scale_edge_width(range = c(0.1,5)) +
+  geom_node_point(aes(colour=Department),
+                  size = 2)
+
+g + facet_edges(~Weekday) +
+  th_foreground(foreground = 'steelblue',
+                fg_text_colour = 'white',
+                border = TRUE) +
+  
+  theme(legend.position = 'bottom')
+  
+```
+
+### 27.6.4 Working with *facet_nodes()*
+
+In the code chunkc below, [*facet_nodes()*](https://ggraph.data-imaginist.com/reference/facet_nodes.html) is used. Before getting started, it is advisable for you to read it's reference guide at least once.
+
+```{r}
+#| fig-width: 8
+#| fig-asp: 0.618
+set_graph_style()
+
+g<- ggraph(GAStech_graph,
+           layout='nicely') +
+  geom_edge_link(aes(width=Weight),
+                 alpha = 0.2) +
+  scale_edge_width(range = c(0.1,5)) +
+  geom_node_point(aes(colour=Department),
+                  size = 2)
+
+g + facet_nodes(~Department) +
+  th_foreground(foreground = 'steelblue',
+                fg_text_colour = 'white',
+                border = TRUE) +
+  
+  theme(legend.position = 'bottom')
+```
+
+## 27.7 Network Metrics Analysis
+
+### 27.7.1 Computing centrality indices
+
+Centrality measures are a collection of statistical indices use to describe the relative important of the actors are to a network. There are four well-known centrality measures, namely: degree, betweenness, closeness and eigenvector. It is beyond the scope of this hands-on exercise to cover the principles and mathematics of these measure here. Students are encouraged to refer to *Chapter 7: Actor Prominence* of **A User's Guide to Network Analysis in R** to gain better understanding of theses network measures.
+
+[Tidygraph documentation](https://tidygraph.data-imaginist.com/reference/index.html) : so far we used `tbl_graph()` to create a tbl_graph network object / dataframe called GAStech_graph. Then we practise activate() to swtich between nodes and edges tibbles. This network obj is passed into ggraph() to plot the charts.
+
+Now we are using tidy graph to perform centrality calculations.
+
+[ggraph documentation](https://ggraph.data-imaginist.com/reference/index.html)
+
+```{r}
+#| fig-width: 8
+#| fig-asp: 0.618
+g <- GAStech_graph %>% 
+  mutate(betweenness_centrality = centrality_betweenness()) %>% #<< tidygraph doc
+  ggraph(layout='fr') +
+  geom_edge_link(aes(width=Weight,
+                     alpha= 0.2)) + 
+  scale_edge_width(range = c(0.1, 5)) + 
+  geom_node_point(aes(colour=Department, size = betweenness_centrality))
+
+g + theme_graph()
+```
+
+::: callout-note
+## Things to learn from the code above
+
+-   *mutate()* of **dplyr** is used to perform the computation and create a new col called betweenness_centrality. Use tidyverse commands on tidygraph object.
+
+<!-- -->
+
+-   the algorithm used, on the other hand, is the *centrality_betweenness()* of **tidygraph**.
+:::
+
+### 27.7.2 Visualising network metrics (without computing col above)
+
+It is important to note that from **ggraph v2.0** onward tidygraph algorithms such as centrality measures can be accessed directly in ggraph calls. This means that it is no longer necessary to precompute and store derived node and edge centrality measures on the graph in order to use them in a plot.
+
+```{r}
+#| fig-width: 8
+#| fig-asp: 0.618
+set.seed (1234)
+g <- GAStech_graph %>%
+  ggraph(layout = "fr") + 
+  geom_edge_link(aes(width=Weight), 
+                 alpha=0.2) +
+  scale_edge_width(range = c(0.1, 5)) +
+  geom_node_point(aes(colour = Department, 
+                      size = centrality_betweenness()))   #<<<< access betweenness values directly using `centrality_betweenness()`
+g + theme_graph()
+```
+
+### 27.7.3 Visualising Community
+
+tidygraph package inherits many of the community detection algorithms imbedded into igraph and makes them available to us, including *Edge-betweenness (group_edge_betweenness)*, *Leading eigenvector (group_leading_eigen)*, *Fast-greedy (group_fast_greedy)*, *Louvain (group_louvain)*, *Walktrap (group_walktrap)*, *Label propagation (group_label_prop)*, *InfoMAP (group_infomap)*, *Spinglass (group_spinglass)*, and *Optimal (group_optimal)*. Some community algorithms are designed to take into account direction or weight, while others ignore it. Use this [link](https://tidygraph.data-imaginist.com/reference/group_graph.html) to find out more about community detection functions provided by tidygraph,
+
+In the code chunk below *group_edge_betweenness()* is used
+
+[thomas85/tidygraph/group](https://github.com/thomasp85/tidygraph/blob/main/R/group.R)
+
+```{r}
+#| fig-width: 8
+#| fig-asp: 0.618
+set.seed (1234)
+g <- GAStech_graph %>%
+  mutate(community = as.factor(group_edge_betweenness(weights = Weight, directed = TRUE))) %>%
+  ggraph(layout = "fr") + 
+  geom_edge_link(aes(width=Weight), 
+                 alpha=0.2) +
+  scale_edge_width(range = c(0.1, 5)) +
+  geom_node_point(aes(colour = community))  
+
+g + theme_graph()
+```
+
+What does the n_groups() argument do? Set the number of communities?
+
+```{r}
+#| fig-width: 8
+#| fig-asp: 0.618
+set.seed (1234)
+g <- GAStech_graph %>%
+  mutate(community = as.factor(group_edge_betweenness(weights = Weight, 
+                                                      directed = TRUE, 
+                                                      n_groups = 20))) %>%  #<< should i try to change the number of groups/community?
+  ggraph(layout = "fr") + 
+  geom_edge_link(aes(width=Weight), 
+                 alpha=0.2) +
+  scale_edge_width(range = c(0.1, 5)) +
+  geom_node_point(aes(colour = community))  
+
+g + theme_graph()
+
 ```

@@ -417,6 +417,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#working-with-facet_edges" id="toc-working-with-facet_edges" class="nav-link" data-scroll-target="#working-with-facet_edges">27.6.1 Working with <em>facet_edges()</em></a></li>
   <li><a href="#working-with-facet_edges-change-legend-position" id="toc-working-with-facet_edges-change-legend-position" class="nav-link" data-scroll-target="#working-with-facet_edges-change-legend-position">27.6.2 Working with <em>facet_edges(): change legend position</em></a></li>
+  <li><a href="#a-framed-facet-graph" id="toc-a-framed-facet-graph" class="nav-link" data-scroll-target="#a-framed-facet-graph">27.6.3 A framed facet graph</a></li>
+  <li><a href="#working-with-facet_nodes" id="toc-working-with-facet_nodes" class="nav-link" data-scroll-target="#working-with-facet_nodes">27.6.4 Working with <em>facet_nodes()</em></a></li>
+  </ul></li>
+  <li><a href="#network-metrics-analysis" id="toc-network-metrics-analysis" class="nav-link" data-scroll-target="#network-metrics-analysis">27.7 Network Metrics Analysis</a>
+  <ul class="collapse">
+  <li><a href="#computing-centrality-indices" id="toc-computing-centrality-indices" class="nav-link" data-scroll-target="#computing-centrality-indices">27.7.1 Computing centrality indices</a></li>
+  <li><a href="#visualising-network-metrics-without-computing-col-above" id="toc-visualising-network-metrics-without-computing-col-above" class="nav-link" data-scroll-target="#visualising-network-metrics-without-computing-col-above">27.7.2 Visualising network metrics (without computing col above)</a></li>
+  <li><a href="#visualising-community" id="toc-visualising-community" class="nav-link" data-scroll-target="#visualising-community">27.7.3 Visualising Community</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -451,7 +459,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">May 14, 2023</p>
+      <p class="date-modified">May 16, 2023</p>
     </div>
   </div>
     
@@ -725,7 +733,7 @@ $ Weight  &lt;int&gt; 4, 3, 5, 8, 4, 3, 5, 8, 4, 3, 5, 8, 4, 3, 5, 8, 4, 3, 5, 8
 </section>
 <section id="using-tbl_graph-to-build-tidygraph-data-model." class="level3">
 <h3 class="anchored" data-anchor-id="using-tbl_graph-to-build-tidygraph-data-model.">27.4.3 Using <code>tbl_graph()</code> to build tidygraph data model.</h3>
-<p>In this section, I will use <code>tbl_graph()</code> of <strong>tinygraph</strong> package to build an tidygraph’s network graph data.frame.</p>
+<p>In this section, I will use <code>tbl_graph()</code> of <a href="https://tidygraph.data-imaginist.com/reference/index.html"><strong>tidygraph</strong></a>package to build an tidygraph’s network graph data.frame.</p>
 <p>Before typing the codes, review to reference guide of <a href="https://tidygraph.data-imaginist.com/reference/tbl_graph.html"><code>tbl_graph()</code></a></p>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
@@ -883,7 +891,7 @@ Things to learn from code chunk above
 <details>
 <summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph) <span class="sc">+</span>  <span class="co">#&lt;&lt;&lt; GAStech_graph is a tbl_graph object</span></span>
-<span id="cb18-2"><a href="#cb18-2"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">alpha=</span><span class="fl">0.2</span>, <span class="at">colour=</span>Weekday)) <span class="sc">+</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>()) <span class="sc">+</span></span>
 <span id="cb18-3"><a href="#cb18-3"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>())</span>
 <span id="cb18-4"><a href="#cb18-4"></a></span>
 <span id="cb18-5"><a href="#cb18-5"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -904,25 +912,44 @@ Things to learn form codes above
 <div class="callout-body-container callout-body">
 <ul>
 <li><strong>ggraph</strong> introduces a special ggplot theme that provides better defaults for network graphs than the normal ggplot defaults. <code>theme_graph()</code>, besides removing axes, grids, and border, changes the font to Arial Narrow (this can be overridden).</li>
-</ul>
-<!-- -->
-<ul>
-<li>The ggraph theme can be set for a series of plots with the <code>set_graph_style()</code> command run before the graphs are plotted or by using <code>theme_graph()</code> in the individual plots.</li>
+<li>The ggraph theme can be set for <strong>a series of plots</strong> with the <code>set_graph_style()</code> command run before the graphs are plotted or by using <code>theme_graph()</code> in the <strong>individual plots</strong>.</li>
 </ul>
 </div>
 </div>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph) <span class="sc">+</span>  <span class="co">#&lt;&lt;&lt; GAStech_graph is a tbl_graph object</span></span>
-<span id="cb19-2"><a href="#cb19-2"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">colour =</span><span class="st">'grey50'</span>),<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span>  <span class="co">#&lt;&lt; refer to ggraph documentation</span></span>
-<span id="cb19-3"><a href="#cb19-3"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span><span class="st">'grey40'</span>))</span>
-<span id="cb19-4"><a href="#cb19-4"></a></span>
-<span id="cb19-5"><a href="#cb19-5"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>(<span class="at">background =</span> <span class="st">'grey10'</span>,</span>
-<span id="cb19-6"><a href="#cb19-6"></a>                <span class="at">text_colour =</span> <span class="st">'orange'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="fu">class</span>(g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "ggraph" "gg"     "ggplot"</code></pre>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Object <strong>g</strong> is a tbl graph object and is a dataframe with nodes, edges, and plot characteristics information. This dataframe changes everytime I overwrite <strong>g</strong></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph) <span class="sc">+</span>  <span class="co">#&lt;&lt;&lt; GAStech_graph is a tbl_graph object</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">colour =</span><span class="st">'grey50'</span>),<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span>  <span class="co">#&lt;&lt; refer to ggraph documentation</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span><span class="st">'grey40'</span>))</span>
+<span id="cb21-4"><a href="#cb21-4"></a></span>
+<span id="cb21-5"><a href="#cb21-5"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>(<span class="at">background =</span> <span class="st">'grey10'</span>,</span>
+<span id="cb21-6"><a href="#cb21-6"></a>                <span class="at">text_colour =</span> <span class="st">'orange'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -938,14 +965,14 @@ Things to learn form codes above
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph, <span class="at">layout=</span><span class="st">'fr'</span>) <span class="sc">+</span>  <span class="co">#&lt;&lt;&lt; refer to ggraph_layout link above</span></span>
-<span id="cb20-2"><a href="#cb20-2"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>()) <span class="sc">+</span>  <span class="co">#&lt;&lt; refer to ggraph documentation</span></span>
-<span id="cb20-3"><a href="#cb20-3"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>())</span>
-<span id="cb20-4"><a href="#cb20-4"></a></span>
-<span id="cb20-5"><a href="#cb20-5"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph, <span class="at">layout=</span><span class="st">'fr'</span>) <span class="sc">+</span>  <span class="co">#&lt;&lt;&lt; refer to ggraph_layout link above</span></span>
+<span id="cb22-2"><a href="#cb22-2"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>()) <span class="sc">+</span>  <span class="co">#&lt;&lt; refer to ggraph documentation</span></span>
+<span id="cb22-3"><a href="#cb22-3"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>())</span>
+<span id="cb22-4"><a href="#cb22-4"></a></span>
+<span id="cb22-5"><a href="#cb22-5"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="callout-note callout callout-style-default callout-captioned">
@@ -970,14 +997,14 @@ Things to learn from the codes above
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph, <span class="at">layout=</span><span class="st">'nicely'</span>) <span class="sc">+</span>  <span class="co">#&lt;&lt;&lt; refer to ggraph_layout link above</span></span>
-<span id="cb21-2"><a href="#cb21-2"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>()) <span class="sc">+</span>  <span class="co">#&lt;&lt; refer to ggraph documentation</span></span>
-<span id="cb21-3"><a href="#cb21-3"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour=</span>Department, <span class="at">size =</span><span class="dv">3</span>))</span>
-<span id="cb21-4"><a href="#cb21-4"></a></span>
-<span id="cb21-5"><a href="#cb21-5"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph, <span class="at">layout=</span><span class="st">'nicely'</span>) <span class="sc">+</span>  <span class="co">#&lt;&lt;&lt; refer to ggraph_layout link above</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>()) <span class="sc">+</span>  <span class="co">#&lt;&lt; refer to ggraph documentation</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour=</span>Department, <span class="at">size =</span><span class="dv">3</span>))</span>
+<span id="cb23-4"><a href="#cb23-4"></a></span>
+<span id="cb23-5"><a href="#cb23-5"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="callout-note callout callout-style-default callout-captioned">
@@ -999,18 +1026,18 @@ Things to learn from the code
 <section id="modifying-edges" class="level3">
 <h3 class="anchored" data-anchor-id="modifying-edges">27.5.7 Modifying edges</h3>
 <p>In the code chunk below, the thickness of the edges will be mapped with the <em>Weight</em> variable. <a href="https://www.rdocumentation.org/packages/ggraph/versions/2.1.0/topics/geom_edge_link">geom_edge_link</a> search individually</p>
-<div class="cell">
+<div class="cell" data-fig.asp="0.618">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph, <span class="at">layout=</span><span class="st">'nicely'</span>) <span class="sc">+</span>  <span class="co">#&lt;&lt;&lt; refer to ggraph_layout link above</span></span>
-<span id="cb22-2"><a href="#cb22-2"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight, <span class="at">alpha=</span> <span class="fl">0.2</span>)) <span class="sc">+</span>  <span class="co">#&lt;&lt; thickness by weight and change alpha</span></span>
-<span id="cb22-3"><a href="#cb22-3"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">5</span>)) <span class="sc">+</span>  <span class="co">#&lt;&lt; control max size of edge , else my plot is ugly</span></span>
-<span id="cb22-4"><a href="#cb22-4"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour=</span>Department, <span class="at">size =</span><span class="dv">3</span>))</span>
-<span id="cb22-5"><a href="#cb22-5"></a></span>
-<span id="cb22-6"><a href="#cb22-6"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph, <span class="at">layout=</span><span class="st">'nicely'</span>) <span class="sc">+</span>  <span class="co">#&lt;&lt;&lt; refer to ggraph_layout link above</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight, <span class="at">alpha=</span> <span class="fl">0.2</span>)) <span class="sc">+</span>  <span class="co">#&lt;&lt; thickness by weight and change alpha</span></span>
+<span id="cb24-3"><a href="#cb24-3"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">5</span>)) <span class="sc">+</span>  <span class="co">#&lt;&lt; control max size of edge , else my plot is ugly</span></span>
+<span id="cb24-4"><a href="#cb24-4"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour=</span>Department, <span class="at">size =</span><span class="dv">3</span>))</span>
+<span id="cb24-5"><a href="#cb24-5"></a></span>
+<span id="cb24-6"><a href="#cb24-6"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
 <div class="callout-note callout callout-style-default callout-captioned">
@@ -1036,64 +1063,64 @@ Things to learn from codes above
 <li><p><strong><code>setNames()</code></strong> function is used to map the colors to the departments</p></li>
 <li><p><strong><code>scale_color_manual()</code></strong> function is used to apply the color mapping to the Department nodes.</p></li>
 </ul>
-<div class="cell">
+<div class="cell" data-fig.asp="0.618">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="fu">library</span>(RColorBrewer)</span>
-<span id="cb23-2"><a href="#cb23-2"></a></span>
-<span id="cb23-3"><a href="#cb23-3"></a><span class="co"># Get unique departments from data</span></span>
-<span id="cb23-4"><a href="#cb23-4"></a>departments <span class="ot">&lt;-</span> <span class="fu">unique</span>(GAStech_graph <span class="sc">%&gt;%</span> <span class="fu">activate</span>(nodes) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(Department))</span>
-<span id="cb23-5"><a href="#cb23-5"></a></span>
-<span id="cb23-6"><a href="#cb23-6"></a><span class="co"># Generate color palette based on number of unique departments</span></span>
-<span id="cb23-7"><a href="#cb23-7"></a>num_departments <span class="ot">&lt;-</span> <span class="fu">length</span>(departments)</span>
-<span id="cb23-8"><a href="#cb23-8"></a>color_palette <span class="ot">&lt;-</span> <span class="fu">brewer.pal</span>(num_departments, <span class="st">"Set3"</span>)</span>
-<span id="cb23-9"><a href="#cb23-9"></a></span>
-<span id="cb23-10"><a href="#cb23-10"></a><span class="co"># Create color mapping for Department nodes</span></span>
-<span id="cb23-11"><a href="#cb23-11"></a>color_mapping <span class="ot">&lt;-</span> <span class="fu">setNames</span>(color_palette, departments)</span>
-<span id="cb23-12"><a href="#cb23-12"></a></span>
-<span id="cb23-13"><a href="#cb23-13"></a><span class="co"># Create plot with color mapping</span></span>
-<span id="cb23-14"><a href="#cb23-14"></a>j <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph, <span class="at">layout=</span><span class="st">'fr'</span>) <span class="sc">+</span> </span>
-<span id="cb23-15"><a href="#cb23-15"></a>     <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">alpha=</span><span class="fl">0.1</span>, <span class="at">colour=</span><span class="st">'white'</span>),<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb23-16"><a href="#cb23-16"></a>     <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour=</span>Department), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb23-17"><a href="#cb23-17"></a>     <span class="fu">scale_color_manual</span>(<span class="at">values =</span> color_mapping) <span class="sc">+</span></span>
-<span id="cb23-18"><a href="#cb23-18"></a>     <span class="fu">theme_graph</span>(<span class="at">background =</span> <span class="st">'grey10'</span>,<span class="at">text_colour =</span> <span class="st">'orange'</span>)</span>
-<span id="cb23-19"><a href="#cb23-19"></a>j</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="fu">library</span>(RColorBrewer)</span>
+<span id="cb25-2"><a href="#cb25-2"></a></span>
+<span id="cb25-3"><a href="#cb25-3"></a><span class="co"># Get unique departments from data</span></span>
+<span id="cb25-4"><a href="#cb25-4"></a>departments <span class="ot">&lt;-</span> <span class="fu">unique</span>(GAStech_graph <span class="sc">%&gt;%</span> <span class="fu">activate</span>(nodes) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(Department))</span>
+<span id="cb25-5"><a href="#cb25-5"></a></span>
+<span id="cb25-6"><a href="#cb25-6"></a><span class="co"># Generate color palette based on number of unique departments</span></span>
+<span id="cb25-7"><a href="#cb25-7"></a>num_departments <span class="ot">&lt;-</span> <span class="fu">length</span>(departments)</span>
+<span id="cb25-8"><a href="#cb25-8"></a>color_palette <span class="ot">&lt;-</span> <span class="fu">brewer.pal</span>(num_departments, <span class="st">"Set3"</span>)</span>
+<span id="cb25-9"><a href="#cb25-9"></a></span>
+<span id="cb25-10"><a href="#cb25-10"></a><span class="co"># Create color mapping for Department nodes</span></span>
+<span id="cb25-11"><a href="#cb25-11"></a>color_mapping <span class="ot">&lt;-</span> <span class="fu">setNames</span>(color_palette, departments)</span>
+<span id="cb25-12"><a href="#cb25-12"></a></span>
+<span id="cb25-13"><a href="#cb25-13"></a><span class="co"># Create plot with color mapping</span></span>
+<span id="cb25-14"><a href="#cb25-14"></a>j <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph, <span class="at">layout=</span><span class="st">'fr'</span>) <span class="sc">+</span> </span>
+<span id="cb25-15"><a href="#cb25-15"></a>     <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">alpha=</span><span class="fl">0.1</span>, <span class="at">colour=</span><span class="st">'white'</span>),<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb25-16"><a href="#cb25-16"></a>     <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour=</span>Department), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb25-17"><a href="#cb25-17"></a>     <span class="fu">scale_color_manual</span>(<span class="at">values =</span> color_mapping) <span class="sc">+</span></span>
+<span id="cb25-18"><a href="#cb25-18"></a>     <span class="fu">theme_graph</span>(<span class="at">background =</span> <span class="st">'grey10'</span>,<span class="at">text_colour =</span> <span class="st">'orange'</span>)</span>
+<span id="cb25-19"><a href="#cb25-19"></a>j</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
 <p>If choose to hard code, refer to the code chunk below. I have tried ‘star’ layout , wonder if the red adminstrative node in the middle is related to high centrality?</p>
-<div class="cell">
+<div class="cell" data-fig.asp="0.618">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="fu">ggraph</span>(GAStech_graph, <span class="at">layout=</span><span class="st">'star'</span>) <span class="sc">+</span> </span>
-<span id="cb24-2"><a href="#cb24-2"></a>     <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>()) <span class="sc">+</span></span>
-<span id="cb24-3"><a href="#cb24-3"></a>     <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour=</span>Department), <span class="at">size =</span><span class="dv">4</span>) <span class="sc">+</span></span>
-<span id="cb24-4"><a href="#cb24-4"></a>     <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Administration"</span> <span class="ot">=</span> <span class="st">"red"</span>, </span>
-<span id="cb24-5"><a href="#cb24-5"></a>                                   <span class="st">"Engineering"</span> <span class="ot">=</span> <span class="st">"blue"</span>, </span>
-<span id="cb24-6"><a href="#cb24-6"></a>                                   <span class="st">"Executive"</span> <span class="ot">=</span> <span class="st">"green"</span>, </span>
-<span id="cb24-7"><a href="#cb24-7"></a>                                   <span class="st">"Facilities"</span> <span class="ot">=</span> <span class="st">"purple"</span>, </span>
-<span id="cb24-8"><a href="#cb24-8"></a>                                   <span class="st">"Information Technology"</span> <span class="ot">=</span> <span class="st">"yellow"</span>, </span>
-<span id="cb24-9"><a href="#cb24-9"></a>                                   <span class="st">"Security"</span> <span class="ot">=</span> <span class="st">"pink"</span>)) <span class="sc">+</span></span>
-<span id="cb24-10"><a href="#cb24-10"></a>     <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="fu">ggraph</span>(GAStech_graph, <span class="at">layout=</span><span class="st">'star'</span>) <span class="sc">+</span> </span>
+<span id="cb26-2"><a href="#cb26-2"></a>     <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>()) <span class="sc">+</span></span>
+<span id="cb26-3"><a href="#cb26-3"></a>     <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour=</span>Department), <span class="at">size =</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb26-4"><a href="#cb26-4"></a>     <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Administration"</span> <span class="ot">=</span> <span class="st">"red"</span>, </span>
+<span id="cb26-5"><a href="#cb26-5"></a>                                   <span class="st">"Engineering"</span> <span class="ot">=</span> <span class="st">"blue"</span>, </span>
+<span id="cb26-6"><a href="#cb26-6"></a>                                   <span class="st">"Executive"</span> <span class="ot">=</span> <span class="st">"green"</span>, </span>
+<span id="cb26-7"><a href="#cb26-7"></a>                                   <span class="st">"Facilities"</span> <span class="ot">=</span> <span class="st">"purple"</span>, </span>
+<span id="cb26-8"><a href="#cb26-8"></a>                                   <span class="st">"Information Technology"</span> <span class="ot">=</span> <span class="st">"yellow"</span>, </span>
+<span id="cb26-9"><a href="#cb26-9"></a>                                   <span class="st">"Security"</span> <span class="ot">=</span> <span class="st">"pink"</span>)) <span class="sc">+</span></span>
+<span id="cb26-10"><a href="#cb26-10"></a>     <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
 <p>I have tried to color code the edges by Weekday. However this graph is hard to interpret due to overplotting. We should try to facet by Weekday instead.</p>
-<div class="cell">
+<div class="cell" data-fig.asp="0.618">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph) <span class="sc">+</span>  <span class="co">#&lt;&lt;&lt; GAStech_graph is a tbl_graph object</span></span>
-<span id="cb25-2"><a href="#cb25-2"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">alpha=</span><span class="fl">0.2</span>, <span class="at">colour=</span>Weekday)) <span class="sc">+</span></span>
-<span id="cb25-3"><a href="#cb25-3"></a>  <span class="fu">geom_node_point</span>()</span>
-<span id="cb25-4"><a href="#cb25-4"></a></span>
-<span id="cb25-5"><a href="#cb25-5"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph) <span class="sc">+</span>  <span class="co">#&lt;&lt;&lt; GAStech_graph is a tbl_graph object</span></span>
+<span id="cb27-2"><a href="#cb27-2"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">alpha=</span><span class="fl">0.2</span>, <span class="at">colour=</span>Weekday)) <span class="sc">+</span></span>
+<span id="cb27-3"><a href="#cb27-3"></a>  <span class="fu">geom_node_point</span>()</span>
+<span id="cb27-4"><a href="#cb27-4"></a></span>
+<span id="cb27-5"><a href="#cb27-5"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
 </section>
@@ -1110,48 +1137,237 @@ Things to learn from codes above
 <section id="working-with-facet_edges" class="level3">
 <h3 class="anchored" data-anchor-id="working-with-facet_edges">27.6.1 Working with <em>facet_edges()</em></h3>
 <p>In the code chunk below, <a href="https://ggraph.data-imaginist.com/reference/facet_edges.html"><em>facet_edges()</em></a> is used. Before getting started, it is advisable for you to read it’s reference guide at least once. Also can refer to <a href="https://ggraph.data-imaginist.com/reference/ggraph.html"><em>ggraph()</em></a>.</p>
-<div class="cell">
+<div class="cell" data-fig.asp="0.618">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="fu">set_graph_style</span>()</span>
-<span id="cb26-2"><a href="#cb26-2"></a></span>
-<span id="cb26-3"><a href="#cb26-3"></a>g <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph, </span>
-<span id="cb26-4"><a href="#cb26-4"></a>            <span class="at">layout =</span> <span class="st">"nicely"</span>) <span class="sc">+</span> </span>
-<span id="cb26-5"><a href="#cb26-5"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight), </span>
-<span id="cb26-6"><a href="#cb26-6"></a>                 <span class="at">alpha=</span><span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb26-7"><a href="#cb26-7"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">5</span>)) <span class="sc">+</span></span>
-<span id="cb26-8"><a href="#cb26-8"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> Department), </span>
-<span id="cb26-9"><a href="#cb26-9"></a>                  <span class="at">size =</span> <span class="dv">2</span>)</span>
-<span id="cb26-10"><a href="#cb26-10"></a></span>
-<span id="cb26-11"><a href="#cb26-11"></a>g <span class="sc">+</span> <span class="fu">facet_edges</span>(<span class="sc">~</span>Weekday)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="fu">set_graph_style</span>()   <span class="co">#&lt;&lt; using this command provide plot settings for next few plots</span></span>
+<span id="cb28-2"><a href="#cb28-2"></a></span>
+<span id="cb28-3"><a href="#cb28-3"></a>g <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph, </span>
+<span id="cb28-4"><a href="#cb28-4"></a>            <span class="at">layout =</span> <span class="st">"nicely"</span>) <span class="sc">+</span> </span>
+<span id="cb28-5"><a href="#cb28-5"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight), </span>
+<span id="cb28-6"><a href="#cb28-6"></a>                 <span class="at">alpha=</span><span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb28-7"><a href="#cb28-7"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb28-8"><a href="#cb28-8"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> Department), </span>
+<span id="cb28-9"><a href="#cb28-9"></a>                  <span class="at">size =</span> <span class="dv">2</span>)</span>
+<span id="cb28-10"><a href="#cb28-10"></a></span>
+<span id="cb28-11"><a href="#cb28-11"></a>g <span class="sc">+</span> <span class="fu">facet_edges</span>(<span class="sc">~</span>Weekday)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+set_graph_style() defaults
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Refer to <a href="https://github.com/thomasp85/ggraph/blob/main/R/theme_graph.R">thomas85github_theme_graph</a></p>
+<ul>
+<li>set_graph_style</li>
+</ul>
+<p>(family = ‘Arial Narrow’, face = ‘plain’, size = 11,</p>
+<p>text_size = 11, text_colour = ‘black’, …)</p>
+<ul>
+<li>unset_graph_style() – to reset the graph style to default</li>
+</ul>
 </div>
 </div>
 </section>
 <section id="working-with-facet_edges-change-legend-position" class="level3">
 <h3 class="anchored" data-anchor-id="working-with-facet_edges-change-legend-position">27.6.2 Working with <em>facet_edges(): change legend position</em></h3>
 <p>The code chunk below uses <em>theme()</em> to change the position of the legend.</p>
-<div class="cell">
+<div class="cell" data-fig.asp="0.618">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="fu">set_graph_style</span>()</span>
-<span id="cb27-2"><a href="#cb27-2"></a></span>
-<span id="cb27-3"><a href="#cb27-3"></a>g<span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph,</span>
-<span id="cb27-4"><a href="#cb27-4"></a>            <span class="at">layout=</span><span class="st">'nicely'</span>) <span class="sc">+</span></span>
-<span id="cb27-5"><a href="#cb27-5"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight),</span>
-<span id="cb27-6"><a href="#cb27-6"></a>                     <span class="at">alpha=</span><span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb27-7"><a href="#cb27-7"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="dv">5</span>)) <span class="sc">+</span></span>
-<span id="cb27-8"><a href="#cb27-8"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour=</span>Department),</span>
-<span id="cb27-9"><a href="#cb27-9"></a>                  <span class="at">size =</span><span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb27-10"><a href="#cb27-10"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">'bottom'</span>)</span>
-<span id="cb27-11"><a href="#cb27-11"></a>                   </span>
-<span id="cb27-12"><a href="#cb27-12"></a>                   </span>
-<span id="cb27-13"><a href="#cb27-13"></a>g <span class="sc">+</span> <span class="fu">facet_edges</span>(<span class="sc">~</span>Weekday)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="fu">set_graph_style</span>()</span>
+<span id="cb29-2"><a href="#cb29-2"></a></span>
+<span id="cb29-3"><a href="#cb29-3"></a>g<span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph,</span>
+<span id="cb29-4"><a href="#cb29-4"></a>            <span class="at">layout=</span><span class="st">'nicely'</span>) <span class="sc">+</span></span>
+<span id="cb29-5"><a href="#cb29-5"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight),</span>
+<span id="cb29-6"><a href="#cb29-6"></a>                     <span class="at">alpha=</span><span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb29-7"><a href="#cb29-7"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb29-8"><a href="#cb29-8"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour=</span>Department),</span>
+<span id="cb29-9"><a href="#cb29-9"></a>                  <span class="at">size =</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb29-10"><a href="#cb29-10"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">'bottom'</span>)</span>
+<span id="cb29-11"><a href="#cb29-11"></a>                   </span>
+<span id="cb29-12"><a href="#cb29-12"></a>                   </span>
+<span id="cb29-13"><a href="#cb29-13"></a>g <span class="sc">+</span> <span class="fu">facet_edges</span>(<span class="sc">~</span>Weekday)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+</section>
+<section id="a-framed-facet-graph" class="level3">
+<h3 class="anchored" data-anchor-id="a-framed-facet-graph">27.6.3 A framed facet graph</h3>
+<p>The code chunk below adds frame to each graph.</p>
+<div class="cell" data-fig.asp="0.618">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="fu">set_graph_style</span>()</span>
+<span id="cb30-2"><a href="#cb30-2"></a></span>
+<span id="cb30-3"><a href="#cb30-3"></a>g<span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph,</span>
+<span id="cb30-4"><a href="#cb30-4"></a>           <span class="at">layout=</span><span class="st">'nicely'</span>) <span class="sc">+</span></span>
+<span id="cb30-5"><a href="#cb30-5"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight),</span>
+<span id="cb30-6"><a href="#cb30-6"></a>                 <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb30-7"><a href="#cb30-7"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb30-8"><a href="#cb30-8"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour=</span>Department),</span>
+<span id="cb30-9"><a href="#cb30-9"></a>                  <span class="at">size =</span> <span class="dv">2</span>)</span>
+<span id="cb30-10"><a href="#cb30-10"></a></span>
+<span id="cb30-11"><a href="#cb30-11"></a>g <span class="sc">+</span> <span class="fu">facet_edges</span>(<span class="sc">~</span>Weekday) <span class="sc">+</span></span>
+<span id="cb30-12"><a href="#cb30-12"></a>  <span class="fu">th_foreground</span>(<span class="at">foreground =</span> <span class="st">'steelblue'</span>,</span>
+<span id="cb30-13"><a href="#cb30-13"></a>                <span class="at">fg_text_colour =</span> <span class="st">'white'</span>,</span>
+<span id="cb30-14"><a href="#cb30-14"></a>                <span class="at">border =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb30-15"><a href="#cb30-15"></a>  </span>
+<span id="cb30-16"><a href="#cb30-16"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">'bottom'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+</section>
+<section id="working-with-facet_nodes" class="level3">
+<h3 class="anchored" data-anchor-id="working-with-facet_nodes">27.6.4 Working with <em>facet_nodes()</em></h3>
+<p>In the code chunkc below, <a href="https://ggraph.data-imaginist.com/reference/facet_nodes.html"><em>facet_nodes()</em></a> is used. Before getting started, it is advisable for you to read it’s reference guide at least once.</p>
+<div class="cell" data-fig.asp="0.618">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="fu">set_graph_style</span>()</span>
+<span id="cb31-2"><a href="#cb31-2"></a></span>
+<span id="cb31-3"><a href="#cb31-3"></a>g<span class="ot">&lt;-</span> <span class="fu">ggraph</span>(GAStech_graph,</span>
+<span id="cb31-4"><a href="#cb31-4"></a>           <span class="at">layout=</span><span class="st">'nicely'</span>) <span class="sc">+</span></span>
+<span id="cb31-5"><a href="#cb31-5"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight),</span>
+<span id="cb31-6"><a href="#cb31-6"></a>                 <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb31-7"><a href="#cb31-7"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb31-8"><a href="#cb31-8"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour=</span>Department),</span>
+<span id="cb31-9"><a href="#cb31-9"></a>                  <span class="at">size =</span> <span class="dv">2</span>)</span>
+<span id="cb31-10"><a href="#cb31-10"></a></span>
+<span id="cb31-11"><a href="#cb31-11"></a>g <span class="sc">+</span> <span class="fu">facet_nodes</span>(<span class="sc">~</span>Department) <span class="sc">+</span></span>
+<span id="cb31-12"><a href="#cb31-12"></a>  <span class="fu">th_foreground</span>(<span class="at">foreground =</span> <span class="st">'steelblue'</span>,</span>
+<span id="cb31-13"><a href="#cb31-13"></a>                <span class="at">fg_text_colour =</span> <span class="st">'white'</span>,</span>
+<span id="cb31-14"><a href="#cb31-14"></a>                <span class="at">border =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb31-15"><a href="#cb31-15"></a>  </span>
+<span id="cb31-16"><a href="#cb31-16"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">'bottom'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="network-metrics-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="network-metrics-analysis">27.7 Network Metrics Analysis</h2>
+<section id="computing-centrality-indices" class="level3">
+<h3 class="anchored" data-anchor-id="computing-centrality-indices">27.7.1 Computing centrality indices</h3>
+<p>Centrality measures are a collection of statistical indices use to describe the relative important of the actors are to a network. There are four well-known centrality measures, namely: degree, betweenness, closeness and eigenvector. It is beyond the scope of this hands-on exercise to cover the principles and mathematics of these measure here. Students are encouraged to refer to <em>Chapter 7: Actor Prominence</em> of <strong>A User’s Guide to Network Analysis in R</strong> to gain better understanding of theses network measures.</p>
+<p><a href="https://tidygraph.data-imaginist.com/reference/index.html">Tidygraph documentation</a> : so far we used <code>tbl_graph()</code> to create a tbl_graph network object / dataframe called GAStech_graph. Then we practise activate() to swtich between nodes and edges tibbles. This network obj is passed into ggraph() to plot the charts.</p>
+<p>Now we are using tidy graph to perform centrality calculations.</p>
+<p><a href="https://ggraph.data-imaginist.com/reference/index.html">ggraph documentation</a></p>
+<div class="cell" data-fig.asp="0.618">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>g <span class="ot">&lt;-</span> GAStech_graph <span class="sc">%&gt;%</span> </span>
+<span id="cb32-2"><a href="#cb32-2"></a>  <span class="fu">mutate</span>(<span class="at">betweenness_centrality =</span> <span class="fu">centrality_betweenness</span>()) <span class="sc">%&gt;%</span> <span class="co">#&lt;&lt; tidygraph doc</span></span>
+<span id="cb32-3"><a href="#cb32-3"></a>  <span class="fu">ggraph</span>(<span class="at">layout=</span><span class="st">'fr'</span>) <span class="sc">+</span></span>
+<span id="cb32-4"><a href="#cb32-4"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight,</span>
+<span id="cb32-5"><a href="#cb32-5"></a>                     <span class="at">alpha=</span> <span class="fl">0.2</span>)) <span class="sc">+</span> </span>
+<span id="cb32-6"><a href="#cb32-6"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">5</span>)) <span class="sc">+</span> </span>
+<span id="cb32-7"><a href="#cb32-7"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour=</span>Department, <span class="at">size =</span> betweenness_centrality))</span>
+<span id="cb32-8"><a href="#cb32-8"></a></span>
+<span id="cb32-9"><a href="#cb32-9"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Things to learn from the code above
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><em>mutate()</em> of <strong>dplyr</strong> is used to perform the computation and create a new col called betweenness_centrality. Use tidyverse commands on tidygraph object.</li>
+</ul>
+<!-- -->
+<ul>
+<li>the algorithm used, on the other hand, is the <em>centrality_betweenness()</em> of <strong>tidygraph</strong>.</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="visualising-network-metrics-without-computing-col-above" class="level3">
+<h3 class="anchored" data-anchor-id="visualising-network-metrics-without-computing-col-above">27.7.2 Visualising network metrics (without computing col above)</h3>
+<p>It is important to note that from <strong>ggraph v2.0</strong> onward tidygraph algorithms such as centrality measures can be accessed directly in ggraph calls. This means that it is no longer necessary to precompute and store derived node and edge centrality measures on the graph in order to use them in a plot.</p>
+<div class="cell" data-fig.asp="0.618">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="fu">set.seed</span> (<span class="dv">1234</span>)</span>
+<span id="cb33-2"><a href="#cb33-2"></a>g <span class="ot">&lt;-</span> GAStech_graph <span class="sc">%&gt;%</span></span>
+<span id="cb33-3"><a href="#cb33-3"></a>  <span class="fu">ggraph</span>(<span class="at">layout =</span> <span class="st">"fr"</span>) <span class="sc">+</span> </span>
+<span id="cb33-4"><a href="#cb33-4"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight), </span>
+<span id="cb33-5"><a href="#cb33-5"></a>                 <span class="at">alpha=</span><span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb33-6"><a href="#cb33-6"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb33-7"><a href="#cb33-7"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> Department, </span>
+<span id="cb33-8"><a href="#cb33-8"></a>                      <span class="at">size =</span> <span class="fu">centrality_betweenness</span>()))   <span class="co">#&lt;&lt;&lt;&lt; access betweenness values directly using `centrality_betweenness()`</span></span>
+<span id="cb33-9"><a href="#cb33-9"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+</section>
+<section id="visualising-community" class="level3">
+<h3 class="anchored" data-anchor-id="visualising-community">27.7.3 Visualising Community</h3>
+<p>tidygraph package inherits many of the community detection algorithms imbedded into igraph and makes them available to us, including <em>Edge-betweenness (group_edge_betweenness)</em>, <em>Leading eigenvector (group_leading_eigen)</em>, <em>Fast-greedy (group_fast_greedy)</em>, <em>Louvain (group_louvain)</em>, <em>Walktrap (group_walktrap)</em>, <em>Label propagation (group_label_prop)</em>, <em>InfoMAP (group_infomap)</em>, <em>Spinglass (group_spinglass)</em>, and <em>Optimal (group_optimal)</em>. Some community algorithms are designed to take into account direction or weight, while others ignore it. Use this <a href="https://tidygraph.data-imaginist.com/reference/group_graph.html">link</a> to find out more about community detection functions provided by tidygraph,</p>
+<p>In the code chunk below <em>group_edge_betweenness()</em> is used</p>
+<p><a href="https://github.com/thomasp85/tidygraph/blob/main/R/group.R">thomas85/tidygraph/group</a></p>
+<div class="cell" data-fig.asp="0.618">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a><span class="fu">set.seed</span> (<span class="dv">1234</span>)</span>
+<span id="cb34-2"><a href="#cb34-2"></a>g <span class="ot">&lt;-</span> GAStech_graph <span class="sc">%&gt;%</span></span>
+<span id="cb34-3"><a href="#cb34-3"></a>  <span class="fu">mutate</span>(<span class="at">community =</span> <span class="fu">as.factor</span>(<span class="fu">group_edge_betweenness</span>(<span class="at">weights =</span> Weight, <span class="at">directed =</span> <span class="cn">TRUE</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb34-4"><a href="#cb34-4"></a>  <span class="fu">ggraph</span>(<span class="at">layout =</span> <span class="st">"fr"</span>) <span class="sc">+</span> </span>
+<span id="cb34-5"><a href="#cb34-5"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight), </span>
+<span id="cb34-6"><a href="#cb34-6"></a>                 <span class="at">alpha=</span><span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb34-7"><a href="#cb34-7"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb34-8"><a href="#cb34-8"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> community))  </span>
+<span id="cb34-9"><a href="#cb34-9"></a></span>
+<span id="cb34-10"><a href="#cb34-10"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+<p>What does the n_groups() argument do? Set the number of communities?</p>
+<div class="cell" data-fig.asp="0.618">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="fu">set.seed</span> (<span class="dv">1234</span>)</span>
+<span id="cb35-2"><a href="#cb35-2"></a>g <span class="ot">&lt;-</span> GAStech_graph <span class="sc">%&gt;%</span></span>
+<span id="cb35-3"><a href="#cb35-3"></a>  <span class="fu">mutate</span>(<span class="at">community =</span> <span class="fu">as.factor</span>(<span class="fu">group_edge_betweenness</span>(<span class="at">weights =</span> Weight, </span>
+<span id="cb35-4"><a href="#cb35-4"></a>                                                      <span class="at">directed =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb35-5"><a href="#cb35-5"></a>                                                      <span class="at">n_groups =</span> <span class="dv">20</span>))) <span class="sc">%&gt;%</span>  <span class="co">#&lt;&lt; should i try to change the number of groups/community?</span></span>
+<span id="cb35-6"><a href="#cb35-6"></a>  <span class="fu">ggraph</span>(<span class="at">layout =</span> <span class="st">"fr"</span>) <span class="sc">+</span> </span>
+<span id="cb35-7"><a href="#cb35-7"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight), </span>
+<span id="cb35-8"><a href="#cb35-8"></a>                 <span class="at">alpha=</span><span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb35-9"><a href="#cb35-9"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb35-10"><a href="#cb35-10"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> community))  </span>
+<span id="cb35-11"><a href="#cb35-11"></a></span>
+<span id="cb35-12"><a href="#cb35-12"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
 

@@ -1,0 +1,83 @@
+---
+title: "Project_MC2"
+author: "NeoYX"
+date: '15 May 2023'
+date-modified: "`r Sys.Date()`"
+editor: visual
+execute: 
+  freeze: auto
+  warning: false
+  echo: true
+  message: true
+format:
+  html:
+    code-fold: true
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
+---
+
+::: callout-note
+**Edge data** should be organised as such: (can use dplyr methods)
+
+First column: Source id (FK to Node second column) - compulsory
+
+Second column: Target id (FK to Node second column) - compulsory
+
+**Node data**
+
+First column: ID - compulsory
+
+Second column: Label (contains all the distinct values of source and target in Edge data) (only need if Id are all integers) (what is present in edge data must exists in Labels of node data, must not be missing in node data)
+:::
+
+::: callout-warning
+Try not to use R built-in NA/NULL function. Manually type "unknown' / 'missing' as a value instead.
+:::
+
+Import libraries
+
+The new libraries used today are :
+
+-   `jsonlite` to import json file
+
+```{r}
+pacman::p_load(jsonlite, igraph, tidygraph, ggraph,
+               visNetwork, lubridate, clock,
+               tidyverse, graphlayouts,knitr)
+```
+
+```{r}
+MC2 <- jsonlite::fromJSON("C:/yixin-neo/ISSS608-VAA/Project/data/mc2_challenge_graph.json")
+```
+
+```{r}
+carp <- jsonlite::fromJSON("C:/yixin-neo/ISSS608-VAA/Project/data/bundles/carp.json")
+```
+
+::: callout-note
+Problem with dataset of links:
+
+Source and Data columns are at the back instead of the first 2 columns
+:::
+
+Pull out the nodes and edge data and save them as tibble data frames.
+
+```{r}
+MC2_nodes <- as_tibble(MC2$nodes) %>% 
+  select(id,shpcountry,rcvcountry)
+```
+
+```{r}
+MC2_edges <- as_tibble(MC2$links) %>% 
+  select(source,target,arrivaldate,hscode,valueofgoods_omu,volumeteu,weightkg,valueofgoodsusd)  
+# can exclude dataste column as they all contain the same values.
+```
+
+```{r}
+glimpse(MC2_nodes)
+```
+
+```{r}
+glimpse(MC2_edges)
+```

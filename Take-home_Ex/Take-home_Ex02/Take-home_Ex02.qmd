@@ -1,5 +1,5 @@
 ---
-title: "In-class_Ex05 (vast challenge Data)"
+title: "Take-home_Ex02"
 author: "NeoYX"
 date: '13 May 2023'
 date-modified: "`r Sys.Date()`"
@@ -20,13 +20,13 @@ format:
 ::: callout-note
 **Edge data** should be organised as such: (can use dplyr methods)
 
-First column: Source id (FK to Node second column)  - compulsory
+First column: Source id (FK to Node second column) - compulsory
 
-Second column: Target id (FK to Node second column)  - compulsory
+Second column: Target id (FK to Node second column) - compulsory
 
 **Node data**
 
-First column: ID  - compulsory
+First column: ID - compulsory
 
 Second column: Label (contains all the distinct values of source and target in Edge data) (only need if Id are all integers) (what is present in edge data must exists in Labels of node data, must not be missing in node data)
 :::
@@ -34,8 +34,6 @@ Second column: Label (contains all the distinct values of source and target in E
 ::: callout-warning
 Try not to use R built-in NA/NULL function. Manually type "unknown' / 'missing' as a value instead.
 :::
-
-In today's in class exercise,
 
 Import libraries
 

@@ -1,0 +1,26 @@
+---
+title: "Hands-on_Ex09"
+author: "NYX"
+date: '19 May 2023'
+date-modified: "`r Sys.Date()`"
+editor: visual
+execute: 
+  freeze: auto
+  warning: false
+  #echo: false
+  #message: false
+format:
+  html:
+    code-fold: True
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
+---
+
+```{r}
+#| fig-width: 8
+#| fig-height: 6
+#| code-fold: True
+```
+
+# 

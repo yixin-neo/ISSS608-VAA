@@ -111,6 +111,8 @@ GAStech_edges <- GAStech_edges %>%
                          abbr = FALSE))
 ```
 
+Codes to check the number of unique Weekdays
+
 ```{r}
 unique(GAStech_edges %>% pull(Weekday))
 ```
@@ -240,7 +242,7 @@ Two functions of **tidygraph** package can be used to create network objects, th
 
 ### 27.4.3 Using `tbl_graph()` to build tidygraph data model.
 
-In this section, I will use `tbl_graph()` of [**tidygraph**](https://tidygraph.data-imaginist.com/reference/index.html)package to build an tidygraph's network graph data.frame.
+In this section, I will use `tbl_graph()` of [**tidygraph**](https://tidygraph.data-imaginist.com/reference/index.html) package to build an tidygraph's network graph data.frame.
 
 Before typing the codes, review to reference guide of [`tbl_graph()`](https://tidygraph.data-imaginist.com/reference/tbl_graph.html)
 
@@ -624,11 +626,13 @@ Centrality measures are a collection of statistical indices use to describe the 
 
 Now we are using tidy graph to perform centrality calculations.
 
-[ggraph documentation](https://ggraph.data-imaginist.com/reference/index.html)
+[ggraph documentation](https://ggraph.data-imaginist.com/reference/index.html) : node, edge, layouts
 
 ```{r}
 #| fig-width: 8
 #| fig-asp: 0.618
+
+set.seed (1234)
 g <- GAStech_graph %>% 
   mutate(betweenness_centrality = centrality_betweenness()) %>% #<< tidygraph doc
   ggraph(layout='fr') +
@@ -644,9 +648,6 @@ g + theme_graph()
 ## Things to learn from the code above
 
 -   *mutate()* of **dplyr** is used to perform the computation and create a new col called betweenness_centrality. Use tidyverse commands on tidygraph object.
-
-<!-- -->
-
 -   the algorithm used, on the other hand, is the *centrality_betweenness()* of **tidygraph**.
 :::
 
@@ -710,3 +711,173 @@ g <- GAStech_graph %>%
 g + theme_graph()
 
 ```
+
+## 27.8 Building Interactive Network Graph with visNetwork
+
+-   [visNetwork()](http://datastorm-open.github.io/visNetwork/) is a R package for network visualization, using [vis.js](http://visjs.org/) javascript library.
+
+-   *visNetwork()* function uses a nodes list and edges list to create an interactive graph.
+
+    -   The nodes list must include an **"id"** column, and the edge list must have **"from"** and **"to"** columns. (Instead of 'source' and 'target'?)
+
+    -   The function also plots the labels for the nodes, using the names of the actors from the "label" column in the node list.
+
+-   The resulting graph is fun to play around with.
+
+    -   You can move the nodes and the graph will use an algorithm to keep the nodes properly spaced.
+
+    -   You can also zoom in and out on the plot and move it around to re-center it.
+
+### 27.8.1 Data preparation
+
+Before we can plot the interactive network graph, we need to prepare the data model by using the code chunk below. In this df, there is no weekday column, unlike GAStech_edges_aggregated df.
+
+```{r}
+GAStech_edges_aggregated2 <- GAStech_edges %>% 
+  left_join(GAStech_nodes, by =c('sourceLabel' = 'label')) %>%  #edges$sourceLabel == nodes.label and the key of right table does not appear
+  rename(from = id) %>%   #rename 'id' column to 'from'
+  left_join(GAStech_nodes, by = c("targetLabel" = "label")) %>%
+  rename(to = id) %>% 
+  filter(MainSubject == 'Work related') %>% 
+  group_by(from,to) %>% 
+  summarise(weight=n()) %>% 
+  filter(from != to) %>% 
+  filter(weight >1) %>% 
+  ungroup()
+```
+
+### 27.8.2 Plotting the first interactive network graph
+
+The code chunk below will be used to plot an interactive network graph by using the data prepared.
+
+```{r}
+#| eval: False
+visNetwork(GAStech_nodes,
+           GAStech_edges_aggregated2)
+```
+
+### 27.8.3 Working with layout
+
+In the code chunk below, Fruchterman and Reingold layout is used.
+
+```{r}
+set.seed(1234)
+visNetwork(GAStech_nodes,
+           GAStech_edges_aggregated2) %>% 
+  visIgraphLayout(layout = 'layout_with_fr')
+```
+
+Visit [Igraph](http://datastorm-open.github.io/visNetwork/igraph.html) to find out more about *visIgraphLayout*'s argument.
+
+### 27.8.4 Working with visual attributes - Nodes
+
+visNetwork() looks for a field called **"group"** in the nodes object and colour the nodes according to the values of the group field.
+
+The code chunk below **rename Department** field to **group**.
+
+```{r}
+GAStech_nodes <- GAStech_nodes %>% rename(group= Department)
+```
+
+Running the code chunk above with the rename column will allow visNet to shade the nodes by assigning a unique colour to each category in the **group** field.
+
+```{r}
+set.seed(1234)
+visNetwork(GAStech_nodes,
+           GAStech_edges_aggregated2) %>% 
+  visIgraphLayout(layout = 'layout_with_fr') %>% 
+  visLegend() 
+# %>% visLayout(randomSeed = 1234)
+```
+
+### 27.8.5 Working with visual attributes - Edges
+
+In the code run below *visEdges()* is used to symbolise the edges.\
+- The argument *arrows* is used to define where to place the arrow.\
+- The *smooth* argument is used to plot the edges using a smooth curve.
+
+```{r}
+set.seed(1234)
+visNetwork(GAStech_nodes,
+           GAStech_edges_aggregated2) %>%
+  visIgraphLayout(layout = "layout_with_fr") %>%
+  visEdges(arrows = 'to',
+           smooth = list(enables = TRUE,
+                         type= 'curvedCW'),
+           shadow = FALSE,
+           dash = FALSE) %>% 
+  visLegend() 
+```
+
+::: callout-note
+Visit [Option](http://datastorm-open.github.io/visNetwork/edges.html) to find out more about visEdges's argument.
+
+arrows : "to", "from", "middle", "middle;to"
+
+dashes: TRUE , FALSE
+
+title: paste('Text', 1:8) -- tooltip
+
+smooth: FALSE, TRUE
+
+shadow: TRUE, FALSE
+
+visNetwork(nodes, edges, height = "500px", width = "100%")
+:::
+
+### 27.8.6 Interactivity
+
+In the code chunk below, *visOptions()* is used to incorporate interactivity features in the data visualisation.\
+- The argument *highlightNearest* highlights nearest when clicking a node. (Does it highlight the ego-network?)\
+- The argument *nodesIdSelection* adds an id node selection creating an HTML select element.
+
+```{r}
+visNetwork(GAStech_nodes,
+           GAStech_edges_aggregated2) %>%
+  visIgraphLayout(layout = "layout_with_fr") %>%
+  visOptions(highlightNearest = TRUE,
+             nodesIdSelection = TRUE) %>%
+  visLegend() %>%
+  visLayout(randomSeed = 123)
+```
+
+## 27.9 Reference
+
+[**tidygraph**](https://tidygraph.data-imaginist.com/reference/index.html) (tbl obj, centrality calc)
+
+[**ggraph documentation**](https://ggraph.data-imaginist.com/reference/index.html) (Node, edge, layout)
+
+[**ggraph**](https://ggraph.data-imaginist.com/)
+
+[*geom-edge_link()*](https://ggraph.data-imaginist.com/reference/geom_edge_link.html)
+
+[*geom_node_point()*](https://ggraph.data-imaginist.com/reference/geom_node_point.html)
+
+[*theme_graph()*](https://ggraph.data-imaginist.com/reference/theme_graph.html)
+
+[ggraph_layout](https://www.data-imaginist.com/2017/ggraph-introduction-layouts/)
+
+**Facet**
+
+[*facet_edges()*](https://ggraph.data-imaginist.com/reference/facet_edges.html)
+
+[*facet_nodes()*](https://r4va.netlify.app/chap27.html)
+
+[*facet_graph()*](https://ggraph.data-imaginist.com/reference/facet_graph.html)
+
+**set_graph_style() defaults**
+
+[thomas85github_theme_graph](https://github.com/thomasp85/ggraph/blob/main/R/theme_graph.R)
+
+**centrality**
+
+[thomas85/tidygraph/group](https://github.com/thomasp85/tidygraph/blob/main/R/group.R)
+
+[**visNetwork()**](http://datastorm-open.github.io/visNetwork/)
+
+[Igraph](http://datastorm-open.github.io/visNetwork/igraph.html)
+
+[visEdge arguments](http://datastorm-open.github.io/visNetwork/edges.html)
+
+
+

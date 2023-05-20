@@ -122,7 +122,9 @@ glimpse(MC2_edges)
 
 Check whether each column in MC2_nodes and MC2_edges contains null and prints the percentage of null for each column.
 
-**For MC2_nodes dataframe;**
+**For MC2_nodes dataframe:**
+
+There are no null values in the id column of Nodes file, which is great.
 
 ```{r}
 # Check for null values in each column
@@ -157,6 +159,12 @@ knitr::kable(null_percentages, "simple")
 
 ```
 
+We will be dropping the `valueofgoods_omu` , `valueofgoodusd`and `volumeteu` columns from our dataframe.
+
+```{r}
+MC2_edges <- MC2_edges %>% select('source','target', 'arrivaldate', 'hscode','weightkg')
+```
+
 ```{r}
 #| eval: false
 #| echo: false
@@ -173,39 +181,172 @@ print(filtered_df)
 
 **For MC2_nodes dataframe:**
 
-There are no duplicated nodes.
+There are no duplicated nodes, which is great.
 
 ```{r}
-#duplicated only
+#| eval: false
+# check for nay duplicates
 any(duplicated(MC2_nodes))
 ```
 
 **For MC2_edges dataframe:**
 
+There are about 0.15 mil records (2 % out of total records) that are duplicated.
+
 ```{r}
 #duplicated only
 print(any(duplicated(MC2_edges)))
 MC2_edges_dup <- MC2_edges[duplicated(MC2_edges), ]
+print(nrow(MC2_edges_dup))
+```
+
+We will drop the duplicates.
+
+```{r}
+# Drop duplicate rows from the dataframe
+MC2_edges_no_dup <- MC2_edges[!duplicated(MC2_edges), ]
+```
+
+### 1.3.3 Check on the HScodes.
+
+Check the unique number of hscodes in the dataset. There are 4761 unique HScodes.
+
+```{r}
+
+# Find the number of unique values in hscode
+length(unique(MC2_edges_no_dup$hscode))
+
+```
+
+With reference to [World Custom Organisation Harmonized System codes](https://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs-nomenclature-2022-edition/hs-nomenclature-2022-edition.aspx), Section 1 and 4 are related to seafood. We will filter for records that has HScodes starting with `1604` and `1605` as they refer to seafood commodities, thus removing many other transactions like 'television', 'steel parts' etc...
+
+```{r}
+mc2_seafood_edges<- MC2_edges_no_dup[grepl('^1605|^1604', MC2_edges_no_dup$hscode), ]
+#MC2_edges[startsWith(MC2_edges$hscode, "1601"), ]
 
 ```
 
 ```{r}
-#| eval: false
-#| echo: false
-
-# Find duplicated rows  and display the original row that was duplicated in the dataframe
-edge_dup <- MC2_edges[duplicated(MC2_edges) | duplicated(MC2_edges, fromLast = TRUE), ]
-
-# Get the unique rows that are duplicates
-unique_duplicates <- unique(edge_dup)
-
-# Display the duplicated rows and their duplicates
-print(unique_duplicates)
-
+#unique(mc2_seafood_edges$hscode)
+#unique(mc2_seafood_edges$source)
+mc2_seafood_edges_agg <- mc2_seafood_edges %>%  
+  group_by(source, target,arrivaldate) %>% 
+  summarise(Weight=n(),
+            Totalweight = sum(weightkg),
+            hscode=first(hscode)) %>% 
+  filter(Weight >=5) %>% 
+  ungroup()
 ```
 
-Check on the HScodes. Starts with 100630, and it doesnt match with any of the real hscodes from [link](https://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs-nomenclature-2022-edition/hs-nomenclature-2022-edition.aspx). We will not be using this column as of now...
+When i tried to plot the graph, i found several disconnected components. Thus I am going to inspect the frequency of source and target actors, and remove those actors below a frequency count of 5. First , we remove low frequency source actors under 5 counts.
 
 ```{r}
-MC2_edges[startsWith(MC2_edges$hscode, "852"), ]
+# Calculate the frequency count of values in 'source'
+frequency_table <- table(mc2_seafood_edges_agg$source)
+
+# Get the values in 'col1' with a frequency count greater than or equal to 5
+valid_source <- names(frequency_table[frequency_table >= 5])
+
+# Subset the dataframe to keep only rows with valid values in 'col1'
+mc2_seafood_edges_agg <- mc2_seafood_edges_agg[mc2_seafood_edges_agg$source %in% valid_source, ]
+
+
 ```
+
+Next, remove target actors with frequency count less than 5:
+
+```{r}
+# Calculate the frequency count of values in 'source'
+frequency_table <- table(mc2_seafood_edges_agg$target)
+
+# Get the values in 'col1' with a frequency count greater than or equal to 5
+valid_target <- names(frequency_table[frequency_table >= 5])
+
+# Subset the dataframe to keep only rows with valid values in 'col1'
+mc2_seafood_edges_agg <- mc2_seafood_edges_agg[mc2_seafood_edges_agg$target %in% valid_target, ]
+
+
+# Print the filtered dataframe
+#print(mc2_seafood_edges_agg)
+```
+
+```{r}
+ #sort(table(mc2_seafood_edges_agg$target))
+```
+
+### 1.3.4 Preparation of Nodes
+
+We will include only nodes that are in source and target columns in the `mc2_seafood_edges_agg` dataframe
+
+```{r}
+nodes_seafood <- MC2_nodes %>%
+  filter (id %in% c(mc2_seafood_edges_agg$source, mc2_seafood_edges_agg$target))
+```
+
+# 2 Visualization
+
+## 2.1 Creating the network graph dataframe using tbl_graph() of the tidygraph package. 
+
+::: callout-note
+Node file needs to have ID of nodes as first column.
+
+Edge file need to contain source and target as column 1 and 2.
+:::
+
+To create the dataframe
+
+```{r}
+seafood_graph<- tbl_graph(nodes=nodes_seafood,
+                          edges = mc2_seafood_edges_agg,
+                          directed = TRUE)
+```
+
+```{r}
+seafood_graph
+```
+
+## 2.2 Plot basic network graph... cross fingers
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+a <- ggraph(seafood_graph) +  #<<< GAStech_graph is a tbl_graph object
+  geom_edge_link(aes(width=Weight, alpha= 0.2)) +
+  scale_edge_width(range = c(0.1, 5)) +
+  geom_node_point()
+a
+
+```
+
+I have actually already excluded source and target actors with frequency counts of 4 and under. I should not exclude anymore 'innocent' actors. Lets use visnetwork to get the id of the two pairs that are still inside there....
+
+We first need to rename the edge file first two columns to `from` and `to` for visNetwork to be able to regconise them.. .
+
+```{r}
+mc2_seafood_edges_agg_vis <- mc2_seafood_edges_agg %>% 
+  rename(from = source) %>% 
+  rename(to = target)
+```
+
+Next, I will rename the `shpcountry` column to `group` because i would like visNetwork looks for `group` column to colour the nodes.
+
+```{r}
+nodes_seafood_vis <- nodes_seafood %>% 
+  rename(group= shpcountry)
+```
+
+The code chunk below plots in interactive network graph using visNetwork.
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+visNetwork(nodes_seafood_vis,
+           mc2_seafood_edges_agg_vis) %>%
+  visIgraphLayout(layout = "layout_with_fr") %>%
+  visOptions(highlightNearest = TRUE,
+             nodesIdSelection = TRUE) %>%
+  visLegend() %>%
+  visLayout(randomSeed = 123)
+```
+
+The four isolated actors id are 'Rift Valley fishery OJSC', 'Bujagali Falls Pic Family', 'Neptune's Realm NV Navigation' and 'Rybachit Sagl and Son's. Thanks to this interactive graph that I know which nodes to remove from my network graph tmr......

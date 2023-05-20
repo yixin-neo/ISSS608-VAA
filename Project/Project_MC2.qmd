@@ -35,6 +35,44 @@ Second column: Label (contains all the distinct values of source and target in E
 Try not to use R built-in NA/NULL function. Manually type "unknown' / 'missing' as a value instead.
 :::
 
+# 1 About the dataset
+
+## 1.1 Data dictionary
+
+**Node Attributes:**
+
+id \-- Name of the company that originated (or received) the shipment
+
+shpcountry \-- Country the company most often associated with when shipping
+
+rcvcountry \-- Country the company most often associated with when receiving
+
+dataset \-- Always 'MC2'
+
+**Edge Attributes:**
+
+arrivaldate \-- Date the shipment arrived at port in YYYY-MM-DD format.
+
+hscode \-- Harmonized System code for the shipment. Can be joined with the hscodes table to get additional details.
+
+valueofgoods_omu \-- Customs-declared value of the total shipment, in Oceanus
+
+Monetary Units (OMU)
+
+volumeteu \-- The volume of the shipment in 'Twenty-foot equivalent units', roughly how many 20-foot standard containers would be required. (Actual number of
+
+containers may have been different as there are 20ft and 40ft standard containers and tankers that do not use containers)
+
+weightkg \-- The weight of the shipment in kilograms (if known)
+
+dataset \-- Always 'MC2'
+
+type \-- Always 'shipment' for MC2
+
+generated_by \-- Name of the program that generated the edge. (Only found on 'bundle' records.)
+
+## 1.2 Importing the datasets
+
 Import libraries
 
 The new libraries used today are :
@@ -55,18 +93,14 @@ MC2 <- jsonlite::fromJSON("C:/yixin-neo/ISSS608-VAA/Project/data/mc2_challenge_g
 carp <- jsonlite::fromJSON("C:/yixin-neo/ISSS608-VAA/Project/data/bundles/carp.json")
 ```
 
-::: callout-note
-Problem with dataset of links:
-
-Source and Data columns are at the back instead of the first 2 columns
-:::
-
 Pull out the nodes and edge data and save them as tibble data frames.
 
 ```{r}
 MC2_nodes <- as_tibble(MC2$nodes) %>% 
   select(id,shpcountry,rcvcountry)
 ```
+
+Rearranging the columns in edge file as we require `source` and `target` columns to be the first two columns.
 
 ```{r}
 MC2_edges <- as_tibble(MC2$links) %>% 
@@ -80,4 +114,98 @@ glimpse(MC2_nodes)
 
 ```{r}
 glimpse(MC2_edges)
+```
+
+## 1.3 Data cleaning
+
+### 1.3.1 Check for null values
+
+Check whether each column in MC2_nodes and MC2_edges contains null and prints the percentage of null for each column.
+
+**For MC2_nodes dataframe;**
+
+```{r}
+# Check for null values in each column
+null_counts_nodes <- sapply(MC2_nodes, function(x) sum(is.null(x) | is.na(x)))
+
+# Calculate the percentage of null values for each column
+null_percentages_nodes <- null_counts_nodes / nrow(MC2_nodes) * 100
+
+# Display the results
+#print(null_percentages)
+
+knitr::kable(null_percentages_nodes, "simple")
+```
+
+**For MC2_edges dataframe:**
+
+As there are a lot zeros inside MC2_edges\$volumteu col, we will consider 0 as equivalent to null values.
+
+We can see that the columns `valueofgoods_omu` and `volumeteu` are mainly null. `valueofgoodusd` column contains more than 50% null values. There are 4 records of `source` with 0 as value, but 0 is their unique identifier so we do not consider 0 as null in `source` column. It means to say that only `source`, `target`, `arrivaldate`, `hscode` and `weight` columns will be helpful in our analysis.
+
+```{r}
+# Check for null values in each column
+null_counts <- sapply(MC2_edges, function(x) sum(is.null(x) | is.na(x) | x==0))
+
+# Calculate the percentage of null values for each column
+null_percentages <- null_counts / nrow(MC2_edges) * 100
+
+# Display the results
+#print(null_percentages)
+
+knitr::kable(null_percentages, "simple")
+
+```
+
+```{r}
+#| eval: false
+#| echo: false
+
+# Filter rows where 'source' column contains 0
+filtered_df <- MC2_edges %>% filter(source == 0)
+
+# Display the filtered dataframe
+print(filtered_df)
+
+```
+
+### 1.3.2 Lets check for duplicates
+
+**For MC2_nodes dataframe:**
+
+There are no duplicated nodes.
+
+```{r}
+#duplicated only
+any(duplicated(MC2_nodes))
+```
+
+**For MC2_edges dataframe:**
+
+```{r}
+#duplicated only
+print(any(duplicated(MC2_edges)))
+MC2_edges_dup <- MC2_edges[duplicated(MC2_edges), ]
+
+```
+
+```{r}
+#| eval: false
+#| echo: false
+
+# Find duplicated rows  and display the original row that was duplicated in the dataframe
+edge_dup <- MC2_edges[duplicated(MC2_edges) | duplicated(MC2_edges, fromLast = TRUE), ]
+
+# Get the unique rows that are duplicates
+unique_duplicates <- unique(edge_dup)
+
+# Display the duplicated rows and their duplicates
+print(unique_duplicates)
+
+```
+
+Check on the HScodes. Starts with 100630, and it doesnt match with any of the real hscodes from [link](https://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs-nomenclature-2022-edition/hs-nomenclature-2022-edition.aspx). We will not be using this column as of now...
+
+```{r}
+MC2_edges[startsWith(MC2_edges$hscode, "852"), ]
 ```

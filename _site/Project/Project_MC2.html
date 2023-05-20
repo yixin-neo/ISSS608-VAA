@@ -374,7 +374,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </nav>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#about-the-dataset" id="toc-about-the-dataset" class="nav-link active" data-scroll-target="#about-the-dataset">1 About the dataset</a>
+  <ul class="collapse">
+  <li><a href="#data-dictionary" id="toc-data-dictionary" class="nav-link" data-scroll-target="#data-dictionary">1.1 Data dictionary</a></li>
+  <li><a href="#importing-the-datasets" id="toc-importing-the-datasets" class="nav-link" data-scroll-target="#importing-the-datasets">1.2 Importing the datasets</a></li>
+  <li><a href="#data-cleaning" id="toc-data-cleaning" class="nav-link" data-scroll-target="#data-cleaning">1.3 Data cleaning</a>
+  <ul class="collapse">
+  <li><a href="#check-for-null-values" id="toc-check-for-null-values" class="nav-link" data-scroll-target="#check-for-null-values">1.3.1 Check for null values</a></li>
+  <li><a href="#lets-check-for-duplicates" id="toc-lets-check-for-duplicates" class="nav-link" data-scroll-target="#lets-check-for-duplicates">1.3.2 Lets check for duplicates</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -405,7 +420,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">May 16, 2023</p>
+      <p class="date-modified">May 20, 2023</p>
     </div>
   </div>
     
@@ -445,6 +460,29 @@ Warning
 <p>Try not to use R built-in NA/NULL function. Manually type “unknown’ / ‘missing’ as a value instead.</p>
 </div>
 </div>
+<section id="about-the-dataset" class="level1">
+<h1>1 About the dataset</h1>
+<section id="data-dictionary" class="level2">
+<h2 class="anchored" data-anchor-id="data-dictionary">1.1 Data dictionary</h2>
+<p><strong>Node Attributes:</strong></p>
+<p>id -- Name of the company that originated (or received) the shipment</p>
+<p>shpcountry -- Country the company most often associated with when shipping</p>
+<p>rcvcountry -- Country the company most often associated with when receiving</p>
+<p>dataset -- Always ‘MC2’</p>
+<p><strong>Edge Attributes:</strong></p>
+<p>arrivaldate -- Date the shipment arrived at port in YYYY-MM-DD format.</p>
+<p>hscode -- Harmonized System code for the shipment. Can be joined with the hscodes table to get additional details.</p>
+<p>valueofgoods_omu -- Customs-declared value of the total shipment, in Oceanus</p>
+<p>Monetary Units (OMU)</p>
+<p>volumeteu -- The volume of the shipment in ‘Twenty-foot equivalent units’, roughly how many 20-foot standard containers would be required. (Actual number of</p>
+<p>containers may have been different as there are 20ft and 40ft standard containers and tankers that do not use containers)</p>
+<p>weightkg -- The weight of the shipment in kilograms (if known)</p>
+<p>dataset -- Always ‘MC2’</p>
+<p>type -- Always ‘shipment’ for MC2</p>
+<p>generated_by -- Name of the program that generated the edge. (Only found on ‘bundle’ records.)</p>
+</section>
+<section id="importing-the-datasets" class="level2">
+<h2 class="anchored" data-anchor-id="importing-the-datasets">1.2 Importing the datasets</h2>
 <p>Import libraries</p>
 <p>The new libraries used today are :</p>
 <ul>
@@ -470,20 +508,6 @@ Warning
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>carp <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(<span class="st">"C:/yixin-neo/ISSS608-VAA/Project/data/bundles/carp.json"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-caption-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Problem with dataset of links:</p>
-<p>Source and Data columns are at the back instead of the first 2 columns</p>
-</div>
-</div>
 <p>Pull out the nodes and edge data and save them as tibble data frames.</p>
 <div class="cell">
 <details>
@@ -492,6 +516,7 @@ Note
 <span id="cb4-2"><a href="#cb4-2"></a>  <span class="fu">select</span>(id,shpcountry,rcvcountry)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+<p>Rearranging the columns in edge file as we require <code>source</code> and <code>target</code> columns to be the first two columns.</p>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
@@ -531,8 +556,179 @@ $ weightkg         &lt;int&gt; 4780, 6125, 10855, 11250, 11165, 11290, 9000, 194
 $ valueofgoodsusd  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, 87110, 188140, NA, 221110, 58…</code></pre>
 </div>
 </div>
+</section>
+<section id="data-cleaning" class="level2">
+<h2 class="anchored" data-anchor-id="data-cleaning">1.3 Data cleaning</h2>
+<section id="check-for-null-values" class="level3">
+<h3 class="anchored" data-anchor-id="check-for-null-values">1.3.1 Check for null values</h3>
+<p>Check whether each column in MC2_nodes and MC2_edges contains null and prints the percentage of null for each column.</p>
+<p><strong>For MC2_nodes dataframe;</strong></p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># Check for null values in each column</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>null_counts_nodes <span class="ot">&lt;-</span> <span class="fu">sapply</span>(MC2_nodes, <span class="cf">function</span>(x) <span class="fu">sum</span>(<span class="fu">is.null</span>(x) <span class="sc">|</span> <span class="fu">is.na</span>(x)))</span>
+<span id="cb10-3"><a href="#cb10-3"></a></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="co"># Calculate the percentage of null values for each column</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a>null_percentages_nodes <span class="ot">&lt;-</span> null_counts_nodes <span class="sc">/</span> <span class="fu">nrow</span>(MC2_nodes) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="co"># Display the results</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a><span class="co">#print(null_percentages)</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a></span>
+<span id="cb10-10"><a href="#cb10-10"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(null_percentages_nodes, <span class="st">"simple"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;">x</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">id</td>
+<td>0.00000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">shpcountry</td>
+<td>64.66624</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rcvcountry</td>
+<td>8.41335</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>For MC2_edges dataframe:</strong></p>
+<p>As there are a lot zeros inside MC2_edges$volumteu col, we will consider 0 as equivalent to null values.</p>
+<p>We can see that the columns <code>valueofgoods_omu</code> and <code>volumeteu</code> are mainly null. <code>valueofgoodusd</code> column contains more than 50% null values. There are 4 records of <code>source</code> with 0 as value, but 0 is their unique identifier so we do not consider 0 as null in <code>source</code> column. It means to say that only <code>source</code>, <code>target</code>, <code>arrivaldate</code>, <code>hscode</code> and <code>weight</code> columns will be helpful in our analysis.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># Check for null values in each column</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>null_counts <span class="ot">&lt;-</span> <span class="fu">sapply</span>(MC2_edges, <span class="cf">function</span>(x) <span class="fu">sum</span>(<span class="fu">is.null</span>(x) <span class="sc">|</span> <span class="fu">is.na</span>(x) <span class="sc">|</span> x<span class="sc">==</span><span class="dv">0</span>))</span>
+<span id="cb11-3"><a href="#cb11-3"></a></span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="co"># Calculate the percentage of null values for each column</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a>null_percentages <span class="ot">&lt;-</span> null_counts <span class="sc">/</span> <span class="fu">nrow</span>(MC2_edges) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb11-6"><a href="#cb11-6"></a></span>
+<span id="cb11-7"><a href="#cb11-7"></a><span class="co"># Display the results</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a><span class="co">#print(null_percentages)</span></span>
+<span id="cb11-9"><a href="#cb11-9"></a></span>
+<span id="cb11-10"><a href="#cb11-10"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(null_percentages, <span class="st">"simple"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;">x</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">source</td>
+<td>0.0000732</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">target</td>
+<td>0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">arrivaldate</td>
+<td>0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">hscode</td>
+<td>0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">valueofgoods_omu</td>
+<td>99.9948576</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">volumeteu</td>
+<td>85.6684146</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">weightkg</td>
+<td>1.0136561</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">valueofgoodsusd</td>
+<td>55.3358864</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+
+</div>
+</section>
+<section id="lets-check-for-duplicates" class="level3">
+<h3 class="anchored" data-anchor-id="lets-check-for-duplicates">1.3.2 Lets check for duplicates</h3>
+<p><strong>For MC2_nodes dataframe:</strong></p>
+<p>There are no duplicated nodes.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">#duplicated only</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="fu">any</span>(<span class="fu">duplicated</span>(MC2_nodes))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+</div>
+<p><strong>For MC2_edges dataframe:</strong></p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="co">#duplicated only</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="fu">print</span>(<span class="fu">any</span>(<span class="fu">duplicated</span>(MC2_edges)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>MC2_edges_dup <span class="ot">&lt;-</span> MC2_edges[<span class="fu">duplicated</span>(MC2_edges), ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+
+</div>
+<p>Check on the HScodes. Starts with 100630, and it doesnt match with any of the real hscodes from <a href="https://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs-nomenclature-2022-edition/hs-nomenclature-2022-edition.aspx">link</a>. We will not be using this column as of now…</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>MC2_edges[<span class="fu">startsWith</span>(MC2_edges<span class="sc">$</span>hscode, <span class="st">"852"</span>), ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 56,263 × 8
+   source          target arrivaldate hscode valueofgoods_omu volumeteu weightkg
+   &lt;chr&gt;           &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt;    &lt;int&gt;
+ 1 French Crab S.… Mar d… 2028-04-07  852872               NA         0       65
+ 2 French Crab S.… -1992  2028-01-02  852990               NA         0     2830
+ 3 French Crab S.… -1992  2028-01-02  852990               NA         0     2230
+ 4 French Crab S.… -1992  2028-01-02  852872               NA         0     6810
+ 5 French Crab S.… -1992  2028-01-02  852990               NA         0     2830
+ 6 French Crab S.… -1992  2028-01-02  852990               NA         0     2830
+ 7 French Crab S.… -1992  2028-01-02  852990               NA         0      805
+ 8 French Crab S.… -1992  2028-01-02  852990               NA         0    10625
+ 9 French Crab S.… -1992  2028-01-02  852990               NA         0     1895
+10 French Crab S.… -1992  2028-01-02  852990               NA         0     5425
+# ℹ 56,253 more rows
+# ℹ 1 more variable: valueofgoodsusd &lt;dbl&gt;</code></pre>
+</div>
+</div>
 
 
+</section>
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

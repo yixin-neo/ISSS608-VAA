@@ -473,7 +473,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">May 16, 2023</p>
+      <p class="date-modified">May 20, 2023</p>
     </div>
   </div>
     
@@ -1317,6 +1317,38 @@ Things to learn from the code above
 </ul>
 </div>
 </div>
+<p>To see the centrality values</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>GAStech_graph <span class="sc">%&gt;%</span> </span>
+<span id="cb33-2"><a href="#cb33-2"></a>  <span class="fu">mutate</span>(<span class="at">betweenness_centrality =</span> <span class="fu">centrality_betweenness</span>()) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tbl_graph: 54 nodes and 1456 edges
+#
+# A directed multigraph with 1 component
+#
+# A tibble: 54 × 5
+     id label               Department     Title          betweenness_centrality
+  &lt;dbl&gt; &lt;chr&gt;               &lt;chr&gt;          &lt;chr&gt;                           &lt;dbl&gt;
+1     1 Mat.Bramar          Administration Assistant to …                  307. 
+2     2 Anda.Ribera         Administration Assistant to …                  170. 
+3     3 Rachel.Pantanal     Administration Assistant to …                   32.8
+4     4 Linda.Lagos         Administration Assistant to …                    0  
+5     5 Ruscella.Mies.Haber Administration Assistant to …                  501. 
+6     6 Carla.Forluniau     Administration Assistant to …                   28.2
+# ℹ 48 more rows
+#
+# A tibble: 1,456 × 4
+   from    to Weekday   Weight
+  &lt;int&gt; &lt;int&gt; &lt;ord&gt;      &lt;int&gt;
+1     1     2 Monday         4
+2     1     2 Tuesday        3
+3     1     2 Wednesday      5
+# ℹ 1,453 more rows</code></pre>
+</div>
+</div>
 </section>
 <section id="visualising-network-metrics-without-computing-col-above" class="level3">
 <h3 class="anchored" data-anchor-id="visualising-network-metrics-without-computing-col-above">27.7.2 Visualising network metrics (without computing col above)</h3>
@@ -1324,18 +1356,18 @@ Things to learn from the code above
 <div class="cell" data-fig.asp="0.618">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="fu">set.seed</span> (<span class="dv">1234</span>)</span>
-<span id="cb33-2"><a href="#cb33-2"></a>g <span class="ot">&lt;-</span> GAStech_graph <span class="sc">%&gt;%</span></span>
-<span id="cb33-3"><a href="#cb33-3"></a>  <span class="fu">ggraph</span>(<span class="at">layout =</span> <span class="st">"fr"</span>) <span class="sc">+</span> </span>
-<span id="cb33-4"><a href="#cb33-4"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight), </span>
-<span id="cb33-5"><a href="#cb33-5"></a>                 <span class="at">alpha=</span><span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb33-6"><a href="#cb33-6"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">5</span>)) <span class="sc">+</span></span>
-<span id="cb33-7"><a href="#cb33-7"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> Department, </span>
-<span id="cb33-8"><a href="#cb33-8"></a>                      <span class="at">size =</span> <span class="fu">centrality_betweenness</span>()))   <span class="co">#&lt;&lt;&lt;&lt; access betweenness values directly using `centrality_betweenness()`</span></span>
-<span id="cb33-9"><a href="#cb33-9"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="fu">set.seed</span> (<span class="dv">1234</span>)</span>
+<span id="cb35-2"><a href="#cb35-2"></a>g <span class="ot">&lt;-</span> GAStech_graph <span class="sc">%&gt;%</span></span>
+<span id="cb35-3"><a href="#cb35-3"></a>  <span class="fu">ggraph</span>(<span class="at">layout =</span> <span class="st">"fr"</span>) <span class="sc">+</span> </span>
+<span id="cb35-4"><a href="#cb35-4"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight), </span>
+<span id="cb35-5"><a href="#cb35-5"></a>                 <span class="at">alpha=</span><span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb35-6"><a href="#cb35-6"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb35-7"><a href="#cb35-7"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> Department, </span>
+<span id="cb35-8"><a href="#cb35-8"></a>                      <span class="at">size =</span> <span class="fu">centrality_betweenness</span>()))   <span class="co">#&lt;&lt;&lt;&lt; access betweenness values directly using `centrality_betweenness()`</span></span>
+<span id="cb35-9"><a href="#cb35-9"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="768"></p>
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
 </section>
@@ -1347,40 +1379,40 @@ Things to learn from the code above
 <div class="cell" data-fig.asp="0.618">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a><span class="fu">set.seed</span> (<span class="dv">1234</span>)</span>
-<span id="cb34-2"><a href="#cb34-2"></a>g <span class="ot">&lt;-</span> GAStech_graph <span class="sc">%&gt;%</span></span>
-<span id="cb34-3"><a href="#cb34-3"></a>  <span class="fu">mutate</span>(<span class="at">community =</span> <span class="fu">as.factor</span>(<span class="fu">group_edge_betweenness</span>(<span class="at">weights =</span> Weight, <span class="at">directed =</span> <span class="cn">TRUE</span>))) <span class="sc">%&gt;%</span></span>
-<span id="cb34-4"><a href="#cb34-4"></a>  <span class="fu">ggraph</span>(<span class="at">layout =</span> <span class="st">"fr"</span>) <span class="sc">+</span> </span>
-<span id="cb34-5"><a href="#cb34-5"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight), </span>
-<span id="cb34-6"><a href="#cb34-6"></a>                 <span class="at">alpha=</span><span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb34-7"><a href="#cb34-7"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">5</span>)) <span class="sc">+</span></span>
-<span id="cb34-8"><a href="#cb34-8"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> community))  </span>
-<span id="cb34-9"><a href="#cb34-9"></a></span>
-<span id="cb34-10"><a href="#cb34-10"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a><span class="fu">set.seed</span> (<span class="dv">1234</span>)</span>
+<span id="cb36-2"><a href="#cb36-2"></a>g <span class="ot">&lt;-</span> GAStech_graph <span class="sc">%&gt;%</span></span>
+<span id="cb36-3"><a href="#cb36-3"></a>  <span class="fu">mutate</span>(<span class="at">community =</span> <span class="fu">as.factor</span>(<span class="fu">group_edge_betweenness</span>(<span class="at">weights =</span> Weight, <span class="at">directed =</span> <span class="cn">TRUE</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb36-4"><a href="#cb36-4"></a>  <span class="fu">ggraph</span>(<span class="at">layout =</span> <span class="st">"fr"</span>) <span class="sc">+</span> </span>
+<span id="cb36-5"><a href="#cb36-5"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight), </span>
+<span id="cb36-6"><a href="#cb36-6"></a>                 <span class="at">alpha=</span><span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb36-7"><a href="#cb36-7"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb36-8"><a href="#cb36-8"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> community))  </span>
+<span id="cb36-9"><a href="#cb36-9"></a></span>
+<span id="cb36-10"><a href="#cb36-10"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="768"></p>
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
 <p>What does the n_groups() argument do? Set the number of communities?</p>
 <div class="cell" data-fig.asp="0.618">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="fu">set.seed</span> (<span class="dv">1234</span>)</span>
-<span id="cb35-2"><a href="#cb35-2"></a>g <span class="ot">&lt;-</span> GAStech_graph <span class="sc">%&gt;%</span></span>
-<span id="cb35-3"><a href="#cb35-3"></a>  <span class="fu">mutate</span>(<span class="at">community =</span> <span class="fu">as.factor</span>(<span class="fu">group_edge_betweenness</span>(<span class="at">weights =</span> Weight, </span>
-<span id="cb35-4"><a href="#cb35-4"></a>                                                      <span class="at">directed =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb35-5"><a href="#cb35-5"></a>                                                      <span class="at">n_groups =</span> <span class="dv">20</span>))) <span class="sc">%&gt;%</span>  <span class="co">#&lt;&lt; should i try to change the number of groups/community?</span></span>
-<span id="cb35-6"><a href="#cb35-6"></a>  <span class="fu">ggraph</span>(<span class="at">layout =</span> <span class="st">"fr"</span>) <span class="sc">+</span> </span>
-<span id="cb35-7"><a href="#cb35-7"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight), </span>
-<span id="cb35-8"><a href="#cb35-8"></a>                 <span class="at">alpha=</span><span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb35-9"><a href="#cb35-9"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">5</span>)) <span class="sc">+</span></span>
-<span id="cb35-10"><a href="#cb35-10"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> community))  </span>
-<span id="cb35-11"><a href="#cb35-11"></a></span>
-<span id="cb35-12"><a href="#cb35-12"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="fu">set.seed</span> (<span class="dv">1234</span>)</span>
+<span id="cb37-2"><a href="#cb37-2"></a>g <span class="ot">&lt;-</span> GAStech_graph <span class="sc">%&gt;%</span></span>
+<span id="cb37-3"><a href="#cb37-3"></a>  <span class="fu">mutate</span>(<span class="at">community =</span> <span class="fu">as.factor</span>(<span class="fu">group_edge_betweenness</span>(<span class="at">weights =</span> Weight, </span>
+<span id="cb37-4"><a href="#cb37-4"></a>                                                      <span class="at">directed =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb37-5"><a href="#cb37-5"></a>                                                      <span class="at">n_groups =</span> <span class="dv">20</span>))) <span class="sc">%&gt;%</span>  <span class="co">#&lt;&lt; should i try to change the number of groups/community?</span></span>
+<span id="cb37-6"><a href="#cb37-6"></a>  <span class="fu">ggraph</span>(<span class="at">layout =</span> <span class="st">"fr"</span>) <span class="sc">+</span> </span>
+<span id="cb37-7"><a href="#cb37-7"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight), </span>
+<span id="cb37-8"><a href="#cb37-8"></a>                 <span class="at">alpha=</span><span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb37-9"><a href="#cb37-9"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb37-10"><a href="#cb37-10"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> community))  </span>
+<span id="cb37-11"><a href="#cb37-11"></a></span>
+<span id="cb37-12"><a href="#cb37-12"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="768"></p>
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
 </section>
@@ -1406,17 +1438,17 @@ Things to learn from the code above
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a>GAStech_edges_aggregated2 <span class="ot">&lt;-</span> GAStech_edges <span class="sc">%&gt;%</span> </span>
-<span id="cb36-2"><a href="#cb36-2"></a>  <span class="fu">left_join</span>(GAStech_nodes, <span class="at">by =</span><span class="fu">c</span>(<span class="st">'sourceLabel'</span> <span class="ot">=</span> <span class="st">'label'</span>)) <span class="sc">%&gt;%</span>  <span class="co">#edges$sourceLabel == nodes.label and the key of right table does not appear</span></span>
-<span id="cb36-3"><a href="#cb36-3"></a>  <span class="fu">rename</span>(<span class="at">from =</span> id) <span class="sc">%&gt;%</span>   <span class="co">#rename 'id' column to 'from'</span></span>
-<span id="cb36-4"><a href="#cb36-4"></a>  <span class="fu">left_join</span>(GAStech_nodes, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"targetLabel"</span> <span class="ot">=</span> <span class="st">"label"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb36-5"><a href="#cb36-5"></a>  <span class="fu">rename</span>(<span class="at">to =</span> id) <span class="sc">%&gt;%</span> </span>
-<span id="cb36-6"><a href="#cb36-6"></a>  <span class="fu">filter</span>(MainSubject <span class="sc">==</span> <span class="st">'Work related'</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb36-7"><a href="#cb36-7"></a>  <span class="fu">group_by</span>(from,to) <span class="sc">%&gt;%</span> </span>
-<span id="cb36-8"><a href="#cb36-8"></a>  <span class="fu">summarise</span>(<span class="at">weight=</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
-<span id="cb36-9"><a href="#cb36-9"></a>  <span class="fu">filter</span>(from <span class="sc">!=</span> to) <span class="sc">%&gt;%</span> </span>
-<span id="cb36-10"><a href="#cb36-10"></a>  <span class="fu">filter</span>(weight <span class="sc">&gt;</span><span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb36-11"><a href="#cb36-11"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a>GAStech_edges_aggregated2 <span class="ot">&lt;-</span> GAStech_edges <span class="sc">%&gt;%</span> </span>
+<span id="cb38-2"><a href="#cb38-2"></a>  <span class="fu">left_join</span>(GAStech_nodes, <span class="at">by =</span><span class="fu">c</span>(<span class="st">'sourceLabel'</span> <span class="ot">=</span> <span class="st">'label'</span>)) <span class="sc">%&gt;%</span>  <span class="co">#edges$sourceLabel == nodes.label and the key of right table does not appear</span></span>
+<span id="cb38-3"><a href="#cb38-3"></a>  <span class="fu">rename</span>(<span class="at">from =</span> id) <span class="sc">%&gt;%</span>   <span class="co">#rename 'id' column to 'from'</span></span>
+<span id="cb38-4"><a href="#cb38-4"></a>  <span class="fu">left_join</span>(GAStech_nodes, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"targetLabel"</span> <span class="ot">=</span> <span class="st">"label"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb38-5"><a href="#cb38-5"></a>  <span class="fu">rename</span>(<span class="at">to =</span> id) <span class="sc">%&gt;%</span> </span>
+<span id="cb38-6"><a href="#cb38-6"></a>  <span class="fu">filter</span>(MainSubject <span class="sc">==</span> <span class="st">'Work related'</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb38-7"><a href="#cb38-7"></a>  <span class="fu">group_by</span>(from,to) <span class="sc">%&gt;%</span> </span>
+<span id="cb38-8"><a href="#cb38-8"></a>  <span class="fu">summarise</span>(<span class="at">weight=</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb38-9"><a href="#cb38-9"></a>  <span class="fu">filter</span>(from <span class="sc">!=</span> to) <span class="sc">%&gt;%</span> </span>
+<span id="cb38-10"><a href="#cb38-10"></a>  <span class="fu">filter</span>(weight <span class="sc">&gt;</span><span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb38-11"><a href="#cb38-11"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -1426,8 +1458,8 @@ Things to learn from the code above
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="fu">visNetwork</span>(GAStech_nodes,</span>
-<span id="cb37-2"><a href="#cb37-2"></a>           GAStech_edges_aggregated2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="fu">visNetwork</span>(GAStech_nodes,</span>
+<span id="cb39-2"><a href="#cb39-2"></a>           GAStech_edges_aggregated2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -1437,10 +1469,10 @@ Things to learn from the code above
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
-<span id="cb38-2"><a href="#cb38-2"></a><span class="fu">visNetwork</span>(GAStech_nodes,</span>
-<span id="cb38-3"><a href="#cb38-3"></a>           GAStech_edges_aggregated2) <span class="sc">%&gt;%</span> </span>
-<span id="cb38-4"><a href="#cb38-4"></a>  <span class="fu">visIgraphLayout</span>(<span class="at">layout =</span> <span class="st">'layout_with_fr'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb40-2"><a href="#cb40-2"></a><span class="fu">visNetwork</span>(GAStech_nodes,</span>
+<span id="cb40-3"><a href="#cb40-3"></a>           GAStech_edges_aggregated2) <span class="sc">%&gt;%</span> </span>
+<span id="cb40-4"><a href="#cb40-4"></a>  <span class="fu">visIgraphLayout</span>(<span class="at">layout =</span> <span class="st">'layout_with_fr'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="visNetwork html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-c00c3f7f2c48986ca491" style="width:100%;height:464px;"></div>
@@ -1456,18 +1488,18 @@ Things to learn from the code above
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a>GAStech_nodes <span class="ot">&lt;-</span> GAStech_nodes <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">group=</span> Department)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a>GAStech_nodes <span class="ot">&lt;-</span> GAStech_nodes <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">group=</span> Department)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Running the code chunk above with the rename column will allow visNet to shade the nodes by assigning a unique colour to each category in the <strong>group</strong> field.</p>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
-<span id="cb40-2"><a href="#cb40-2"></a><span class="fu">visNetwork</span>(GAStech_nodes,</span>
-<span id="cb40-3"><a href="#cb40-3"></a>           GAStech_edges_aggregated2) <span class="sc">%&gt;%</span> </span>
-<span id="cb40-4"><a href="#cb40-4"></a>  <span class="fu">visIgraphLayout</span>(<span class="at">layout =</span> <span class="st">'layout_with_fr'</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb40-5"><a href="#cb40-5"></a>  <span class="fu">visLegend</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb42-2"><a href="#cb42-2"></a><span class="fu">visNetwork</span>(GAStech_nodes,</span>
+<span id="cb42-3"><a href="#cb42-3"></a>           GAStech_edges_aggregated2) <span class="sc">%&gt;%</span> </span>
+<span id="cb42-4"><a href="#cb42-4"></a>  <span class="fu">visIgraphLayout</span>(<span class="at">layout =</span> <span class="st">'layout_with_fr'</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb42-5"><a href="#cb42-5"></a>  <span class="fu">visLegend</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="visNetwork html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-d40227f9b7784c108edf" style="width:100%;height:464px;"></div>
@@ -1475,7 +1507,7 @@ Things to learn from the code above
 </div>
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a><span class="co"># %&gt;% visLayout(randomSeed = 1234)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="co"># %&gt;% visLayout(randomSeed = 1234)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -1487,16 +1519,16 @@ Things to learn from the code above
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
-<span id="cb42-2"><a href="#cb42-2"></a><span class="fu">visNetwork</span>(GAStech_nodes,</span>
-<span id="cb42-3"><a href="#cb42-3"></a>           GAStech_edges_aggregated2) <span class="sc">%&gt;%</span></span>
-<span id="cb42-4"><a href="#cb42-4"></a>  <span class="fu">visIgraphLayout</span>(<span class="at">layout =</span> <span class="st">"layout_with_fr"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb42-5"><a href="#cb42-5"></a>  <span class="fu">visEdges</span>(<span class="at">arrows =</span> <span class="st">'to'</span>,</span>
-<span id="cb42-6"><a href="#cb42-6"></a>           <span class="at">smooth =</span> <span class="fu">list</span>(<span class="at">enables =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb42-7"><a href="#cb42-7"></a>                         <span class="at">type=</span> <span class="st">'curvedCW'</span>),</span>
-<span id="cb42-8"><a href="#cb42-8"></a>           <span class="at">shadow =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb42-9"><a href="#cb42-9"></a>           <span class="at">dash =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb42-10"><a href="#cb42-10"></a>  <span class="fu">visLegend</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb44-2"><a href="#cb44-2"></a><span class="fu">visNetwork</span>(GAStech_nodes,</span>
+<span id="cb44-3"><a href="#cb44-3"></a>           GAStech_edges_aggregated2) <span class="sc">%&gt;%</span></span>
+<span id="cb44-4"><a href="#cb44-4"></a>  <span class="fu">visIgraphLayout</span>(<span class="at">layout =</span> <span class="st">"layout_with_fr"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb44-5"><a href="#cb44-5"></a>  <span class="fu">visEdges</span>(<span class="at">arrows =</span> <span class="st">'to'</span>,</span>
+<span id="cb44-6"><a href="#cb44-6"></a>           <span class="at">smooth =</span> <span class="fu">list</span>(<span class="at">enables =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb44-7"><a href="#cb44-7"></a>                         <span class="at">type=</span> <span class="st">'curvedCW'</span>),</span>
+<span id="cb44-8"><a href="#cb44-8"></a>           <span class="at">shadow =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb44-9"><a href="#cb44-9"></a>           <span class="at">dash =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb44-10"><a href="#cb44-10"></a>  <span class="fu">visLegend</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="visNetwork html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-43732d74083f3e2b1d8a" style="width:100%;height:464px;"></div>
@@ -1531,13 +1563,13 @@ Note
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="fu">visNetwork</span>(GAStech_nodes,</span>
-<span id="cb43-2"><a href="#cb43-2"></a>           GAStech_edges_aggregated2) <span class="sc">%&gt;%</span></span>
-<span id="cb43-3"><a href="#cb43-3"></a>  <span class="fu">visIgraphLayout</span>(<span class="at">layout =</span> <span class="st">"layout_with_fr"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb43-4"><a href="#cb43-4"></a>  <span class="fu">visOptions</span>(<span class="at">highlightNearest =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb43-5"><a href="#cb43-5"></a>             <span class="at">nodesIdSelection =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb43-6"><a href="#cb43-6"></a>  <span class="fu">visLegend</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb43-7"><a href="#cb43-7"></a>  <span class="fu">visLayout</span>(<span class="at">randomSeed =</span> <span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a><span class="fu">visNetwork</span>(GAStech_nodes,</span>
+<span id="cb45-2"><a href="#cb45-2"></a>           GAStech_edges_aggregated2) <span class="sc">%&gt;%</span></span>
+<span id="cb45-3"><a href="#cb45-3"></a>  <span class="fu">visIgraphLayout</span>(<span class="at">layout =</span> <span class="st">"layout_with_fr"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb45-4"><a href="#cb45-4"></a>  <span class="fu">visOptions</span>(<span class="at">highlightNearest =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb45-5"><a href="#cb45-5"></a>             <span class="at">nodesIdSelection =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb45-6"><a href="#cb45-6"></a>  <span class="fu">visLegend</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb45-7"><a href="#cb45-7"></a>  <span class="fu">visLayout</span>(<span class="at">randomSeed =</span> <span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="visNetwork html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-1449dfa4dc7ce29aa2ec" style="width:100%;height:464px;"></div>

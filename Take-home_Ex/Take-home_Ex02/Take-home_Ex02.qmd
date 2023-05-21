@@ -39,39 +39,41 @@ Try not to use R built-in NA/NULL function. Manually type "unknown' / 'missing' 
 
 # Vast Challenge 2023 Mini Challenge 2 (Subtask: 1)
 
+In this challenge, I seek to use visual analytics to identify temporal patterns for individual entities and between entities using the knowledge graph the FishEye Organisation has provided us with. Also , I will be categorising the type of business relationship patterns found.
+
 # 1 About the dataset
 
 ## 1.1 Data dictionary
 
 **Node Attributes:**
 
-id \-- Name of the company that originated (or received) the shipment
+-   id \-- Name of the company that originated (or received) the shipment
 
-shpcountry \-- Country the company most often associated with when shipping
+-   shpcountry \-- Country the company most often associated with when shipping
 
-rcvcountry \-- Country the company most often associated with when receiving
+-   rcvcountry \-- Country the company most often associated with when receiving
 
-dataset \-- Always 'MC2'
+-   dataset \-- Always 'MC2'
 
 **Edge Attributes:**
 
-arrivaldate \-- Date the shipment arrived at port in YYYY-MM-DD format.
+-   arrivaldate \-- Date the shipment arrived at port in YYYY-MM-DD format.
 
-hscode \-- Harmonized System code for the shipment. Can be joined with the hscodes table to get additional details.
+-   hscode \-- Harmonized System code for the shipment. Can be joined with the hscodes table to get additional details.
 
-valueofgoods_omu \-- Customs-declared value of the total shipment, in Oceanus
+-   valueofgoods_omu \-- Customs-declared value of the total shipment, in Oceanus
 
-Monetary Units (OMU)
+-   Monetary Units (OMU)
 
-volumeteu \-- The volume of the shipment in 'Twenty-foot equivalent units', roughly how many 20-foot standard containers would be required. (Actual number of containers may have been different as there are 20ft and 40ft standard containers and tankers that do not use containers)
+-   volumeteu \-- The volume of the shipment in 'Twenty-foot equivalent units', roughly how many 20-foot standard containers would be required. (Actual number of containers may have been different as there are 20ft and 40ft standard containers and tankers that do not use containers)
 
-weightkg \-- The weight of the shipment in kilograms (if known)
+-   weightkg \-- The weight of the shipment in kilograms (if known)
 
-dataset \-- Always 'MC2'
+-   dataset \-- Always 'MC2'
 
-type \-- Always 'shipment' for MC2
+-   type \-- Always 'shipment' for MC2
 
-generated_by \-- Name of the program that generated the edge. (Only found on 'bundle' records.)
+-   generated_by \-- Name of the program that generated the edge. (Only found on 'bundle' records.)
 
 ## 1.2 Importing the datasets
 
@@ -84,7 +86,7 @@ The new libraries used today are :
 ```{r}
 pacman::p_load(jsonlite, igraph, tidygraph, ggraph,
                visNetwork, lubridate, clock,
-               tidyverse, graphlayouts,knitr,plotly)
+               tidyverse, graphlayouts,knitr,plotly, ggHoriPlot, ggthemes)
 ```
 
 ```{r}
@@ -213,7 +215,7 @@ We will drop the duplicates.
 MC2_edges_no_dup <- MC2_edges[!duplicated(MC2_edges), ]
 ```
 
-### 1.3.3 Check on the HScodes.
+### 1.3.3 Check on the HScodes
 
 Check the unique number of hscodes in the dataset. There are 4761 unique HScodes.
 
@@ -223,7 +225,7 @@ length(unique(MC2_edges_no_dup$hscode))
 
 ```
 
-With reference to [World Custom Organisation Harmonized System codes](https://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs-nomenclature-2022-edition/hs-nomenclature-2022-edition.aspx), Section 1 and 4 are related to seafood trade. We will filter for records that has HScodes starting with `1604` and `1605` as they refer to seafood commodities, thus removing many other transactions like 'television', 'steel parts' etc...
+With reference to [World Custom Organisation Harmonized System codes](https://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs-nomenclature-2022-edition/hs-nomenclature-2022-edition.aspx), Section 1 and 4 are related to seafood trade. We will filter for records that has HScodes starting with `1604` and `1605` as they refer to seafood commodities, thus removing many other transactions like 'television', 'steel parts' etc... not related to our project goals...
 
 ```{r}
 mc2_seafood_edges<- MC2_edges_no_dup[grepl('^1605|^1604', MC2_edges_no_dup$hscode), ]
@@ -301,7 +303,7 @@ mc2_seafood_edges_agg <- mc2_seafood_edges_agg[mc2_seafood_edges_agg$target %in%
 #print(mc2_seafood_edges_agg)
 ```
 
-Based on some checks on the dataset, there were two pairs of actors that exist as disconnected components. They are 'Rift Valley fishery OJSC', 'Bujagali Falls Pic Family', 'Neptune's Realm NV Navigation' and 'Rybachit Sagl and Son's. I will remove the edge records if either `source` or `target` columns contains any of these four nodes.
+Based on some checks on the dataset, there were two pairs of actors that exist as disconnected components. They are 'Rift Valley fishery OJSC', 'Bujagali Falls Pic Family', 'Neptune's Realm NV Navigation', 'Rybachit Sagl and Son's', 'Mar de la Aventura Rybachit' and 'Olas del Sur Ltd'. I will remove the edge records if either `source` or `target` columns contains any of these four nodes.
 
 ```{r}
 # Specify the values to be excluded
@@ -366,15 +368,15 @@ Now lets calculate the various centrality measures of seafood_graph. The top 10 
 
 I have taken reference from this [link](https://hohenfeld.is/posts/graphs-are-fun-an-introduction-to-graphs-in-r/). The tidyverse centrality functions can be taken from [here](https://cran.r-project.org/web/packages/tidygraph/tidygraph.pdf).
 
-First compute 'in-deg', 'out-deg' and 'pagerank' scores.
+First compute 'in-deg', 'out-deg' and 'pagerank' scores. All my betweenness scores were zero (Investigation in progress)...
 
 ```{r}
 seafood_graph<- seafood_graph %>%
   activate("nodes") %>% 
   mutate(betweenness_centrality = centrality_betweenness(directed = TRUE)) %>% 
-  mutate(in_deg_centrality = centrality_degree(weights = NULL, 
+  mutate(in_deg_centrality = centrality_degree(weights = Weight, 
                                                mode = "in")) %>% 
-  mutate(out_deg_centrality = centrality_degree(weights = NULL, 
+  mutate(out_deg_centrality = centrality_degree(weights = Weight, 
                                                mode = "out")) %>% 
   mutate(pagerank = centrality_pagerank(weights = Weight,
                                         directed = TRUE)) %>% 
@@ -410,6 +412,8 @@ seafood_graph %>%
 
 ## 2.2 Plot network graph based on centrality scores 
 
+The code chunk below plots a simple static graph with the nodes coloured by receiving countries and the node size relative to their in-deg centrality scores. They are a few nodes with high scores.
+
 ```{r}
 #| fig-width: 12
 #| fig-asp: 0.618
@@ -426,9 +430,11 @@ a + theme_graph()
 
 ```
 
+However, this graph is not interactive, I will be building an interactive one later.
+
 ## 2.3 Are there communities inside this network graph? 
 
-The **`group_edge_betweenness()`** function is typically used in community detection algorithms, such as the Girvan-Newman algorithm. It is a top down approach by calculating the edge betweenness centrality for each edge in the graph (in each iteration) and progressively removes the edges with the highest betweenness centrality until the desired number of communities is reached. The **`n`** parameter specifies the number of edges to remove. The more times we cut an edge, the more communities we get. I am not very certain at the number of communities I should get, in R shiny, we could set n as am interactive component for users to play with. The tags obtained from community detection could be analysed with the nodes attributes.
+The **`group_edge_betweenness()`** function is typically used in community detection algorithms, such as the Girvan-Newman algorithm. It is a top down approach by calculating the edge betweenness centrality for each edge in the graph (in each iteration) and progressively removes the edges with the highest betweenness centrality until the desired number of communities is reached. The **`n`** parameter specifies the number of edges to remove. The more times we cut an edge, the more communities we get. I am not very certain at the number of communities I should get, in R shiny, we could set n as an interactive component for users to play with. The tags obtained from community detection could be analysed with the nodes attributes.
 
 ```{r}
 #| fig-width: 12
@@ -450,7 +456,7 @@ b  + theme_graph() + theme(legend.key.size = unit(1, "lines"),
 
 ```
 
-# 3 Interactive network graph
+# 3 Interactive graphs of network structure and temporal analysis
 
 ## 3.1 Interactive graph grouped by  IN-DEGREE CENTRALITY scores
 
@@ -485,12 +491,12 @@ nodes_seafood_vis <- nodes_seafood_vis %>%
 The code chunk below binned the in-deg scores into intervals of 50 using the `cut()` function. Next, rename the `in_deg_grp` column to `group` column for VisNetwork to colour nodes by in-deg intervals.
 
 ```{r}
-in_deg_brks <- c(0, 50, 100, 150, 200, 250, 277)
-grps <- c('50 & Below', '51-100', '101-150', '151-200', '201-250', '251-277')
+in_deg_brks <- c(0, 500, 1000, 2000, 3000, 7000)
+grps <- c('500 & Below','501-1000', '1001-2000', '2001-3000', '3001-6132')
 
 nodes_seafood_vis$in_deg_grp <- cut(nodes_seafood_vis$in_deg_centrality, breaks=in_deg_brks, labels = grps,include.lowest = TRUE)
 
-nodes_seafood_vis$in_deg_grp <- factor(nodes_seafood_vis$in_deg_grp, ordered = TRUE, levels = c('251-277','201-250','151-200','101-150','51-100','50 & Below'))
+nodes_seafood_vis$in_deg_grp <- factor(nodes_seafood_vis$in_deg_grp, ordered = TRUE, levels = c('3001-6132','2001-3000','1001-2000','501-1000','500 & Below'))
 
 nodes_seafood_vis <- nodes_seafood_vis %>% 
   rename(group = in_deg_grp)
@@ -537,22 +543,24 @@ visNetwork(nodes_seafood_vis,
 \(7\) Click and Drag on the graph to move the canvas around, will also temporary disable the edge lines.
 :::
 
-## 3.2 Interactive graph grouped by  OUT-DEGREE CENTRALITY scores
+## 3.3 Interactive graph grouped by  OUT-DEGREE CENTRALITY scores
 
 The code chunk below binned the out-deg scores into intervals of 50 using the `cut()` function. Next, rename the `group` column back to `in-deg` column followed by `out_deg_grp` column to `group` column for VisNetwork to colour nodes by out-deg intervals.
 
 ```{r}
-out_deg_brks <- c(0, 50, 100, 150, 200, 250, 300, 350)
-grps <- c('50 & Below', '51-100', '101-150', '151-200', '201-250', '251-300, 301-307')
+out_deg_brks <- c(0, 500, 1000, 2000, 3000, 7000)
+grps <- c('500 & Below','501-1000', '1001-2000', '2001-3000', '3001-6132')
 
 nodes_seafood_vis$out_deg_grp <- cut(nodes_seafood_vis$out_deg_centrality, breaks=in_deg_brks, labels = grps,include.lowest = TRUE)
 
-nodes_seafood_vis$out_deg_grp <- factor(nodes_seafood_vis$out_deg_grp, ordered = TRUE, levels = c('301-307','251-300','201-250','151-200','101-150','51-100','50 & Below'))
+nodes_seafood_vis$out_deg_grp <- factor(nodes_seafood_vis$out_deg_grp, ordered = TRUE, levels = c('3001-6132','2001-3000','1001-2000','501-1000','500 & Below'))
 
 nodes_seafood_vis <- nodes_seafood_vis %>% 
   rename(in_deg_grp = group) %>% 
   rename(group = out_deg_grp)
 ```
+
+The code chunk below plots the interactive graph.
 
 ```{r}
 #| fig-width: 12
@@ -575,7 +583,82 @@ visNetwork(nodes_seafood_vis,
   visLayout(randomSeed = 123)
 ```
 
-## 3.3 Interactive graph grouped by  community
+The chart highlights actors with high out-deg centrality scores over 2028 to 2034. Let us visualise the horizon plot of the number of trading activities of the top 3 companies over the years.
+
+## 3.4 Temporal analysis of top 3 companies in trading occurrence. 
+
+Creating horizon plots for Playa del Tesoro OJSC company.. First filter records of this company.
+
+```{r}
+playa <- mc2_seafood_edges_agg_vis %>%
+  filter(from == "Playa del Tesoro OJSC")
+```
+
+Next, filter records where `Weight` value does not fall in outlier regions
+
+```{r}
+cutpoints_playa <- playa  %>% 
+  mutate(
+    outlier = between(
+      Weight, 
+      quantile(Weight, 0.25, na.rm=T)-
+        1.5*IQR(Weight, na.rm=T),
+      quantile(Weight, 0.75, na.rm=T)+
+        1.5*IQR(Weight, na.rm=T))) %>% 
+  filter(outlier)
+```
+
+Set the fold value by finding the midpoint of the max and min Weight values for the entire Horizon plot. the `ori` value will be used in the `origin` parameter which indicates the origin of the horizon plot.
+
+Then set the intervals of Weighs value using the `seq()` function. The `sca` vector will be used to colour the horizon plot later by using the parameter `fill.`
+
+```{r}
+ori <- sum(range(cutpoints_playa$Weight))/2
+
+sca <- seq(range(cutpoints_playa$Weight)[1], 
+           range(cutpoints_playa$Weight)[2], 
+           length.out = 7)[-4]
+```
+
+Last preparation to do would be to fix the arrivaldate column such that all the year value are the same (for the purpose for plotting horizon chart later). All the year values will get a default '2021'.
+
+```{r}
+playa$mine_date <- sprintf("2021-%s-%s", substr(playa$arrivaldate, 6, 7), substr(playa$arrivaldate, 9, 10))
+playa$mine_date <- as.Date(playa$mine_date)
+```
+
+We are finally ready to plot....
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+playa %>% ggplot() +
+  geom_horizon(aes(mine_date, 
+                   Weight,
+                   fill = ..Cutpoints..), 
+               origin = ori, horizonscale = sca) +
+  scale_fill_hcl(palette = 'RdBu', reverse = T) +
+  facet_grid(year~.) +
+  theme_few() +
+  theme(
+    panel.spacing.y=unit(0, "lines"),
+    strip.text.y = element_text(size = 7, angle = 0, hjust = 0),
+    axis.text.y = element_blank(),
+    axis.title.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.border = element_blank()
+    ) +
+  scale_x_date(expand=c(0,0), 
+               date_breaks = "1 month", 
+               date_labels = "%b") +
+  xlab('Date') +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggtitle('Number of trade by Playa del Tesoro OJSC from 2028 to 2034')
+```
+
+Blue regions represents cold trading intervals while red regions represents high trading occurrence for this company. The chart is faceted by year. Observe that the company was cold from Apr 2031 to May 2033 and trading occurrence pick up in the last quarter of 2033.
+
+## 3.5 Interactive graph grouped by  community
 
 ```{r}
 #| fig-width: 12
@@ -605,7 +688,13 @@ visNetwork(nodes_seafood_vis,
   visLayout(randomSeed = 123)
 ```
 
-References:
+```{r}
+#| eval: false
+#| echo: false
+saveRDS(mc2_seafood_edges_agg_vis, "C:/yixin-neo/ISSS608-VAA/Project/data/mc2_seafood_edges_agg_vis.rds")
+```
+
+# 4 References
 
 https://hohenfeld.is/posts/graphs-are-fun-an-introduction-to-graphs-in-r/
 

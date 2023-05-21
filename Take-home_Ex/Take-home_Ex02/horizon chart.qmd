@@ -1,0 +1,221 @@
+---
+title: "gghorizon"
+---
+
+```{r}
+pacman::p_load(jsonlite, igraph, tidygraph, ggraph,
+               visNetwork, lubridate, clock,
+               tidyverse, graphlayouts,knitr,plotly, ggHoriPlot, ggthemes)
+```
+
+```{r}
+utils::data(climate_CPH)
+```
+
+```{r}
+glimpse(climate_CPH)
+```
+
+1.  The **`mutate()`** function is used to create a new column named "outlier" in the **`climate_CPH`** dataframe.
+
+2.  The **`between()`** function is applied to the "AvgTemperature" column, checking if each value falls within a certain range.
+
+3.  The range is defined using the lower and upper cutpoints. The lower cutpoint is calculated as the first quartile (25th percentile) of the "AvgTemperature" column minus 1.5 times the interquartile range (IQR), while the upper cutpoint is calculated as the third quartile (75th percentile) plus 1.5 times the IQR. The **`quantile()`** function is used to calculate the quartiles, and the **`IQR()`** function is used to calculate the interquartile range.
+
+4.  The resulting logical values are stored in the "outlier" column.
+
+5.  Finally, the **`filter()`** function is used to keep only the rows where the "outlier" column has a value of **`TRUE`**, effectively filtering out the rows that do not meet the outlier criteria based on the "AvgTemperature" values.
+
+```{r}
+cutpoints <- climate_CPH  %>% 
+  mutate(
+    outlier = between(
+      AvgTemperature, 
+      quantile(AvgTemperature, 0.25, na.rm=T)-
+        1.5*IQR(AvgTemperature, na.rm=T),
+      quantile(AvgTemperature, 0.75, na.rm=T)+
+        1.5*IQR(AvgTemperature, na.rm=T))) %>% 
+  filter(outlier)
+```
+
+1.  The **`sum()`** function is used to calculate the sum of the minimum and maximum values of the "AvgTemperature" column in the **`cutpoints`** dataframe. The **`range()`** function returns a vector containing the minimum and maximum values of the specified column. The result is divided by 2 to obtain the midpoint of the range. This midpoint is stored in the variable **`ori`**.
+
+2.  The **`seq()`** function is used to generate a sequence of values. It takes three arguments: the start value, the end value, and the length of the sequence. In this case, the start value is the minimum value of the "AvgTemperature" column, and the end value is the maximum value of the "AvgTemperature" column. The length of the sequence is set to 7. The **`[-4]`** at the end of the sequence generation excludes the fourth element from the sequence. The resulting sequence of values is stored in the variable **`sca`**.
+
+Overall, the code calculates the midpoint of the range of values in the "AvgTemperature" column and generates a sequence of values based on the minimum and maximum values in the same column. The generated sequence is used for further analysis or plotting purposes.
+
+```{r}
+ori <- sum(range(cutpoints$AvgTemperature))/2
+
+sca <- seq(range(cutpoints$AvgTemperature)[1], 
+           range(cutpoints$AvgTemperature)[2], 
+           length.out = 7)[-4]
+```
+
+```{r}
+round(ori, 2) # The origin
+#> [1] 6.58
+
+round(sca, 2) # The horizon scale cutpoints
+#> [1] -12.11  -5.88   0.35  12.81  19.05  25.28
+```
+
+Plotting the horizon
+
+1.  The **`ggplot()`** function initializes the plot.
+
+2.  The **`geom_horizon()`** function creates the horizon plot. It uses the **`date_mine`** column as the x-axis, the **`AvgTemperature`** column as the y-axis, and the **`..Cutpoints..`** variable for filling the horizons.
+
+3.  The **`origin`** parameter sets the origin of the horizon plot to the value stored in the variable **`ori`**.
+
+4.  The **`horizonscale`** parameter sets the scale of the horizons using the values stored in the variable **`sca`**.
+
+5.  The **`scale_fill_hcl()`** function sets the color palette for the filled horizons. It uses the 'RdBu' palette and reverses the order of the colors with **`reverse = T`**.
+
+6.  The **`facet_grid()`** function creates a grid of facets (small multiples) based on the **`Year`** column.
+
+7.  The **`theme_few()`** function applies a pre-defined minimalistic theme to the plot.
+
+8.  The **`theme()`** function is used to modify specific aspects of the plot's appearance. It removes vertical panel spacing, adjusts the size, angle, and justification of y-axis strip text, removes y-axis text, title, and ticks, and removes the panel border.
+
+9.  The **`scale_x_date()`** function is used to customize the x-axis. It sets the expand parameter to c(0,0) to remove padding, sets the date breaks to "1 month", and sets the date labels to "%b" for abbreviated month names.
+
+10. The **`xlab()`** function sets the label for the x-axis.
+
+11. The **`ggtitle()`** function sets the plot title and subtitle.
+
+```{r}
+climate_CPH %>% ggplot() +
+  geom_horizon(aes(date_mine, 
+                   AvgTemperature,
+                   fill = ..Cutpoints..), 
+               origin = ori, horizonscale = sca) +
+  scale_fill_hcl(palette = 'RdBu', reverse = T) +
+  facet_grid(Year~.) +
+  theme_few() +
+  theme(
+    panel.spacing.y=unit(0, "lines"),
+    strip.text.y = element_text(size = 7, angle = 0, hjust = 0),
+    axis.text.y = element_blank(),
+    axis.title.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.border = element_blank()
+    ) +
+  scale_x_date(expand=c(0,0), 
+               date_breaks = "1 month", 
+               date_labels = "%b") +
+  xlab('Date') +
+  ggtitle('Average daily temperature in Copenhagen', 
+          'from 1995 to 2019')
+```
+
+# 2 Trying it on nodes_seafood_vis
+
+```{r}
+mc2_seafood_edges_agg_vis<- readRDS("C:/yixin-neo/ISSS608-VAA/Project/data/mc2_seafood_edges_agg_vis.rds")
+```
+
+```{r}
+glimpse(mc2_seafood_edges_agg_vis)
+```
+
+```{r}
+mc2_seafood_edges_agg_vis %>%  group_by(from) %>%  summarise(Allweight = sum(Weight)) %>%
+  arrange(desc(Allweight))
+```
+
+```{r}
+playa <- mc2_seafood_edges_agg_vis %>%
+  filter(from == "Playa del Tesoro OJSC")
+```
+
+```{r}
+cutpoints_playa <- playa  %>% 
+  mutate(
+    outlier = between(
+      Weight, 
+      quantile(Weight, 0.25, na.rm=T)-
+        1.5*IQR(Weight, na.rm=T),
+      quantile(Weight, 0.75, na.rm=T)+
+        1.5*IQR(Weight, na.rm=T))) %>% 
+  filter(outlier)
+```
+
+```{r}
+ori <- sum(range(cutpoints_playa$Weight))/2
+
+sca <- seq(range(cutpoints_playa$Weight)[1], 
+           range(cutpoints_playa$Weight)[2], 
+           length.out = 7)[-4]
+```
+
+First we have to fix the arrivaldate column such that all the year value are the same (for the purpose for plotting horizon chart later). All the year values will get a default '2021'
+
+```{r}
+playa$mine_date <- sprintf("2021-%s-%s", substr(playa$arrivaldate, 6, 7), substr(playa$arrivaldate, 9, 10))
+playa$mine_date <- as.Date(playa$mine_date)
+```
+
+```{r}
+playa %>% ggplot() +
+  geom_horizon(aes(mine_date, 
+                   Weight,
+                   fill = ..Cutpoints..), 
+               origin = ori, horizonscale = sca) +
+  scale_fill_hcl(palette = 'RdBu', reverse = T) +
+  facet_grid(year~.) +
+  theme_few() +
+  theme(
+    panel.spacing.y=unit(0, "lines"),
+    strip.text.y = element_text(size = 7, angle = 0, hjust = 0),
+    axis.text.y = element_blank(),
+    axis.title.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.border = element_blank()
+    ) +
+  scale_x_date(expand=c(0,0), 
+               date_breaks = "1 month", 
+               date_labels = "%b") +
+  xlab('Date') +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggtitle('Weight of goods trade by Playa del Tesoro OJSC from 2028 to 2034')
+```
+
+```{r}
+playa %>% ggplot() +
+  geom_horizon(aes(arrivaldate, 
+                   Weight,
+                   fill = ..Cutpoints..), 
+               origin = ori, horizonscale = sca) +
+  scale_fill_hcl(palette = 'RdBu', reverse = T) +
+  #facet_grid(year~.) +
+  theme_few() +
+  theme(
+    panel.spacing.y=unit(0, "lines"),
+    strip.text.y = element_text(size = 7, angle = 0, hjust = 0),
+    axis.text.y = element_blank(),
+    axis.title.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.border = element_blank()
+    ) +
+  scale_x_date(expand=c(0,0), 
+               date_breaks = "6 month") +
+  xlab('Date') +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+x <- c(3,19,27,49,22,16)
+
+cut(x, breaks = c(0,7,15,24,34,50),
+    labels = c("First", "Second", "Third", "Fourth", "Fifth"))
+```
+
+```{r}
+in_deg_brks <- c(0, 500, 1000, 2000, 3000, 4000, 5000, 6000, 7000)
+grps <- c('500 & Below','501-1000', '1001-2000', '2001-3000', '3001-4000', '4001-5000', '5001-6000', '6001-6132')
+
+cut(c(400,6139,5003),
+    breaks=in_deg_brks,
+    labels=grps)
+```

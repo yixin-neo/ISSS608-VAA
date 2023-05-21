@@ -305,7 +305,7 @@ Based on some checks on the dataset, there were two pairs of actors that exist a
 
 ```{r}
 # Specify the values to be excluded
-values_to_exclude <- c('Rift Valley fishery OJSC', 'Bujagali Falls Pic Family', 'Neptune\'s Realm NV Navigation', 'Rybachit Sagl and Son\'s')
+values_to_exclude <- c('Rift Valley fishery OJSC', 'Bujagali Falls Pic Family', 'Neptune\'s Realm NV Navigation', 'Rybachit Sagl and Son\'s', 'Mar de la Aventura Rybachit', 'Olas del Sur Ltd')
 
 # Delete rows with specified values in 'from' or 'to' columns
 mc2_seafood_edges_agg <- mc2_seafood_edges_agg %>%
@@ -364,7 +364,7 @@ is.connected(seafood_graph)
 
 Now lets calculate the various centrality measures of seafood_graph. The top 10 inodes with reference to various centrality scores are printed using `kable()` function from `knitr`.
 
-I have taken reference from this [link](https://hohenfeld.is/posts/graphs-are-fun-an-introduction-to-graphs-in-r/).
+I have taken reference from this [link](https://hohenfeld.is/posts/graphs-are-fun-an-introduction-to-graphs-in-r/). The tidyverse centrality functions can be taken from [here](https://cran.r-project.org/web/packages/tidygraph/tidygraph.pdf).
 
 First compute 'in-deg', 'out-deg' and 'pagerank' scores.
 
@@ -377,7 +377,10 @@ seafood_graph<- seafood_graph %>%
   mutate(out_deg_centrality = centrality_degree(weights = NULL, 
                                                mode = "out")) %>% 
   mutate(pagerank = centrality_pagerank(weights = Weight,
-                                        directed = TRUE))
+                                        directed = TRUE)) %>% 
+  mutate(community = as.factor(group_edge_betweenness(weights = Weight, 
+                                                      directed = TRUE,
+                                                      n = 20)))
 
 ```
 
@@ -410,6 +413,7 @@ seafood_graph %>%
 ```{r}
 #| fig-width: 12
 #| fig-asp: 0.618
+set.seed (1234)
 a <- ggraph(seafood_graph, layout = 'fr') +
   geom_edge_link(aes(width=Weight, alpha= 0.2),
                  arrow = arrow(length = unit(2, 'mm')), #<<< delete
@@ -419,6 +423,30 @@ a <- ggraph(seafood_graph, layout = 'fr') +
   geom_edge_loop()
 
 a + theme_graph()
+
+```
+
+## 2.3 Are there communities inside this network graph? 
+
+The **`group_edge_betweenness()`** function is typically used in community detection algorithms, such as the Girvan-Newman algorithm. It is a top down approach by calculating the edge betweenness centrality for each edge in the graph (in each iteration) and progressively removes the edges with the highest betweenness centrality until the desired number of communities is reached. The **`n`** parameter specifies the number of edges to remove. The more times we cut an edge, the more communities we get. I am not very certain at the number of communities I should get, in R shiny, we could set n as am interactive component for users to play with. The tags obtained from community detection could be analysed with the nodes attributes.
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+
+set.seed (1234)
+b <- seafood_graph %>%
+  mutate(community = as.factor(group_edge_betweenness(weights = Weight, 
+                                                      directed = TRUE,
+                                                      n = 20))) %>%
+  ggraph(layout = "fr") + 
+  geom_edge_link(aes(width=Weight), 
+                 alpha=0.2) +
+  scale_edge_width(range = c(0.1, 5)) +
+  geom_node_point(aes(colour = community))  
+
+b  + theme_graph() + theme(legend.key.size = unit(1, "lines"),
+          legend.position = 'bottom')
 
 ```
 
@@ -447,8 +475,9 @@ nodes_seafood_vis <- as.data.frame(seafood_graph %>% activate(nodes))
 nodes_seafood_vis <- nodes_seafood_vis %>% 
   #rename(group= rcvcountry)  %>% 
   mutate(pagerank = round(pagerank, 5)) %>% 
-  mutate(title = paste('In-deg = ',in_deg_centrality, 
-                       "\n Pagerank =", pagerank, 
+  mutate(title = paste('rcvcountry =', rcvcountry, ',',
+                       '\n In-deg = ',in_deg_centrality, ',',
+                       "\n Pagerank =", pagerank, ',',
                        "\n Out-deg =", out_deg_centrality))
 
 ```
@@ -543,6 +572,36 @@ visNetwork(nodes_seafood_vis,
              selectedBy = "group") %>%
   visInteraction(hideEdgesOnDrag = TRUE) %>% 
   visLegend() %>%
+  visLayout(randomSeed = 123)
+```
+
+## 3.3 Interactive graph grouped by  community
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+
+# let the community community column be called group column
+nodes_seafood_vis <- nodes_seafood_vis %>% 
+  rename(out_deg_grp = group) %>% 
+  rename(group = community)
+
+
+visNetwork(nodes_seafood_vis,
+           mc2_seafood_edges_agg_vis,
+           main = "Seafood graph grouped by Communities",
+           height = "500px", width = "100%") %>%
+  visIgraphLayout(layout = "layout_nicely") %>%
+  visEdges(arrows = 'to',
+           smooth = list(enables = TRUE,
+                         type= 'curvedCW'),
+           shadow = FALSE,
+           dash = FALSE) %>% 
+  visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T),
+             nodesIdSelection = TRUE,
+             selectedBy = "group") %>%
+  visInteraction(hideEdgesOnDrag = TRUE) %>% 
+  #visLegend() %>%
   visLayout(randomSeed = 123)
 ```
 

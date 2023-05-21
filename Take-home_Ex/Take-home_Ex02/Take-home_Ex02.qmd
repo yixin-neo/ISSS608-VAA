@@ -84,7 +84,7 @@ The new libraries used today are :
 ```{r}
 pacman::p_load(jsonlite, igraph, tidygraph, ggraph,
                visNetwork, lubridate, clock,
-               tidyverse, graphlayouts,knitr)
+               tidyverse, graphlayouts,knitr,plotly)
 ```
 
 ```{r}
@@ -241,7 +241,7 @@ mc2_seafood_edges_agg <- mc2_seafood_edges %>%
   summarise(Weight=n(),
             Totalweight = sum(weightkg),
             hscode=first(hscode)) %>% 
-  filter(Weight >=5) %>% 
+  filter(Weight >=6) %>% 
   ungroup()
 ```
 
@@ -378,6 +378,7 @@ seafood_graph<- seafood_graph %>%
                                                mode = "out")) %>% 
   mutate(pagerank = centrality_pagerank(weights = Weight,
                                         directed = TRUE))
+
 ```
 
 To see the top 10 nodes with 'in-deg' scores:
@@ -404,78 +405,66 @@ seafood_graph %>%
   kable()
 ```
 
-To extract the seafood nodes data from seafood_graph as a dataframe
-
-```{r}
-
-```
-
-## 2.2 Plot network graph based on centrality scores
+## 2.2 Plot network graph based on centrality scores 
 
 ```{r}
 #| fig-width: 12
 #| fig-asp: 0.618
-a <- ggraph(seafood_graph) +  #<<< GAStech_graph is a tbl_graph object
-  geom_edge_link(aes(width=Weight, alpha= 0.2)) +
+a <- ggraph(seafood_graph, layout = 'fr') +
+  geom_edge_link(aes(width=Weight, alpha= 0.2),
+                 arrow = arrow(length = unit(2, 'mm')), #<<< delete
+                 end_cap = circle(1, 'mm')) +           #<<< delete
   scale_edge_width(range = c(0.1, 5)) +
-  geom_node_point(aes(size = in_deg_centrality, colour=rcvcountry))
+  geom_node_point(aes(size = in_deg_centrality, colour=rcvcountry)) +
+  geom_edge_loop()
+
 a + theme_graph()
 
 ```
 
-### 2.2.1 Social Network graph featuring top 10% of  'in-degree' centrality scores
-
-We will first extract the nodes table into a dataframe
-
-```{r}
-#| eval: false
-#| echo: false
-# top_50_indeg_nodes <- as.data.frame(seafood_graph)
-```
-
-The `quantile` function is used to identify the quantile based on the `` `in_deg_centrality` `` of the nodes.
-
-```{r}
-#| eval: false
-#| echo: false
-quantile_in_deg <- quantile(top_10_indeg_nodes$in_deg_centrality, probs = seq(0,1,1/10))
-quantile_in_deg
-```
-
-Then we will filter and keep only the nodes in top 50 percent.
-
-```{r}
-#| eval: false
-#| echo: false
-top_50_indeg_nodes <- top_50_indeg_nodes %>%
-  filter(in_deg_centrality >= quantile_in_deg[6])
-```
-
-Next , we will remove source-target links that are not formed by the nodes in `top_50_indeg_nodes` dataframe
-
-```{r}
-#| eval: false
-#| echo: false
-seafood_edges_top50 <- mc2_seafood_edges_agg %>%
-  filter (source %in% c(top_50_indeg_nodes$id)) %>%
-  filter (target %in% c(top_50_indeg_nodes$id))
-```
-
 # 3 Interactive network graph
 
-We first need to rename the edge file first two columns to `from` and `to` for visNetwork to be able to regconise them.. .
+## 3.1 Interactive graph grouped by  IN-DEGREE CENTRALITY scores
+
+We first need to rename the edge file first two columns to `from` and `to` for visNetwork to be able to regconise them. `title` column has been created for tooltip when we hover over each of the edges.
 
 ```{r}
 mc2_seafood_edges_agg_vis <- mc2_seafood_edges_agg %>% 
   rename(from = source) %>% 
-  rename(to = target)
+  rename(to = target) %>% 
+  mutate(title = paste('Total Weight = ',Totalweight, "\n HSCODE =", hscode))
 ```
 
-Next, I will rename the `shpcountry` column to `group` because i would like visNetwork looks for `group` column to colour the nodes.
+The code chunk below extracts the node table from tbl_graph() object 'seafood_graph' created earlier. The reason for donig so is because it contains the centrality values that were calculated using the tidyverse centrality functions.
+
+Next, add a column `title` because it is the column that VisNetwork will search for to display tooltip when the mouse hovers over the nodes. We will be displaying the 'in-deg', 'pagerank' and 'out-deg' scores in the tooltip. If we want to colour the nodes by their shipping countries, then we would have to rename the `shpcountry` column to `group` because visNetwork looks for `group` column to colour the nodes. However, we will not do this now.
 
 ```{r}
-nodes_seafood_vis <- nodes_seafood %>% 
-  rename(group= shpcountry)
+# extract nodes file from seafood_graph as a data frame
+nodes_seafood_vis <- as.data.frame(seafood_graph %>% activate(nodes))
+
+# further processing
+nodes_seafood_vis <- nodes_seafood_vis %>% 
+  #rename(group= rcvcountry)  %>% 
+  mutate(pagerank = round(pagerank, 5)) %>% 
+  mutate(title = paste('In-deg = ',in_deg_centrality, 
+                       "\n Pagerank =", pagerank, 
+                       "\n Out-deg =", out_deg_centrality))
+
+```
+
+The code chunk below binned the in-deg scores into intervals of 50 using the `cut()` function. Next, rename the `in_deg_grp` column to `group` column for VisNetwork to colour nodes by in-deg intervals.
+
+```{r}
+in_deg_brks <- c(0, 50, 100, 150, 200, 250, 277)
+grps <- c('50 & Below', '51-100', '101-150', '151-200', '201-250', '251-277')
+
+nodes_seafood_vis$in_deg_grp <- cut(nodes_seafood_vis$in_deg_centrality, breaks=in_deg_brks, labels = grps,include.lowest = TRUE)
+
+nodes_seafood_vis$in_deg_grp <- factor(nodes_seafood_vis$in_deg_grp, ordered = TRUE, levels = c('251-277','201-250','151-200','101-150','51-100','50 & Below'))
+
+nodes_seafood_vis <- nodes_seafood_vis %>% 
+  rename(group = in_deg_grp)
 ```
 
 The code chunk below plots in interactive network graph using visNetwork.
@@ -484,11 +473,75 @@ The code chunk below plots in interactive network graph using visNetwork.
 #| fig-width: 12
 #| fig-asp: 0.618
 visNetwork(nodes_seafood_vis,
-           mc2_seafood_edges_agg_vis) %>%
-  visIgraphLayout(layout = "layout_with_fr") %>%
-  visOptions(highlightNearest = list(enabled = T, degree = 2, hover = T),
+           mc2_seafood_edges_agg_vis,
+           main = "Seafood graph grouped by In-Deg centrality intervals",
+           height = "500px", width = "100%") %>%
+  visIgraphLayout(layout = "layout_nicely") %>%
+  visEdges(arrows = 'to',
+           smooth = list(enables = TRUE,
+                         type= 'curvedCW'),
+           shadow = FALSE,
+           dash = FALSE) %>% 
+  visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T),
              nodesIdSelection = TRUE,
              selectedBy = "group") %>%
+  visInteraction(hideEdgesOnDrag = TRUE) %>% 
+  visLegend() %>%
+  visLayout(randomSeed = 123)
+```
+
+::: callout-note
+## Interactivity features of this graph
+
+\(1\) Select Id dropdown list
+
+\(2\) Select Group dropdown list: The values inside refers to the range of 'in-deg' centrality scores of the nodes. The pink colour node will represent the highest in-deg centrality score, followed by green, yellow, red and blue.
+
+\(3\) Zoom in to see the node labels, and arrows direction.
+
+\(4\) Drag a particular node away from the cluster to admire it.
+
+\(5\) Hover mouse over a node will display tooltip (In-deg, pagerank and out-deg score). It will also display the 'ego' network with itself at the ego. Click on the node freeze the ego network. Click on blank space to reset.
+
+\(6\) Hovering the mouse over an edge will display tooltip (Total weight of cargo, hscode of cargo)
+
+\(7\) Click and Drag on the graph to move the canvas around, will also temporary disable the edge lines.
+:::
+
+## 3.2 Interactive graph grouped by  OUT-DEGREE CENTRALITY scores
+
+The code chunk below binned the out-deg scores into intervals of 50 using the `cut()` function. Next, rename the `group` column back to `in-deg` column followed by `out_deg_grp` column to `group` column for VisNetwork to colour nodes by out-deg intervals.
+
+```{r}
+out_deg_brks <- c(0, 50, 100, 150, 200, 250, 300, 350)
+grps <- c('50 & Below', '51-100', '101-150', '151-200', '201-250', '251-300, 301-307')
+
+nodes_seafood_vis$out_deg_grp <- cut(nodes_seafood_vis$out_deg_centrality, breaks=in_deg_brks, labels = grps,include.lowest = TRUE)
+
+nodes_seafood_vis$out_deg_grp <- factor(nodes_seafood_vis$out_deg_grp, ordered = TRUE, levels = c('301-307','251-300','201-250','151-200','101-150','51-100','50 & Below'))
+
+nodes_seafood_vis <- nodes_seafood_vis %>% 
+  rename(in_deg_grp = group) %>% 
+  rename(group = out_deg_grp)
+```
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+visNetwork(nodes_seafood_vis,
+           mc2_seafood_edges_agg_vis,
+           main = "Seafood graph grouped by Out-Deg centrality intervals",
+           height = "500px", width = "100%") %>%
+  visIgraphLayout(layout = "layout_nicely") %>%
+  visEdges(arrows = 'to',
+           smooth = list(enables = TRUE,
+                         type= 'curvedCW'),
+           shadow = FALSE,
+           dash = FALSE) %>% 
+  visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T),
+             nodesIdSelection = TRUE,
+             selectedBy = "group") %>%
+  visInteraction(hideEdgesOnDrag = TRUE) %>% 
   visLegend() %>%
   visLayout(randomSeed = 123)
 ```
@@ -496,3 +549,11 @@ visNetwork(nodes_seafood_vis,
 References:
 
 https://hohenfeld.is/posts/graphs-are-fun-an-introduction-to-graphs-in-r/
+
+On ggraph edgelink
+
+https://cran.r-project.org/web/packages/ggraph/vignettes/Edges.html
+
+Visnetwork
+
+http://datastorm-open.github.io/visNetwork/

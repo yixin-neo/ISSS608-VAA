@@ -93,7 +93,7 @@ MC2 <- jsonlite::fromJSON("C:/yixin-neo/ISSS608-VAA/Project/data/mc2_challenge_g
 
 ```{r}
 #| eval: false
-#| echo:false
+#| echo: false
 carp <- jsonlite::fromJSON("C:/yixin-neo/ISSS608-VAA/Project/data/bundles/carp.json")
 ```
 
@@ -105,7 +105,7 @@ MC2_nodes <- as_tibble(MC2$nodes) %>%
 ```
 
 ```{r}
-#| echo:false
+#| echo: false
 glimpse(MC2_nodes)
 ```
 
@@ -118,7 +118,7 @@ MC2_edges <- as_tibble(MC2$links) %>%
 ```
 
 ```{r}
-#| echo:false
+#| echo: false
 glimpse(MC2_edges)
 ```
 
@@ -486,8 +486,9 @@ The code chunk below plots in interactive network graph using visNetwork.
 visNetwork(nodes_seafood_vis,
            mc2_seafood_edges_agg_vis) %>%
   visIgraphLayout(layout = "layout_with_fr") %>%
-  visOptions(highlightNearest = TRUE,
-             nodesIdSelection = TRUE) %>%
+  visOptions(highlightNearest = list(enabled = T, degree = 2, hover = T),
+             nodesIdSelection = TRUE,
+             selectedBy = "group") %>%
   visLegend() %>%
   visLayout(randomSeed = 123)
 ```

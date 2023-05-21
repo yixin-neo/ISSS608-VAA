@@ -26,14 +26,18 @@ Second column: Target id (FK to Node second column) - compulsory
 
 **Node data**
 
-First column: ID - compulsory
+First column: ID (contains all the distinct values of source and target in Edge data) - compulsory
 
-Second column: Label (contains all the distinct values of source and target in Edge data) (only need if Id are all integers) (what is present in edge data must exists in Labels of node data, must not be missing in node data)
+-   Nodes present in edge data must exists in ID of node data, must not have missing in node ID.
+
+Second column: Label (only need if Id are all integers)
 :::
 
 ::: callout-warning
 Try not to use R built-in NA/NULL function. Manually type "unknown' / 'missing' as a value instead.
 :::
+
+# Vast Challenge 2023 Mini Challenge 2 (Subtask: 1)
 
 # 1 About the dataset
 
@@ -59,9 +63,7 @@ valueofgoods_omu \-- Customs-declared value of the total shipment, in Oceanus
 
 Monetary Units (OMU)
 
-volumeteu \-- The volume of the shipment in 'Twenty-foot equivalent units', roughly how many 20-foot standard containers would be required. (Actual number of
-
-containers may have been different as there are 20ft and 40ft standard containers and tankers that do not use containers)
+volumeteu \-- The volume of the shipment in 'Twenty-foot equivalent units', roughly how many 20-foot standard containers would be required. (Actual number of containers may have been different as there are 20ft and 40ft standard containers and tankers that do not use containers)
 
 weightkg \-- The weight of the shipment in kilograms (if known)
 
@@ -90,6 +92,8 @@ MC2 <- jsonlite::fromJSON("C:/yixin-neo/ISSS608-VAA/Project/data/mc2_challenge_g
 ```
 
 ```{r}
+#| eval: false
+#| echo:false
 carp <- jsonlite::fromJSON("C:/yixin-neo/ISSS608-VAA/Project/data/bundles/carp.json")
 ```
 
@@ -98,6 +102,11 @@ Pull out the nodes and edge data and save them as tibble data frames.
 ```{r}
 MC2_nodes <- as_tibble(MC2$nodes) %>% 
   select(id,shpcountry,rcvcountry)
+```
+
+```{r}
+#| echo:false
+glimpse(MC2_nodes)
 ```
 
 Rearranging the columns in edge file as we require `source` and `target` columns to be the first two columns.
@@ -109,10 +118,7 @@ MC2_edges <- as_tibble(MC2$links) %>%
 ```
 
 ```{r}
-glimpse(MC2_nodes)
-```
-
-```{r}
+#| echo:false
 glimpse(MC2_edges)
 ```
 
@@ -136,7 +142,7 @@ null_percentages_nodes <- null_counts_nodes / nrow(MC2_nodes) * 100
 # Display the results
 #print(null_percentages)
 
-knitr::kable(null_percentages_nodes, "simple")
+knitr::kable(null_percentages_nodes, "simple", col.names = c("Null Percentage"))
 ```
 
 **For MC2_edges dataframe:**
@@ -155,7 +161,7 @@ null_percentages <- null_counts / nrow(MC2_edges) * 100
 # Display the results
 #print(null_percentages)
 
-knitr::kable(null_percentages, "simple")
+knitr::kable(null_percentages, "simple", col.names = c("Null Percentage"))
 
 ```
 
@@ -191,11 +197,11 @@ any(duplicated(MC2_nodes))
 
 **For MC2_edges dataframe:**
 
-There are about 0.15 mil records (2 % out of total records) that are duplicated.
+There are about 273971 records (4% out of total records) that are duplicated.
 
 ```{r}
 #duplicated only
-print(any(duplicated(MC2_edges)))
+# print(any(duplicated(MC2_edges)))
 MC2_edges_dup <- MC2_edges[duplicated(MC2_edges), ]
 print(nrow(MC2_edges_dup))
 ```
@@ -212,19 +218,20 @@ MC2_edges_no_dup <- MC2_edges[!duplicated(MC2_edges), ]
 Check the unique number of hscodes in the dataset. There are 4761 unique HScodes.
 
 ```{r}
-
 # Find the number of unique values in hscode
 length(unique(MC2_edges_no_dup$hscode))
 
 ```
 
-With reference to [World Custom Organisation Harmonized System codes](https://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs-nomenclature-2022-edition/hs-nomenclature-2022-edition.aspx), Section 1 and 4 are related to seafood. We will filter for records that has HScodes starting with `1604` and `1605` as they refer to seafood commodities, thus removing many other transactions like 'television', 'steel parts' etc...
+With reference to [World Custom Organisation Harmonized System codes](https://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs-nomenclature-2022-edition/hs-nomenclature-2022-edition.aspx), Section 1 and 4 are related to seafood trade. We will filter for records that has HScodes starting with `1604` and `1605` as they refer to seafood commodities, thus removing many other transactions like 'television', 'steel parts' etc...
 
 ```{r}
 mc2_seafood_edges<- MC2_edges_no_dup[grepl('^1605|^1604', MC2_edges_no_dup$hscode), ]
 #MC2_edges[startsWith(MC2_edges$hscode, "1601"), ]
 
 ```
+
+### 1.3.4 Preparation of Edges
 
 ```{r}
 #unique(mc2_seafood_edges$hscode)
@@ -238,7 +245,31 @@ mc2_seafood_edges_agg <- mc2_seafood_edges %>%
   ungroup()
 ```
 
-When i tried to plot the graph, i found several disconnected components. Thus I am going to inspect the frequency of source and target actors, and remove those actors below a frequency count of 5. First , we remove low frequency source actors under 5 counts.
+I will now wrangle the date columns to prepare dataframe for temporal analysis later.
+
+\(1\) change the arrivaldate column to date data type
+
+\(2\) create year, month, weekday, weeknumber columns
+
+```{r}
+mc2_seafood_edges_agg$arrivaldate <- as.Date(mc2_seafood_edges_agg$arrivaldate)
+
+```
+
+```{r}
+mc2_seafood_edges_agg <- mc2_seafood_edges_agg %>% 
+  mutate(year = year(arrivaldate)) %>% 
+  mutate(month = month(arrivaldate)) %>% 
+  mutate(day = day(arrivaldate)) %>% 
+  mutate(weekday = wday(arrivaldate,
+                        label= TRUE,
+                        abbr = FALSE)) %>% 
+  mutate(weeknumber = isoweek(arrivaldate))
+```
+
+To prevent disconnected graphs, I am going to inspect the frequency of source and target actors, and remove those actors below a frequency count of 5.
+
+First , we remove low frequency source actors under 5 counts.
 
 ```{r}
 # Calculate the frequency count of values in 'source'
@@ -270,11 +301,28 @@ mc2_seafood_edges_agg <- mc2_seafood_edges_agg[mc2_seafood_edges_agg$target %in%
 #print(mc2_seafood_edges_agg)
 ```
 
+Based on some checks on the dataset, there were two pairs of actors that exist as disconnected components. They are 'Rift Valley fishery OJSC', 'Bujagali Falls Pic Family', 'Neptune's Realm NV Navigation' and 'Rybachit Sagl and Son's. I will remove the edge records if either `source` or `target` columns contains any of these four nodes.
+
 ```{r}
- #sort(table(mc2_seafood_edges_agg$target))
+# Specify the values to be excluded
+values_to_exclude <- c('Rift Valley fishery OJSC', 'Bujagali Falls Pic Family', 'Neptune\'s Realm NV Navigation', 'Rybachit Sagl and Son\'s')
+
+# Delete rows with specified values in 'from' or 'to' columns
+mc2_seafood_edges_agg <- mc2_seafood_edges_agg %>%
+  filter(!(source %in% values_to_exclude | target %in% values_to_exclude))
+
+# Display the updated data frame
+#print(mc2_seafood_edges_agg)
+
 ```
 
-### 1.3.4 Preparation of Nodes
+```{r}
+#| eval: false
+#| echo: false
+sort(table(mc2_seafood_edges_agg$target))
+```
+
+### 1.3.5 Preparation of Nodes
 
 We will include only nodes that are in source and target columns in the `mc2_seafood_edges_agg` dataframe
 
@@ -293,7 +341,7 @@ Node file needs to have ID of nodes as first column.
 Edge file need to contain source and target as column 1 and 2.
 :::
 
-To create the dataframe
+To create the network graph dataframe
 
 ```{r}
 seafood_graph<- tbl_graph(nodes=nodes_seafood,
@@ -301,11 +349,68 @@ seafood_graph<- tbl_graph(nodes=nodes_seafood,
                           directed = TRUE)
 ```
 
+Taking a look at the dataframe..
+
 ```{r}
+#| echo: false
 seafood_graph
 ```
 
-## 2.2 Plot basic network graph... cross fingers
+We can run the code below to check that seafood_graph is a connected graph:
+
+```{r}
+is.connected(seafood_graph)
+```
+
+Now lets calculate the various centrality measures of seafood_graph. The top 10 inodes with reference to various centrality scores are printed using `kable()` function from `knitr`.
+
+I have taken reference from this [link](https://hohenfeld.is/posts/graphs-are-fun-an-introduction-to-graphs-in-r/).
+
+First compute 'in-deg', 'out-deg' and 'pagerank' scores.
+
+```{r}
+seafood_graph<- seafood_graph %>%
+  activate("nodes") %>% 
+  mutate(betweenness_centrality = centrality_betweenness(directed = TRUE)) %>% 
+  mutate(in_deg_centrality = centrality_degree(weights = NULL, 
+                                               mode = "in")) %>% 
+  mutate(out_deg_centrality = centrality_degree(weights = NULL, 
+                                               mode = "out")) %>% 
+  mutate(pagerank = centrality_pagerank(weights = Weight,
+                                        directed = TRUE))
+```
+
+To see the top 10 nodes with 'in-deg' scores:
+
+```{r}
+seafood_graph %>% 
+  activate("nodes") %>% 
+  as_tibble() %>% 
+  arrange(desc(in_deg_centrality), desc(pagerank)) %>% 
+  select(id,in_deg_centrality,pagerank) %>% 
+  head(n=10) %>% 
+  kable()
+```
+
+To see the top 10 nodes with 'out-deg' scores:
+
+```{r}
+seafood_graph %>% 
+  activate("nodes") %>% 
+  as_tibble() %>% 
+  arrange(desc(out_deg_centrality)) %>% 
+  select(id,out_deg_centrality) %>% 
+  head(n=10) %>% 
+  kable()
+```
+
+To extract the seafood nodes data from seafood_graph as a dataframe
+
+```{r}
+
+```
+
+## 2.2 Plot network graph based on centrality scores
 
 ```{r}
 #| fig-width: 12
@@ -313,12 +418,50 @@ seafood_graph
 a <- ggraph(seafood_graph) +  #<<< GAStech_graph is a tbl_graph object
   geom_edge_link(aes(width=Weight, alpha= 0.2)) +
   scale_edge_width(range = c(0.1, 5)) +
-  geom_node_point()
-a
+  geom_node_point(aes(size = in_deg_centrality, colour=rcvcountry))
+a + theme_graph()
 
 ```
 
-I have actually already excluded source and target actors with frequency counts of 4 and under. I should not exclude anymore 'innocent' actors. Lets use visnetwork to get the id of the two pairs that are still inside there....
+### 2.2.1 Social Network graph featuring top 10% of  'in-degree' centrality scores
+
+We will first extract the nodes table into a dataframe
+
+```{r}
+#| eval: false
+#| echo: false
+# top_50_indeg_nodes <- as.data.frame(seafood_graph)
+```
+
+The `quantile` function is used to identify the quantile based on the `` `in_deg_centrality` `` of the nodes.
+
+```{r}
+#| eval: false
+#| echo: false
+quantile_in_deg <- quantile(top_10_indeg_nodes$in_deg_centrality, probs = seq(0,1,1/10))
+quantile_in_deg
+```
+
+Then we will filter and keep only the nodes in top 50 percent.
+
+```{r}
+#| eval: false
+#| echo: false
+top_50_indeg_nodes <- top_50_indeg_nodes %>%
+  filter(in_deg_centrality >= quantile_in_deg[6])
+```
+
+Next , we will remove source-target links that are not formed by the nodes in `top_50_indeg_nodes` dataframe
+
+```{r}
+#| eval: false
+#| echo: false
+seafood_edges_top50 <- mc2_seafood_edges_agg %>%
+  filter (source %in% c(top_50_indeg_nodes$id)) %>%
+  filter (target %in% c(top_50_indeg_nodes$id))
+```
+
+# 3 Interactive network graph
 
 We first need to rename the edge file first two columns to `from` and `to` for visNetwork to be able to regconise them.. .
 
@@ -349,4 +492,6 @@ visNetwork(nodes_seafood_vis,
   visLayout(randomSeed = 123)
 ```
 
-The four isolated actors id are 'Rift Valley fishery OJSC', 'Bujagali Falls Pic Family', 'Neptune's Realm NV Navigation' and 'Rybachit Sagl and Son's. Thanks to this interactive graph that I know which nodes to remove from my network graph tmr......
+References:
+
+https://hohenfeld.is/posts/graphs-are-fun-an-introduction-to-graphs-in-r/

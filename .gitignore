@@ -6,3 +6,8 @@
 
 /.quarto/
 data/
+
+.RDataTmp
+.RDataTmp1
+.RDataTmp2
+.RDataTmp23

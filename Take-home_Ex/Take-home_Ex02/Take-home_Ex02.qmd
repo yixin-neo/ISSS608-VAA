@@ -542,7 +542,7 @@ From the plot above, we can see there are a few top shipping companies that has 
 
 ## 3.2 Temporal analysis of top 10 'in-deg' centrality companies in trading occurrence over the years
 
-Use the code chunk below to get top 10 receiving companies. As
+Use the code chunk below to get top 10 buyer companies.
 
 ```{r}
 top_10_in_list <- mc2_seafood_edges_agg_vis %>%  
@@ -555,7 +555,7 @@ top_10_in_list <- mc2_seafood_edges_agg_vis %>%
 kable(top_10_in_list)
 ```
 
-Subset the dataset to filter records from top 10 receiving companies
+Subset the dataset to filter records from top 10 buyer companies
 
 ```{r}
 top_10_indeg <- mc2_seafood_edges_agg_vis %>%
@@ -628,11 +628,11 @@ top_10_indeg %>% ggplot() +
 
 Analysis of the plot above:
 
-Fresh Wharf SRL Consulting exhibits similar patterns to top shipping company Playa because of their close trading patterns.
+'Fresh Wharf SRL Consulting' exhibits similar patterns to top shipping company 'Playa del Tesoro OJSC' because of they are close trading partners (refer to interactive graph). The buying pattern of 'Fresh Wharf SRL Consulting' can be considered unusual due to the spikes we see happening at certain time periods (eg. end 2029 and 3rd quarter of 2033).
 
 ## 3.3 Trading patterns of Volga River LLC Enterprises
 
-Let us examine the trading patterns of Volga River LLC Enterprises, the second top ''in-deg' company with its four suppliers (as seen from the interactive graph).
+Let us examine the trading patterns of 'Volga River LLC Enterprises', the second top ''in-deg' company with its four suppliers (as seen from the interactive graph).
 
 First, filter records with only Volga River LLC Enterprises and its suppliers.
 
@@ -666,6 +666,8 @@ volga_in
 
 #ggplotly(volga_in)
 ```
+
+\[WORK IN PROGRESS\] trying to fix my interactive plot below..
 
 ```{r}
 #| fig-width: 12
@@ -759,7 +761,9 @@ girafe(code = print(volga_in1 / volga_in2 / volga_in3 / volga_in4),
        ) 
 ```
 
-Analysis of the plot above: In the earlier years, Volga River LLC Enterprises receives goods from three shipping companies. However, it has been receiving only from Estrella de la Coasta SRL very frequently from 2032 Nov onwards. For our group project we can consider creating drop down list of 'receiving companies' for user to see each of their trading patterns with their suppliers.
+Analysis of the plot above: In the earlier years, Volga River LLC Enterprises receives goods from three shipping companies. However, it has been receiving only from Estrella de la Coasta SRL very frequently from 2032 Nov onwards. There were two occurrence of interaction with 'Seaside Summit SE Merchants' which can be considered short and abrupt. It dawned on me that we can identify IUU companies that frequently close down and re-register their companies from the plot above. For such companies, I would expect the buyer's graph to show that buyer has been changing suppliers and over different time periods.
+
+For our group project we can consider creating drop down list of 'buying companies' for user to interact with and see each of the buyers interaction with their suppliers over the years.
 
 ## 3.4 Interactive graph grouped by OUT-DEGREE CENTRALITY scores
 
@@ -801,13 +805,13 @@ visNetwork(nodes_seafood_vis,
   visLayout(randomSeed = 123)
 ```
 
-The chart highlights actors with high out-deg centrality scores over 2028 to 2034.
+The chart highlights actors with high out-deg centrality scores over 2028 to 2034. In this default view, we can quickly identify the coloured nodes as top few suppliers.
 
-## 3.3 Temporal analysis of top shipping company in trading occurrence over the years
+## 3.3 Temporal analysis of top supplier company in trading occurrence over the years
 
-Let us visualise the horizon plot of the number of trading activities of the top shipping company over the years.
+Let us visualise the horizon plot of the number of trading activities of the top supplier company 'Playa del Tesoro OJSC ' over the years.
 
-Creating horizon plots for Playa del Tesoro OJSC company.. First filter records of this company.
+First filter records of this company.
 
 ```{r}
 playa <- mc2_seafood_edges_agg_vis %>%
@@ -876,11 +880,13 @@ playa %>% ggplot() +
   ggtitle('Trading interactions of Playa del Tesoro OJSC from 2028 to 2034')
 ```
 
-Blue regions represents cold trading intervals while red regions represents high trading occurrence for this company. The chart is faceted by year. Observe that the company was cold from Apr 2031 to May 2033 and trading occurrence pick up in the last quarter of 2033.
+Blue regions represents cold trading intervals while red regions represents high trading occurrence for this company. The chart is faceted by year. Observe that the company was cold from Apr 2031 to May 2033 and trading occurrence pick up in the last quarter of 2033. This pattern with ocassional spikes is indeed unusual and some investigation could be done regarding this company and its buyer (discussed earlier).
 
 ## 3.4 Temporal analysis of top 10 'out-deg' centrality companies in trading occurrence over the years
 
-Use the code chunk below to get the top 10 shipping companies
+We would like to see if there are other supplier companies that has patterns like 'Playa del Tesoro OJSC' so we will plot multiple horizon graphs for quick comparison.
+
+Use the code chunk below to get the top 10 supplier companies
 
 ```{r}
 mc2_seafood_edges_agg_vis %>%  group_by(from) %>%  summarise(Allweight = sum(Weight)) %>% arrange(desc(Allweight))
@@ -947,11 +953,11 @@ top10_outdeg %>% ggplot() +
 
 Analysis of the plot above:
 
-Observe the different shipping companies were active for different periods of time. Most of them have low interactions consistently throughout 2028-2034 (Like Estrella, Oceanic and Shou gan) while some have stop activity for some time (like Gujarat, Nautica and Diao er). The most unique of all is Playa del Tesoro OJSC - some of it interactions are extremely high for a specific period of time.
+Observe the different shipping companies were active for different period of time. Most of them have low interactions consistently throughout 2028-2034 (Like 'Estrella', 'Oceanic' and 'Shou gan') while some have stopped activity for some time (like 'Gujarat', 'Nautica' and 'Diao er'). The most unique of all is 'Playa del Tesoro OJSC' - some of it interactions are extremely high for a specific period of time. To capture suspicious companies that are in operation for only a short period of time, we can consider plotting more horizon plots.
 
 ## 3.6 Treemap of business relationship between shipping and receiving companies
 
-We somewhat know the high 'in-deg' and 'out-deg' scores of the filtered dataset. Lets us try to find business patterns by using a treemap.
+We have almost come to the end of this exercise. Before we finish, lets build a treemap to get a high level view of the current status of this business (who are the bigger suppliers and their corresponding buyers).
 
 The code chunk below groups the data by from and to columns and aggregating the TotalInteractions and MedianCargoWeight_daily between each pair shipping and receiving company by hscode.
 
@@ -989,7 +995,9 @@ The largest player here is 'Playa del Tesoro OJSC' (no pun intended) and it ship
 
 Are there communities inside this network graph?
 
-The group_edge_betweenness() function is typically used in community detection algorithms, such as the Girvan-Newman algorithm. It is a top down approach by calculating the edge betweenness centrality for each edge in the graph (in each iteration) and progressively removes the edges with the highest betweenness centrality until the desired number of communities is reached. The n parameter specifies the number of edges to remove. The more times we cut an edge, the more communities we get. I am not very certain at the number of communities I should get, in R shiny, we could set n as an interactive component for users to play with. The tags obtained from community detection could be analysed with the nodes attributes.
+The group_edge_betweenness() function is typically used in community detection algorithms, such as the Girvan-Newman algorithm. It is a top down approach by calculating the edge betweenness centrality for each edge in the graph (in each iteration) and progressively removes the edges with the highest betweenness centrality until the desired number of communities is reached. The n parameter specifies the number of edges to remove. The more times we cut an edge, the more communities we get.
+
+I am not very certain at the number of communities I should get, in R shiny, we could set n as an interactive component for users to play with. The tags obtained from community detection could be analysed with the nodes attributes.
 
 ```{r}
 #| fig-width: 12

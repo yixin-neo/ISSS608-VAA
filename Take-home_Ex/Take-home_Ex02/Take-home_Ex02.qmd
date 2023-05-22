@@ -39,7 +39,7 @@ Try not to use R built-in NA/NULL function. Manually type "unknown' / 'missing' 
 
 # Vast Challenge 2023 Mini Challenge 2 (Subtask: 1)
 
-In this challenge, I seek to use visual analytics to identify temporal patterns for individual entities and between entities using the knowledge graph the FishEye Organisation has provided us with. Also , I will be categorising the type of business relationship patterns found.
+In this challenge, my group and I seek to use visual analytics to identify temporal patterns for individual entities and between entities using the knowledge graph the FishEye Organisation has provided us with. We will also be categorising the type of business relationship patterns found.
 
 # 1 About the dataset
 
@@ -86,7 +86,7 @@ The new libraries used today are :
 ```{r}
 pacman::p_load(jsonlite, igraph, tidygraph, ggraph,
                visNetwork, lubridate, clock,
-               tidyverse, graphlayouts,knitr,plotly, ggHoriPlot, ggthemes)
+               tidyverse, graphlayouts,knitr,plotly, ggHoriPlot, ggthemes,treemap)
 ```
 
 ```{r}
@@ -124,9 +124,9 @@ MC2_edges <- as_tibble(MC2$links) %>%
 glimpse(MC2_edges)
 ```
 
-## 1.3 Data cleaning
+# 2 Data cleaning
 
-### 1.3.1 Check for null values
+## 2.1 Check for null values
 
 Check whether each column in MC2_nodes and MC2_edges contains null and prints the percentage of null for each column.
 
@@ -185,7 +185,7 @@ print(filtered_df)
 
 ```
 
-### 1.3.2 Lets check for duplicates
+## 2.2 Lets check for duplicates
 
 **For MC2_nodes dataframe:**
 
@@ -225,7 +225,7 @@ length(unique(MC2_edges_no_dup$hscode))
 
 ```
 
-With reference to [World Custom Organisation Harmonized System codes](https://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs-nomenclature-2022-edition/hs-nomenclature-2022-edition.aspx), Section 1 and 4 are related to seafood trade. We will filter for records that has HScodes starting with `1604` and `1605` as they refer to seafood commodities, thus removing many other transactions like 'television', 'steel parts' etc... not related to our project goals...
+With reference to [World Custom Organisation Harmonized System codes](https://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs-nomenclature-2022-edition/hs-nomenclature-2022-edition.aspx), only Section 1 and 4 are related to seafood trade. We will filter for records that have HScodes starting with `1604` and `1605` as they refer to seafood commodities, thus removing many other transactions like 'television', 'steel parts' etc... that are not related to our project goals.
 
 ```{r}
 mc2_seafood_edges<- MC2_edges_no_dup[grepl('^1605|^1604', MC2_edges_no_dup$hscode), ]
@@ -233,7 +233,7 @@ mc2_seafood_edges<- MC2_edges_no_dup[grepl('^1605|^1604', MC2_edges_no_dup$hscod
 
 ```
 
-### 1.3.4 Preparation of Edges
+## 2.3 Preparation of Edges
 
 ```{r}
 #unique(mc2_seafood_edges$hscode)
@@ -247,16 +247,16 @@ mc2_seafood_edges_agg <- mc2_seafood_edges %>%
   ungroup()
 ```
 
-I will now wrangle the date columns to prepare dataframe for temporal analysis later.
+Lets wrangle the date columns to prepare dataframe for temporal analysis later.
 
 \(1\) change the arrivaldate column to date data type
-
-\(2\) create year, month, weekday, weeknumber columns
 
 ```{r}
 mc2_seafood_edges_agg$arrivaldate <- as.Date(mc2_seafood_edges_agg$arrivaldate)
 
 ```
+
+\(2\) create year, month, weekday, weeknumber columns
 
 ```{r}
 mc2_seafood_edges_agg <- mc2_seafood_edges_agg %>% 
@@ -269,7 +269,7 @@ mc2_seafood_edges_agg <- mc2_seafood_edges_agg %>%
   mutate(weeknumber = isoweek(arrivaldate))
 ```
 
-To prevent disconnected graphs, I am going to inspect the frequency of source and target actors, and remove those actors below a frequency count of 5.
+Inspect the frequency of source and target actors, and remove those actors below a frequency count of 5.
 
 First , we remove low frequency source actors under 5 counts.
 
@@ -303,7 +303,7 @@ mc2_seafood_edges_agg <- mc2_seafood_edges_agg[mc2_seafood_edges_agg$target %in%
 #print(mc2_seafood_edges_agg)
 ```
 
-Based on some checks on the dataset, there were two pairs of actors that exist as disconnected components. They are 'Rift Valley fishery OJSC', 'Bujagali Falls Pic Family', 'Neptune's Realm NV Navigation', 'Rybachit Sagl and Son's', 'Mar de la Aventura Rybachit' and 'Olas del Sur Ltd'. I will remove the edge records if either `source` or `target` columns contains any of these four nodes.
+Based on some checks on the dataset, there were three pairs of actors that exist as disconnected components. They are 'Rift Valley fishery OJSC', 'Bujagali Falls Pic Family', 'Neptune's Realm NV Navigation', 'Rybachit Sagl and Son's', 'Mar de la Aventura Rybachit' and 'Olas del Sur Ltd'. Lets remove the edge records if either `source` or `target` columns contains any of these four nodes.
 
 ```{r}
 # Specify the values to be excluded
@@ -324,7 +324,7 @@ mc2_seafood_edges_agg <- mc2_seafood_edges_agg %>%
 sort(table(mc2_seafood_edges_agg$target))
 ```
 
-### 1.3.5 Preparation of Nodes
+## 2.4 Preparation of Nodes
 
 We will include only nodes that are in source and target columns in the `mc2_seafood_edges_agg` dataframe
 
@@ -333,9 +333,7 @@ nodes_seafood <- MC2_nodes %>%
   filter (id %in% c(mc2_seafood_edges_agg$source, mc2_seafood_edges_agg$target))
 ```
 
-# 2 Visualization
-
-## 2.1 Creating the network graph dataframe using tbl_graph() of the tidygraph package.
+## 2.5 Creating the network graph dataframe using tbl_graph() of the tidygraph package.
 
 ::: callout-note
 Node file needs to have ID of nodes as first column.
@@ -364,9 +362,11 @@ We can run the code below to check that seafood_graph is a connected graph:
 is.connected(seafood_graph)
 ```
 
-Now lets calculate the various centrality measures of seafood_graph. The top 10 inodes with reference to various centrality scores are printed using `kable()` function from `knitr`.
+## 2.6 Calculate the various centrality measures of seafood_graph. 
 
-I have taken reference from this [link](https://hohenfeld.is/posts/graphs-are-fun-an-introduction-to-graphs-in-r/). The tidyverse centrality functions can be taken from [here](https://cran.r-project.org/web/packages/tidygraph/tidygraph.pdf).
+The top 10 nodes with reference to various centrality scores are printed using `kable()` function from `knitr`.
+
+Reference was made from this [link](https://hohenfeld.is/posts/graphs-are-fun-an-introduction-to-graphs-in-r/). The tidyverse centrality functions can be taken from [here](https://cran.r-project.org/web/packages/tidygraph/tidygraph.pdf).
 
 First compute 'in-deg', 'out-deg' and 'pagerank' scores. All my betweenness scores were zero (Investigation in progress)...
 
@@ -410,11 +410,10 @@ seafood_graph %>%
   kable()
 ```
 
-## 2.2 Plot network graph based on centrality scores 
-
-The code chunk below plots a simple static graph with the nodes coloured by receiving countries and the node size relative to their in-deg centrality scores. They are a few nodes with high scores.
-
 ```{r}
+# SECTION HAS BEEN REMOVED
+#| echo: false
+#| eval: false
 #| fig-width: 12
 #| fig-asp: 0.618
 set.seed (1234)
@@ -430,13 +429,10 @@ a + theme_graph()
 
 ```
 
-However, this graph is not interactive, I will be building an interactive one later.
-
-## 2.3 Are there communities inside this network graph? 
-
-The **`group_edge_betweenness()`** function is typically used in community detection algorithms, such as the Girvan-Newman algorithm. It is a top down approach by calculating the edge betweenness centrality for each edge in the graph (in each iteration) and progressively removes the edges with the highest betweenness centrality until the desired number of communities is reached. The **`n`** parameter specifies the number of edges to remove. The more times we cut an edge, the more communities we get. I am not very certain at the number of communities I should get, in R shiny, we could set n as an interactive component for users to play with. The tags obtained from community detection could be analysed with the nodes attributes.
-
 ```{r}
+# SECTION HAS BEEN REMOVED
+#| echo: false
+#| eval: false
 #| fig-width: 12
 #| fig-asp: 0.618
 
@@ -456,9 +452,9 @@ b  + theme_graph() + theme(legend.key.size = unit(1, "lines"),
 
 ```
 
-# 3 Interactive graphs of network structure and temporal analysis
+# 3 Interactive graphs of network structure, temporal analysis and business patterns detection
 
-## 3.1 Interactive graph grouped by  IN-DEGREE CENTRALITY scores
+## 3.1 Interactive graph grouped by IN-DEGREE CENTRALITY scores
 
 We first need to rename the edge file first two columns to `from` and `to` for visNetwork to be able to regconise them. `title` column has been created for tooltip when we hover over each of the edges.
 
@@ -543,7 +539,7 @@ visNetwork(nodes_seafood_vis,
 \(7\) Click and Drag on the graph to move the canvas around, will also temporary disable the edge lines.
 :::
 
-## 3.3 Interactive graph grouped by  OUT-DEGREE CENTRALITY scores
+## 3.2 Interactive graph grouped by OUT-DEGREE CENTRALITY scores
 
 The code chunk below binned the out-deg scores into intervals of 50 using the `cut()` function. Next, rename the `group` column back to `in-deg` column followed by `out_deg_grp` column to `group` column for VisNetwork to colour nodes by out-deg intervals.
 
@@ -583,9 +579,47 @@ visNetwork(nodes_seafood_vis,
   visLayout(randomSeed = 123)
 ```
 
-The chart highlights actors with high out-deg centrality scores over 2028 to 2034. Let us visualise the horizon plot of the number of trading activities of the top 3 companies over the years.
+The chart highlights actors with high out-deg centrality scores over 2028 to 2034.
 
-## 3.4 Temporal analysis of top 3 companies in trading occurrence. 
+## 3.3 Treemap of business relationship between shipping and receiving companies
+
+We somewhat know the high 'in-deg' and 'out-deg' scores of the filtered dataset. Lets us try to find business patterns by using a treemap.
+
+The code chunk below groups the data by `from` and `to` columns and aggregating the `TotalInteractions` and `MedianCargoWeight_daily` between each pair shipping and receiving company by hscode.
+
+```{r}
+seafood_tree <-mc2_seafood_edges_agg_vis %>% 
+  group_by(from,to,hscode) %>% 
+  summarise(TotalInteractions=sum(Weight),
+            MedianCargoWeight_daily= median(Totalweight)) %>% 
+  ungroup() %>% 
+  arrange(desc(TotalInteractions))
+```
+
+The code chunk below plots the treemap using the `treemap` library.
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+tm<- treemap(seafood_tree,
+        index=c("from", "to"),
+        vSize="TotalInteractions",
+        vColor="MedianCargoWeight_daily",
+        type="value",
+        palette="RdYlBu", 
+        algorithm = "squarified",
+        title='Shipping and receiving companies interaction pattern',
+        title.legend = "Median Cargo Weight per day"
+        )
+```
+
+The most outer layer refers to shipping companies while the tiles within represents the companies that they shipped their goods to. The bigger the tile size, the more the interaction. The darker the colour, the greater the daily median cargo weight.
+
+The largest player here is 'Playa del Tesoro OJSC' (no pun intended) and it ships in high frequency and large volume only to one receiving compmany called 'Fresh Wharf SRL Consulting' over the years 2028 to 2034.
+
+## 3.4 Temporal analysis of top company in trading occurrence over the years
+
+Let us visualise the horizon plot of the number of trading activities of the top 3 companies over the years.
 
 Creating horizon plots for Playa del Tesoro OJSC company.. First filter records of this company.
 
@@ -653,12 +687,85 @@ playa %>% ggplot() +
                date_labels = "%b") +
   xlab('Date') +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  ggtitle('Number of trade by Playa del Tesoro OJSC from 2028 to 2034')
+  ggtitle('Trading interactions of Playa del Tesoro OJSC from 2028 to 2034')
 ```
 
 Blue regions represents cold trading intervals while red regions represents high trading occurrence for this company. The chart is faceted by year. Observe that the company was cold from Apr 2031 to May 2033 and trading occurrence pick up in the last quarter of 2033.
 
-## 3.5 Interactive graph grouped by  community
+## 3.5 Temporal analysis of top 10 'out-deg' centrality companies in trading occurrence over the years
+
+Use the code chunk below to get the top 10 shipping companies
+
+```{r}
+mc2_seafood_edges_agg_vis %>%  group_by(from) %>%  summarise(Allweight = sum(Weight)) %>% arrange(desc(Allweight))
+```
+
+Subset the entire dataset to filter records of these 10 companies
+
+```{r}
+top10_outdeg <-subset(mc2_seafood_edges_agg_vis, from %in% c('Playa del Tesoro OJSC', 'Estrella de la Costa SRL', 'OceanicOrigin Foods Co Consulting', 'Náutica del Sol Brothers', 'Beachcomber\'s Bounty Sea spray', 'Mar de la Aventura Limited Liability Company', 'Shou gan  Oyj Overseas', 'Diao er  Limited Liability Company', 'Oceanfront Oasis Company Green ', 'Gujarat   Tide NV Solutions'))
+```
+
+Repeat the steps as explained previously to prepare for the horizon plot
+
+```{r}
+cutpoints_top10_outdeg <- top10_outdeg  %>% 
+  mutate(
+    outlier = between(
+      Weight, 
+      quantile(Weight, 0.25, na.rm=T)-
+        1.5*IQR(Weight, na.rm=T),
+      quantile(Weight, 0.75, na.rm=T)+
+        1.5*IQR(Weight, na.rm=T))) %>% 
+  filter(outlier)
+
+ori <- sum(range(top10_outdeg$Weight))/2
+
+sca <- seq(range(top10_outdeg$Weight)[1], 
+           range(top10_outdeg$Weight)[2], 
+           length.out = 7)[-4]
+
+top10_outdeg$mine_date <- sprintf("2021-%s-%s", substr(top10_outdeg$arrivaldate, 6, 7), substr(top10_outdeg$arrivaldate, 9, 10))
+
+top10_outdeg$mine_date <- as.Date(top10_outdeg$mine_date)
+```
+
+Plotting the horizon plot of top 10 shipping companies over the years
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+top10_outdeg %>% ggplot() +
+  geom_horizon(aes(arrivaldate, 
+                   Weight,
+                   fill = ..Cutpoints..), 
+               origin = ori, horizonscale = sca) +
+  scale_fill_hcl(palette = 'RdBu', reverse = T) +
+  facet_grid(from~.) +
+  theme_few() +
+  theme(
+    panel.spacing.y=unit(0, "lines"),
+    strip.text.y = element_text(size = 7, angle = 0, hjust = 0),
+    axis.text.y = element_blank(),
+    axis.title.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.border = element_blank()
+    ) +
+  scale_x_date(expand=c(0,0), 
+               date_breaks = "3 month",
+               date_labels = "%b %Y") +
+  xlab('Date') +
+  ggtitle('Trading interactions of top 10 shipping companies from 2028 to 2034') +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 6))
+```
+
+Analysis of the plot above: TBC....
+
+## 3.6 Interactive graph grouped by community
+
+Are there communities inside this network graph?
+
+The group_edge_betweenness() function is typically used in community detection algorithms, such as the Girvan-Newman algorithm. It is a top down approach by calculating the edge betweenness centrality for each edge in the graph (in each iteration) and progressively removes the edges with the highest betweenness centrality until the desired number of communities is reached. The n parameter specifies the number of edges to remove. The more times we cut an edge, the more communities we get. I am not very certain at the number of communities I should get, in R shiny, we could set n as an interactive component for users to play with. The tags obtained from community detection could be analysed with the nodes attributes.
 
 ```{r}
 #| fig-width: 12
@@ -705,3 +812,7 @@ https://cran.r-project.org/web/packages/ggraph/vignettes/Edges.html
 Visnetwork
 
 http://datastorm-open.github.io/visNetwork/
+
+Horizon plot
+
+https://rivasiker.github.io/ggHoriPlot/

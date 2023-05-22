@@ -391,7 +391,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#check-for-null-values" id="toc-check-for-null-values" class="nav-link" data-scroll-target="#check-for-null-values">1.3.1 Check for null values</a></li>
   <li><a href="#lets-check-for-duplicates" id="toc-lets-check-for-duplicates" class="nav-link" data-scroll-target="#lets-check-for-duplicates">1.3.2 Lets check for duplicates</a></li>
-  <li><a href="#check-on-the-hscodes." id="toc-check-on-the-hscodes." class="nav-link" data-scroll-target="#check-on-the-hscodes.">1.3.3 Check on the HScodes.</a></li>
+  <li><a href="#check-on-the-hscodes" id="toc-check-on-the-hscodes" class="nav-link" data-scroll-target="#check-on-the-hscodes">1.3.3 Check on the HScodes</a></li>
   <li><a href="#preparation-of-edges" id="toc-preparation-of-edges" class="nav-link" data-scroll-target="#preparation-of-edges">1.3.4 Preparation of Edges</a></li>
   <li><a href="#preparation-of-nodes" id="toc-preparation-of-nodes" class="nav-link" data-scroll-target="#preparation-of-nodes">1.3.5 Preparation of Nodes</a></li>
   </ul></li>
@@ -409,6 +409,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#temporal-analysis-of-top-3-companies-in-trading-occurrence." id="toc-temporal-analysis-of-top-3-companies-in-trading-occurrence." class="nav-link" data-scroll-target="#temporal-analysis-of-top-3-companies-in-trading-occurrence.">3.4 Temporal analysis of top 3 companies in trading occurrence.</a></li>
   <li><a href="#interactive-graph-grouped-by-community" id="toc-interactive-graph-grouped-by-community" class="nav-link" data-scroll-target="#interactive-graph-grouped-by-community">3.5 Interactive graph grouped by community</a></li>
   </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">4 References</a></li>
   </ul>
 </nav>
     </div>
@@ -441,7 +442,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">May 21, 2023</p>
+      <p class="date-modified">May 22, 2023</p>
     </div>
   </div>
     
@@ -486,26 +487,31 @@ Warning
 </div>
 <section id="vast-challenge-2023-mini-challenge-2-subtask-1" class="level1">
 <h1>Vast Challenge 2023 Mini Challenge 2 (Subtask: 1)</h1>
+<p>In this challenge, I seek to use visual analytics to identify temporal patterns for individual entities and between entities using the knowledge graph the FishEye Organisation has provided us with. Also , I will be categorising the type of business relationship patterns found.</p>
 </section>
 <section id="about-the-dataset" class="level1">
 <h1>1 About the dataset</h1>
 <section id="data-dictionary" class="level2">
 <h2 class="anchored" data-anchor-id="data-dictionary">1.1 Data dictionary</h2>
 <p><strong>Node Attributes:</strong></p>
-<p>id -- Name of the company that originated (or received) the shipment</p>
-<p>shpcountry -- Country the company most often associated with when shipping</p>
-<p>rcvcountry -- Country the company most often associated with when receiving</p>
-<p>dataset -- Always ‘MC2’</p>
+<ul>
+<li><p>id -- Name of the company that originated (or received) the shipment</p></li>
+<li><p>shpcountry -- Country the company most often associated with when shipping</p></li>
+<li><p>rcvcountry -- Country the company most often associated with when receiving</p></li>
+<li><p>dataset -- Always ‘MC2’</p></li>
+</ul>
 <p><strong>Edge Attributes:</strong></p>
-<p>arrivaldate -- Date the shipment arrived at port in YYYY-MM-DD format.</p>
-<p>hscode -- Harmonized System code for the shipment. Can be joined with the hscodes table to get additional details.</p>
-<p>valueofgoods_omu -- Customs-declared value of the total shipment, in Oceanus</p>
-<p>Monetary Units (OMU)</p>
-<p>volumeteu -- The volume of the shipment in ‘Twenty-foot equivalent units’, roughly how many 20-foot standard containers would be required. (Actual number of containers may have been different as there are 20ft and 40ft standard containers and tankers that do not use containers)</p>
-<p>weightkg -- The weight of the shipment in kilograms (if known)</p>
-<p>dataset -- Always ‘MC2’</p>
-<p>type -- Always ‘shipment’ for MC2</p>
-<p>generated_by -- Name of the program that generated the edge. (Only found on ‘bundle’ records.)</p>
+<ul>
+<li><p>arrivaldate -- Date the shipment arrived at port in YYYY-MM-DD format.</p></li>
+<li><p>hscode -- Harmonized System code for the shipment. Can be joined with the hscodes table to get additional details.</p></li>
+<li><p>valueofgoods_omu -- Customs-declared value of the total shipment, in Oceanus</p></li>
+<li><p>Monetary Units (OMU)</p></li>
+<li><p>volumeteu -- The volume of the shipment in ‘Twenty-foot equivalent units’, roughly how many 20-foot standard containers would be required. (Actual number of containers may have been different as there are 20ft and 40ft standard containers and tankers that do not use containers)</p></li>
+<li><p>weightkg -- The weight of the shipment in kilograms (if known)</p></li>
+<li><p>dataset -- Always ‘MC2’</p></li>
+<li><p>type -- Always ‘shipment’ for MC2</p></li>
+<li><p>generated_by -- Name of the program that generated the edge. (Only found on ‘bundle’ records.)</p></li>
+</ul>
 </section>
 <section id="importing-the-datasets" class="level2">
 <h2 class="anchored" data-anchor-id="importing-the-datasets">1.2 Importing the datasets</h2>
@@ -725,8 +731,8 @@ $ valueofgoodsusd  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, 87110, 188140, NA, 221110
 </details>
 </div>
 </section>
-<section id="check-on-the-hscodes." class="level3">
-<h3 class="anchored" data-anchor-id="check-on-the-hscodes.">1.3.3 Check on the HScodes.</h3>
+<section id="check-on-the-hscodes" class="level3">
+<h3 class="anchored" data-anchor-id="check-on-the-hscodes">1.3.3 Check on the HScodes</h3>
 <p>Check the unique number of hscodes in the dataset. There are 4761 unique HScodes.</p>
 <div class="cell">
 <details>
@@ -738,7 +744,7 @@ $ valueofgoodsusd  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, 87110, 188140, NA, 221110
 <pre><code>[1] 4761</code></pre>
 </div>
 </div>
-<p>With reference to <a href="https://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs-nomenclature-2022-edition/hs-nomenclature-2022-edition.aspx">World Custom Organisation Harmonized System codes</a>, Section 1 and 4 are related to seafood trade. We will filter for records that has HScodes starting with <code>1604</code> and <code>1605</code> as they refer to seafood commodities, thus removing many other transactions like ‘television’, ‘steel parts’ etc…</p>
+<p>With reference to <a href="https://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs-nomenclature-2022-edition/hs-nomenclature-2022-edition.aspx">World Custom Organisation Harmonized System codes</a>, Section 1 and 4 are related to seafood trade. We will filter for records that has HScodes starting with <code>1604</code> and <code>1605</code> as they refer to seafood commodities, thus removing many other transactions like ‘television’, ‘steel parts’ etc… not related to our project goals…</p>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
@@ -818,7 +824,7 @@ $ valueofgoodsusd  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, 87110, 188140, NA, 221110
 <span id="cb21-12"><a href="#cb21-12"></a><span class="co">#print(mc2_seafood_edges_agg)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Based on some checks on the dataset, there were two pairs of actors that exist as disconnected components. They are ‘Rift Valley fishery OJSC’, ‘Bujagali Falls Pic Family’, ‘Neptune’s Realm NV Navigation’ and ’Rybachit Sagl and Son’s. I will remove the edge records if either <code>source</code> or <code>target</code> columns contains any of these four nodes.</p>
+<p>Based on some checks on the dataset, there were two pairs of actors that exist as disconnected components. They are ‘Rift Valley fishery OJSC’, ‘Bujagali Falls Pic Family’, ‘Neptune’s Realm NV Navigation’, ‘Rybachit Sagl and Son’s’, ‘Mar de la Aventura Rybachit’ and ‘Olas del Sur Ltd’. I will remove the edge records if either <code>source</code> or <code>target</code> columns contains any of these four nodes.</p>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
@@ -917,7 +923,7 @@ Note
 </div>
 <p>Now lets calculate the various centrality measures of seafood_graph. The top 10 inodes with reference to various centrality scores are printed using <code>kable()</code> function from <code>knitr</code>.</p>
 <p>I have taken reference from this <a href="https://hohenfeld.is/posts/graphs-are-fun-an-introduction-to-graphs-in-r/">link</a>. The tidyverse centrality functions can be taken from <a href="https://cran.r-project.org/web/packages/tidygraph/tidygraph.pdf">here</a>.</p>
-<p>First compute ‘in-deg’, ‘out-deg’ and ‘pagerank’ scores.</p>
+<p>First compute ‘in-deg’, ‘out-deg’ and ‘pagerank’ scores. All my betweenness scores were zero (Investigation in progress)…</p>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
@@ -1084,6 +1090,7 @@ Note
 </section>
 <section id="plot-network-graph-based-on-centrality-scores" class="level2">
 <h2 class="anchored" data-anchor-id="plot-network-graph-based-on-centrality-scores">2.2 Plot network graph based on centrality scores</h2>
+<p>The code chunk below plots a simple static graph with the nodes coloured by receiving countries and the node size relative to their in-deg centrality scores. They are a few nodes with high scores.</p>
 <div class="cell" data-fig.asp="0.618">
 <details>
 <summary>Show the code</summary>
@@ -1102,10 +1109,11 @@ Note
 <p><img src="Take-home_Ex02_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="1152"></p>
 </div>
 </div>
+<p>However, this graph is not interactive, I will be building an interactive one later.</p>
 </section>
 <section id="are-there-communities-inside-this-network-graph" class="level2">
 <h2 class="anchored" data-anchor-id="are-there-communities-inside-this-network-graph">2.3 Are there communities inside this network graph?</h2>
-<p>The <strong><code>group_edge_betweenness()</code></strong> function is typically used in community detection algorithms, such as the Girvan-Newman algorithm. It is a top down approach by calculating the edge betweenness centrality for each edge in the graph (in each iteration) and progressively removes the edges with the highest betweenness centrality until the desired number of communities is reached. The <strong><code>n</code></strong> parameter specifies the number of edges to remove. The more times we cut an edge, the more communities we get. I am not very certain at the number of communities I should get, in R shiny, we could set n as am interactive component for users to play with. The tags obtained from community detection could be analysed with the nodes attributes.</p>
+<p>The <strong><code>group_edge_betweenness()</code></strong> function is typically used in community detection algorithms, such as the Girvan-Newman algorithm. It is a top down approach by calculating the edge betweenness centrality for each edge in the graph (in each iteration) and progressively removes the edges with the highest betweenness centrality until the desired number of communities is reached. The <strong><code>n</code></strong> parameter specifies the number of edges to remove. The more times we cut an edge, the more communities we get. I am not very certain at the number of communities I should get, in R shiny, we could set n as an interactive component for users to play with. The tags obtained from community detection could be analysed with the nodes attributes.</p>
 <div class="cell" data-fig.asp="0.618">
 <details>
 <summary>Show the code</summary>
@@ -1240,6 +1248,7 @@ Interactivity features of this graph
 <span id="cb37-10"><a href="#cb37-10"></a>  <span class="fu">rename</span>(<span class="at">group =</span> out_deg_grp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+<p>The code chunk below plots the interactive graph.</p>
 <div class="cell" data-fig.asp="0.618">
 <details>
 <summary>Show the code</summary>
@@ -1313,7 +1322,7 @@ Interactivity features of this graph
 </details>
 </div>
 <p>We are finally ready to plot….</p>
-<div class="cell">
+<div class="cell" data-fig.asp="0.618">
 <details>
 <summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a>playa <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
@@ -1337,12 +1346,13 @@ Interactivity features of this graph
 <span id="cb43-19"><a href="#cb43-19"></a>               <span class="at">date_labels =</span> <span class="st">"%b"</span>) <span class="sc">+</span></span>
 <span id="cb43-20"><a href="#cb43-20"></a>  <span class="fu">xlab</span>(<span class="st">'Date'</span>) <span class="sc">+</span></span>
 <span id="cb43-21"><a href="#cb43-21"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb43-22"><a href="#cb43-22"></a>  <span class="fu">ggtitle</span>(<span class="st">'Weight of goods trade by Playa del Tesoro OJSC from 2028 to 2034'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb43-22"><a href="#cb43-22"></a>  <span class="fu">ggtitle</span>(<span class="st">'Number of trade by Playa del Tesoro OJSC from 2028 to 2034'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Take-home_Ex02_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid" width="672"></p>
+<p><img src="Take-home_Ex02_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid" width="1152"></p>
 </div>
 </div>
+<p>Blue regions represents cold trading intervals while red regions represents high trading occurrence for this company. The chart is faceted by year. Observe that the company was cold from Apr 2031 to May 2033 and trading occurrence pick up in the last quarter of 2033.</p>
 </section>
 <section id="interactive-graph-grouped-by-community" class="level2">
 <h2 class="anchored" data-anchor-id="interactive-graph-grouped-by-community">3.5 Interactive graph grouped by community</h2>
@@ -1380,7 +1390,10 @@ Interactivity features of this graph
 <div class="cell">
 
 </div>
-<p>References:</p>
+</section>
+</section>
+<section id="references" class="level1">
+<h1>4 References</h1>
 <p>https://hohenfeld.is/posts/graphs-are-fun-an-introduction-to-graphs-in-r/</p>
 <p>On ggraph edgelink</p>
 <p>https://cran.r-project.org/web/packages/ggraph/vignettes/Edges.html</p>
@@ -1388,7 +1401,6 @@ Interactivity features of this graph
 <p>http://datastorm-open.github.io/visNetwork/</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->

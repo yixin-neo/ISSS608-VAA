@@ -86,7 +86,8 @@ The new libraries used today are :
 ```{r}
 pacman::p_load(jsonlite, igraph, tidygraph, ggraph,
                visNetwork, lubridate, clock,
-               tidyverse, graphlayouts,knitr,plotly, ggHoriPlot, ggthemes,treemap)
+               tidyverse, graphlayouts,knitr,plotly, 
+               ggHoriPlot, ggthemes,hrbrthemes,treemap,patchwork, ggiraph)
 ```
 
 ```{r}
@@ -362,7 +363,7 @@ We can run the code below to check that seafood_graph is a connected graph:
 is.connected(seafood_graph)
 ```
 
-## 2.6 Calculate the various centrality measures of seafood_graph. 
+## 2.6 Calculate the various centrality measures of seafood_graph.
 
 The top 10 nodes with reference to various centrality scores are printed using `kable()` function from `knitr`.
 
@@ -537,7 +538,230 @@ visNetwork(nodes_seafood_vis,
 \(7\) Click and Drag on the graph to move the canvas around, will also temporary disable the edge lines.
 :::
 
-## 3.2 Interactive graph grouped by OUT-DEGREE CENTRALITY scores
+From the plot above, we can see there are a few top shipping companies that has high interactions with receiving companies. Try selecting '1001 - 2000' from the group drop down list, we will see three companies with similar range of 'in-deg' centrality scores. The company with the highest 'in-deg' centrality score is 'Fresh Wharf SRL Consulting', but note that it receives only from one shipping company 'Playa del Tesoro OJSC' , that ships only to two companies.
+
+## 3.2 Temporal analysis of top 10 'in-deg' centrality companies in trading occurrence over the years
+
+Use the code chunk below to get top 10 receiving companies. As
+
+```{r}
+top_10_in_list <- mc2_seafood_edges_agg_vis %>%  
+  group_by(to) %>%  
+  summarise(Allweight = sum(Weight)) %>% 
+  arrange(desc(Allweight)) %>% top_n(10) %>%
+  pull(to)
+
+
+kable(top_10_in_list)
+```
+
+Subset the dataset to filter records from top 10 receiving companies
+
+```{r}
+top_10_indeg <- mc2_seafood_edges_agg_vis %>%
+  filter(to %in% top_10_in_list)
+```
+
+Next, filter records where Weight value does not fall in outlier regions
+
+```{r}
+cutpoints_top10_indeg <- top_10_indeg  %>% 
+  mutate(
+    outlier = between(
+      Weight, 
+      quantile(Weight, 0.25, na.rm=T)-
+        1.5*IQR(Weight, na.rm=T),
+      quantile(Weight, 0.75, na.rm=T)+
+        1.5*IQR(Weight, na.rm=T))) %>% 
+  filter(outlier)
+```
+
+Set the fold value by finding the midpoint of the max and min Weight values for the entire Horizon plot. the ori value will be used in the origin parameter which indicates the origin of the horizon plot.
+
+Then set the intervals of Weighs value using the seq() function. The sca vector will be used to colour the horizon plot later by using the parameter fill.
+
+```{r}
+ori <- sum(range(top_10_indeg$Weight))/2
+
+sca <- seq(range(top_10_indeg$Weight)[1], 
+           range(top_10_indeg$Weight)[2], 
+           length.out = 7)[-4]
+```
+
+Last preparation to do would be to fix the arrivaldate column such that all the year value are the same (for the purpose for plotting horizon chart later). All the year values will get a default '2021'.
+
+```{r}
+top_10_indeg$mine_date <- sprintf("2021-%s-%s", substr(top_10_indeg$arrivaldate, 6, 7), substr(top_10_indeg$arrivaldate, 9, 10))
+
+top_10_indeg$mine_date <- as.Date(top_10_indeg$mine_date)
+
+```
+
+Plotting the horizon plot
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+top_10_indeg %>% ggplot() +
+  geom_horizon(aes(arrivaldate, 
+                   Weight,
+                   fill = ..Cutpoints..), 
+               origin = ori, horizonscale = sca) +
+  scale_fill_hcl(palette = 'RdBu', reverse = T) +
+  facet_grid(to~.) +
+  theme_few() +
+  theme(
+    panel.spacing.y=unit(0, "lines"),
+    strip.text.y = element_text(size = 7, angle = 0, hjust = 0),
+    axis.text.y = element_blank(),
+    axis.title.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.border = element_blank()
+    ) +
+  scale_x_date(expand=c(0,0), 
+               date_breaks = "3 month",
+               date_labels = "%b %Y") +
+  xlab('Date') +
+  ggtitle('Trading interactions of top 10 receving companies from 2028 to 2034') +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 6))
+```
+
+Analysis of the plot above:
+
+Fresh Wharf SRL Consulting exhibits similar patterns to top shipping company Playa because of their close trading patterns.
+
+## 3.3 Trading patterns of Volga River LLC Enterprises
+
+Let us examine the trading patterns of Volga River LLC Enterprises, the second top ''in-deg' company with its four suppliers (as seen from the interactive graph).
+
+First, filter records with only Volga River LLC Enterprises and its suppliers.
+
+```{r}
+ volga_in_df<- mc2_seafood_edges_agg_vis %>%
+  filter(to %in% 'Volga River LLC Enterprises')
+```
+
+Next, plot a time series using `geom_line()` and `geom_point()`.
+
+```{r}
+#| fig-width: 12
+#| fig-height: 12
+volga_in<- ggplot(volga_in_df, aes(x=arrivaldate, y=Weight)) +
+  geom_line( color="steelblue", size = 0.5) + 
+  geom_point(size = 0.3) +
+  xlab("") +
+  facet_wrap(~from, ncol = 1)+
+  theme_light() +
+  theme(panel.spacing = unit(2, "lines"),
+        axis.text.x=element_text(angle=60, hjust=1),
+        panel.grid.major.x = element_blank()) +
+  scale_x_date(
+    breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), by = "3 months"),
+    labels = function(x) format(x, "%b %Y")) +
+  labs(title='Volga River LLC Enterprises activity with suppliers', 
+         x = 'Date',
+         y='Number of trading occurrence')
+
+volga_in
+
+#ggplotly(volga_in)
+```
+
+```{r}
+#| fig-width: 12
+#| fig-height: 24
+volga_in1<- ggplot(volga_in_df %>% filter(from=='Estrella de la Costa SRL'), aes(x=arrivaldate, y=Weight)) +
+  geom_line( color="steelblue", size = 0.8) + 
+  geom_point_interactive(aes(tooltip= Weight), 
+                           size = 0.5) +
+  xlab("") +
+  #facet_wrap(~from, ncol = 1)+
+  theme_light() +
+  theme(#panel.spacing = unit(2, "lines"),
+        axis.text.x=element_text(angle=60, hjust=1),
+        panel.grid.major.x = element_blank()) +
+  scale_x_date(
+    breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), by = "3 months"),
+    labels = function(x) format(x, "%b %Y")) +
+  labs(title='Estrella de la Costa SRL', 
+         x = 'Date',
+         y='Number of trading occurrence')
+
+volga_in2<- ggplot(volga_in_df %>% filter(from=='Náutica del Sol Brothers'), aes(x=arrivaldate, y=Weight)) +
+  geom_line( color="steelblue", size = 0.8) + 
+  geom_point_interactive(aes(tooltip= Weight),
+                           size = 0.5) +
+  xlab("") +
+  #facet_wrap(~from, ncol = 1)+
+  theme_light() +
+  theme(#panel.spacing = unit(2, "lines"),
+        axis.text.x=element_text(angle=60, hjust=1),
+        panel.grid.major.x = element_blank()) +
+  scale_x_date(
+    breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), 
+                 by = "3 months"),
+    limits = c(as.Date("2028-01-01"), as.Date("2034-12-31")),
+    labels = function(x) format(x, "%b %Y")) +
+   scale_y_continuous(
+    limits = c(0, 30),  # Set the y-axis limits
+    breaks = seq(0, 30, by = 5),  # Set the y-axis breaks at intervals of 5
+    #minor_breaks = seq(0, 30, by = 1),  # Set the y-axis minor breaks at intervals of 1
+    expand = c(0, 0)  # Remove padding around the y-axis limits
+  )
+      
+  labs(title='Náutica del Sol Brothers', 
+         x = 'Date',
+         y='Number of trading occurrence')
+
+volga_in3<- ggplot(volga_in_df %>% filter(from=='Pez Dorado Inc Freight'), aes(x=arrivaldate, y=Weight)) +
+  geom_line( color="steelblue", size = 0.8) + 
+  geom_point_interactive(aes(tooltip= Weight),
+                           size = 0.5) +
+  xlab("") +
+  #facet_wrap(~from, ncol = 1)+
+  theme_light() +
+  theme(#panel.spacing = unit(2, "lines"),
+        axis.text.x=element_text(angle=60, hjust=1),
+        panel.grid.major.x = element_blank()) +
+  scale_x_date(
+    breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), by = "3 months"),
+    limits = c(as.Date("2028-01-01"), as.Date("2034-12-31")),
+    labels = function(x) format(x, "%b %Y")) +
+  labs(title='Pez Dorado Inc Freight', 
+         x = 'Date',
+         y='Number of trading occurrence')
+
+volga_in4<- ggplot(volga_in_df %>% filter(from=='Seaside Summit SE Merchants'), aes(x=arrivaldate, y=Weight)) +
+  geom_line( color="steelblue", size = 0.8) + 
+  geom_point_interactive(aes(tooltip= Weight),
+                           size = 0.5) +
+  xlab("") +
+  #facet_wrap(~from, ncol = 1)+
+  theme_light() +
+  theme(#panel.spacing = unit(2, "lines"),
+        axis.text.x=element_text(angle=60, hjust=1),
+        panel.grid.major.x = element_blank()) +
+  scale_x_date(
+    breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), by = "3 months"),
+    limits = c(as.Date("2028-01-01"), as.Date("2034-12-31")),
+    labels = function(x) format(x, "%b %Y")) +
+  labs(title='Seaside Summit SE Merchants', 
+         x = 'Date',
+         y='Number of trading occurrence')
+
+girafe(code = print(volga_in1 / volga_in2 / volga_in3 / volga_in4),
+       #width_svg = 6,
+       height_svg =6,
+       options = list(
+         opts_hover(css = "fill: #202020;"),
+         opts_hover_inv(css = "opacity:0.2;")
+         )
+       ) 
+```
+
+Analysis of the plot above: In the earlier years, Volga River LLC Enterprises receives goods from three shipping companies. However, it has been receiving only from Estrella de la Coasta SRL very frequently from 2032 Nov onwards. For our group project we can consider creating drop down list of 'receiving companies' for user to see each of their trading patterns with their suppliers.
+
+## 3.4 Interactive graph grouped by OUT-DEGREE CENTRALITY scores
 
 The code chunk below binned the out-deg scores into intervals of 50 using the `cut()` function. Next, rename the `group` column back to `in-deg` column followed by `out_deg_grp` column to `group` column for VisNetwork to colour nodes by out-deg intervals.
 
@@ -724,89 +948,6 @@ top10_outdeg %>% ggplot() +
 Analysis of the plot above:
 
 Observe the different shipping companies were active for different periods of time. Most of them have low interactions consistently throughout 2028-2034 (Like Estrella, Oceanic and Shou gan) while some have stop activity for some time (like Gujarat, Nautica and Diao er). The most unique of all is Playa del Tesoro OJSC - some of it interactions are extremely high for a specific period of time.
-
-## 
-
-3.5 Temporal analysis of top 10 'in-deg' centrality companies in trading occurrence over the years
-
-Use the code chunk below to get top 10 receiving companies
-
-```{r}
-top_10_in_list <- mc2_seafood_edges_agg_vis %>%  
-  group_by(to) %>%  
-  summarise(Allweight = sum(Weight)) %>% 
-  arrange(desc(Allweight)) %>% top_n(10) %>%
-  pull(to)
-```
-
-```{r}
-kable(top_10_in_list)
-```
-
-Subset the dataset to filter records from top 10 receiving companies
-
-```{r}
-top_10_indeg <- mc2_seafood_edges_agg_vis %>%
-  filter(to %in% top_10_in_list)
-
-```
-
-Repeat steps explained earlier
-
-```{r}
-cutpoints_top10_indeg <- top_10_indeg  %>% 
-  mutate(
-    outlier = between(
-      Weight, 
-      quantile(Weight, 0.25, na.rm=T)-
-        1.5*IQR(Weight, na.rm=T),
-      quantile(Weight, 0.75, na.rm=T)+
-        1.5*IQR(Weight, na.rm=T))) %>% 
-  filter(outlier)
-
-ori <- sum(range(top_10_indeg$Weight))/2
-
-sca <- seq(range(top_10_indeg$Weight)[1], 
-           range(top_10_indeg$Weight)[2], 
-           length.out = 7)[-4]
-
-top_10_indeg$mine_date <- sprintf("2021-%s-%s", substr(top_10_indeg$arrivaldate, 6, 7), substr(top_10_indeg$arrivaldate, 9, 10))
-
-top_10_indeg$mine_date <- as.Date(top_10_indeg$mine_date)
-```
-
-Plotting the horizon plot
-
-```{r}
-#| fig-width: 12
-#| fig-asp: 0.618
-top_10_indeg %>% ggplot() +
-  geom_horizon(aes(arrivaldate, 
-                   Weight,
-                   fill = ..Cutpoints..), 
-               origin = ori, horizonscale = sca) +
-  scale_fill_hcl(palette = 'RdBu', reverse = T) +
-  facet_grid(to~.) +
-  theme_few() +
-  theme(
-    panel.spacing.y=unit(0, "lines"),
-    strip.text.y = element_text(size = 7, angle = 0, hjust = 0),
-    axis.text.y = element_blank(),
-    axis.title.y = element_blank(),
-    axis.ticks.y = element_blank(),
-    panel.border = element_blank()
-    ) +
-  scale_x_date(expand=c(0,0), 
-               date_breaks = "3 month",
-               date_labels = "%b %Y") +
-  xlab('Date') +
-  ggtitle('Trading interactions of top 10 receving companies from 2028 to 2034') +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 6))
-```
-
-Analysis of the plot above:
-
-Fresh Wharf SRL Consulting exhibits similar patterns to top shipping company Playa because of their close trading patterns.
 
 ## 3.6 Treemap of business relationship between shipping and receiving companies
 

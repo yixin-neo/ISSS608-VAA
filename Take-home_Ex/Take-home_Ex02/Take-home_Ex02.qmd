@@ -411,9 +411,8 @@ seafood_graph %>%
 ```
 
 ```{r}
-# SECTION HAS BEEN REMOVED
-#| echo: false
 #| eval: false
+#| echo: false
 #| fig-width: 12
 #| fig-asp: 0.618
 set.seed (1234)
@@ -430,9 +429,8 @@ a + theme_graph()
 ```
 
 ```{r}
-# SECTION HAS BEEN REMOVED
-#| echo: false
 #| eval: false
+#| echo: false
 #| fig-width: 12
 #| fig-asp: 0.618
 
@@ -581,45 +579,9 @@ visNetwork(nodes_seafood_vis,
 
 The chart highlights actors with high out-deg centrality scores over 2028 to 2034.
 
-## 3.3 Treemap of business relationship between shipping and receiving companies
+## 3.3 Temporal analysis of top shipping company in trading occurrence over the years
 
-We somewhat know the high 'in-deg' and 'out-deg' scores of the filtered dataset. Lets us try to find business patterns by using a treemap.
-
-The code chunk below groups the data by `from` and `to` columns and aggregating the `TotalInteractions` and `MedianCargoWeight_daily` between each pair shipping and receiving company by hscode.
-
-```{r}
-seafood_tree <-mc2_seafood_edges_agg_vis %>% 
-  group_by(from,to,hscode) %>% 
-  summarise(TotalInteractions=sum(Weight),
-            MedianCargoWeight_daily= median(Totalweight)) %>% 
-  ungroup() %>% 
-  arrange(desc(TotalInteractions))
-```
-
-The code chunk below plots the treemap using the `treemap` library.
-
-```{r}
-#| fig-width: 12
-#| fig-asp: 0.618
-tm<- treemap(seafood_tree,
-        index=c("from", "to"),
-        vSize="TotalInteractions",
-        vColor="MedianCargoWeight_daily",
-        type="value",
-        palette="RdYlBu", 
-        algorithm = "squarified",
-        title='Shipping and receiving companies interaction pattern',
-        title.legend = "Median Cargo Weight per day"
-        )
-```
-
-The most outer layer refers to shipping companies while the tiles within represents the companies that they shipped their goods to. The bigger the tile size, the more the interaction. The darker the colour, the greater the daily median cargo weight.
-
-The largest player here is 'Playa del Tesoro OJSC' (no pun intended) and it ships in high frequency and large volume only to one receiving compmany called 'Fresh Wharf SRL Consulting' over the years 2028 to 2034.
-
-## 3.4 Temporal analysis of top company in trading occurrence over the years
-
-Let us visualise the horizon plot of the number of trading activities of the top 3 companies over the years.
+Let us visualise the horizon plot of the number of trading activities of the top shipping company over the years.
 
 Creating horizon plots for Playa del Tesoro OJSC company.. First filter records of this company.
 
@@ -692,7 +654,7 @@ playa %>% ggplot() +
 
 Blue regions represents cold trading intervals while red regions represents high trading occurrence for this company. The chart is faceted by year. Observe that the company was cold from Apr 2031 to May 2033 and trading occurrence pick up in the last quarter of 2033.
 
-## 3.5 Temporal analysis of top 10 'out-deg' centrality companies in trading occurrence over the years
+## 3.4 Temporal analysis of top 10 'out-deg' centrality companies in trading occurrence over the years
 
 Use the code chunk below to get the top 10 shipping companies
 
@@ -759,9 +721,130 @@ top10_outdeg %>% ggplot() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 6))
 ```
 
-Analysis of the plot above: TBC....
+Analysis of the plot above:
 
-## 3.6 Interactive graph grouped by community
+Observe the different shipping companies were active for different periods of time. Most of them have low interactions consistently throughout 2028-2034 (Like Estrella, Oceanic and Shou gan) while some have stop activity for some time (like Gujarat, Nautica and Diao er). The most unique of all is Playa del Tesoro OJSC - some of it interactions are extremely high for a specific period of time.
+
+## 
+
+3.5 Temporal analysis of top 10 'in-deg' centrality companies in trading occurrence over the years
+
+Use the code chunk below to get top 10 receiving companies
+
+```{r}
+top_10_in_list <- mc2_seafood_edges_agg_vis %>%  
+  group_by(to) %>%  
+  summarise(Allweight = sum(Weight)) %>% 
+  arrange(desc(Allweight)) %>% top_n(10) %>%
+  pull(to)
+```
+
+```{r}
+kable(top_10_in_list)
+```
+
+Subset the dataset to filter records from top 10 receiving companies
+
+```{r}
+top_10_indeg <- mc2_seafood_edges_agg_vis %>%
+  filter(to %in% top_10_in_list)
+
+```
+
+Repeat steps explained earlier
+
+```{r}
+cutpoints_top10_indeg <- top_10_indeg  %>% 
+  mutate(
+    outlier = between(
+      Weight, 
+      quantile(Weight, 0.25, na.rm=T)-
+        1.5*IQR(Weight, na.rm=T),
+      quantile(Weight, 0.75, na.rm=T)+
+        1.5*IQR(Weight, na.rm=T))) %>% 
+  filter(outlier)
+
+ori <- sum(range(top_10_indeg$Weight))/2
+
+sca <- seq(range(top_10_indeg$Weight)[1], 
+           range(top_10_indeg$Weight)[2], 
+           length.out = 7)[-4]
+
+top_10_indeg$mine_date <- sprintf("2021-%s-%s", substr(top_10_indeg$arrivaldate, 6, 7), substr(top_10_indeg$arrivaldate, 9, 10))
+
+top_10_indeg$mine_date <- as.Date(top_10_indeg$mine_date)
+```
+
+Plotting the horizon plot
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+top_10_indeg %>% ggplot() +
+  geom_horizon(aes(arrivaldate, 
+                   Weight,
+                   fill = ..Cutpoints..), 
+               origin = ori, horizonscale = sca) +
+  scale_fill_hcl(palette = 'RdBu', reverse = T) +
+  facet_grid(to~.) +
+  theme_few() +
+  theme(
+    panel.spacing.y=unit(0, "lines"),
+    strip.text.y = element_text(size = 7, angle = 0, hjust = 0),
+    axis.text.y = element_blank(),
+    axis.title.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.border = element_blank()
+    ) +
+  scale_x_date(expand=c(0,0), 
+               date_breaks = "3 month",
+               date_labels = "%b %Y") +
+  xlab('Date') +
+  ggtitle('Trading interactions of top 10 receving companies from 2028 to 2034') +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 6))
+```
+
+Analysis of the plot above:
+
+Fresh Wharf SRL Consulting exhibits similar patterns to top shipping company Playa because of their close trading patterns.
+
+## 3.6 Treemap of business relationship between shipping and receiving companies
+
+We somewhat know the high 'in-deg' and 'out-deg' scores of the filtered dataset. Lets us try to find business patterns by using a treemap.
+
+The code chunk below groups the data by from and to columns and aggregating the TotalInteractions and MedianCargoWeight_daily between each pair shipping and receiving company by hscode.
+
+```{r}
+seafood_tree <-mc2_seafood_edges_agg_vis %>% 
+  group_by(from,to,hscode) %>% 
+  summarise(TotalInteractions=sum(Weight),
+            MedianCargoWeight_daily= median(Totalweight)) %>% 
+  ungroup() %>% 
+  arrange(desc(TotalInteractions))
+```
+
+The code chunk below plots the treemap using the treemap library.
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+tm<- treemap(seafood_tree,
+        index=c("from", "to"),
+        vSize="TotalInteractions",
+        vColor="MedianCargoWeight_daily",
+        type="value",
+        palette="RdYlBu", 
+        algorithm = "squarified",
+        title='Shipping and receiving companies interaction pattern',
+        title.legend = "Median Cargo Weight per day"
+        )
+```
+
+The most outer layer refers to shipping companies while the tiles within represents the companies that they shipped their goods to. The bigger the tile size, the more the interaction. The darker the colour, the greater the daily median cargo weight.
+
+The largest player here is 'Playa del Tesoro OJSC' (no pun intended) and it ships in high frequency and large volume mainly to one receiving compmany called 'Fresh Wharf SRL Consulting' over the years 2028 to 2034.
+
+## 3.7 Interactive graph grouped by community
 
 Are there communities inside this network graph?
 

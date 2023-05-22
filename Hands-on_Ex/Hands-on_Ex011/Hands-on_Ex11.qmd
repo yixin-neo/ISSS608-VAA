@@ -34,7 +34,8 @@ Before you get started, you are required:
 Next, you will use the code chunk below to install and launch **seriation**, **heatmaply**, **dendextend** and **tidyverse** in RStudio.
 
 ```{r}
-pacman::p_load(seriation, dendextend, heatmaply, tidyverse)
+pacman::p_load(seriation, dendextend, heatmaply, tidyverse, lubridate, clock,
+               knitr,plotly,ggthemes, treemap)
 ```
 
 ### 14.3.1 Importing the data set
@@ -316,4 +317,93 @@ heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
           xlab = "World Happiness Indicators",
           ylab = "World Countries"
           )
+```
+
+On take-home2
+
+```{r}
+mc2_seafood_edges_agg_vis<- readRDS("C:/yixin-neo/ISSS608-VAA/Project/data/mc2_seafood_edges_agg_vis.rds")
+```
+
+```{r}
+bet_ent <- mc2_seafood_edges_agg_vis %>% 
+  group_by(from,to) %>% 
+  summarise(Weight=sum(Weight)) %>% 
+  ungroup() %>% 
+  arrange(desc(Weight))
+```
+
+```{r}
+top10_bet_ent <- bet_ent %>% 
+  pivot_wider(names_from = to, values_from = Weight)
+```
+
+```{r}
+top10_bet_ent <- replace(top10_bet_ent, is.na(top10_bet_ent), 0)
+```
+
+```{r}
+row.names(top10_bet_ent) <- top10_bet_ent$from
+```
+
+```{r}
+top10_bet_ent_matrix <- data.matrix(top10_bet_ent)
+```
+
+```{r}
+#| fig-width: 12
+#| fig-height: 24
+heatmap(top10_bet_ent_matrix[, -c(1)],
+        
+        Rowv=NA, 
+        Colv=NA,
+        scale = 'column',
+        margins = c(15,12),
+        xlab = "Receiving companies", ylab =  "Shipping companies",
+              main = "Heat map of business relationship"
+        )
+```
+
+Tree Map
+
+```{r}
+#| eval: false
+#| echo: false
+install.packages("devtools")
+```
+
+```{r}
+#| eval: false
+#| echo: false
+library(devtools)
+install_github("timelyportfolio/d3treeR")
+```
+
+```{r}
+seafood_tree <-mc2_seafood_edges_agg_vis %>% 
+  group_by(from,to,hscode) %>% 
+  summarise(TotalInteractions=sum(Weight),
+            MedianCargoWeight_daily= median(Totalweight)) %>% 
+  ungroup() %>% 
+  arrange(desc(TotalInteractions))
+```
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+tm<- treemap(seafood_tree,
+        index=c("from", "to"),
+        vSize="TotalInteractions",
+        vColor="MedianCargoWeight_daily",
+        type="value",
+        palette="RdYlBu", 
+        algorithm = "squarified",
+        title='Shipping and receiving companies relationship',
+        title.legend = "Median Cargo Weight per day"
+        )
+```
+
+```{r}
+library(d3treeR)
+d3tree(tm,rootname = "Shipping companies" )
 ```

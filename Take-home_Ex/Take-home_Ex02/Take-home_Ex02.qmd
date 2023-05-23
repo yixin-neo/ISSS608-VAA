@@ -1045,7 +1045,9 @@ ggbetweenstats(data = nodes_seafood_vis %>% filter(rcvcountry %in% c("Utoporiana
                                   vjust=0.9))
 ```
 
-Another section --- work in progress
+Scatter plot of number of interaction and trading period between pairs of companies.
+
+WORK IN PROGRESS
 
 ```{r}
 cor <- mc2_seafood_edges_agg_vis %>% 
@@ -1055,10 +1057,6 @@ cor <- mc2_seafood_edges_agg_vis %>%
             median_interaction = median(Weight)) %>% 
   ungroup() %>% 
   arrange(trading_days)
-```
-
-```{r}
-kable(cor)
 ```
 
 Correlation graph
@@ -1082,6 +1080,8 @@ low_correl <- ggscatterstats(data = cor,
        x = "Days(365)", y = "Number of interactions") 
 low_correl
 ```
+
+We hope that from graphs like above, we can identify companies that has short period of interations but high number of interactions.
 
 ## 3.7 Treemap of business relationship between shipping and receiving companies
 

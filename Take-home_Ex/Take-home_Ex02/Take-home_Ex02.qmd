@@ -87,7 +87,8 @@ The new libraries used today are :
 pacman::p_load(jsonlite, igraph, tidygraph, ggraph,
                visNetwork, lubridate, clock,
                tidyverse, graphlayouts,knitr,plotly, 
-               ggHoriPlot, ggthemes,hrbrthemes,treemap,patchwork, ggiraph)
+               ggHoriPlot, ggthemes,hrbrthemes,treemap,patchwork, ggiraph,
+               ggstatsplot)
 ```
 
 ```{r}
@@ -234,6 +235,8 @@ mc2_seafood_edges<- MC2_edges_no_dup[grepl('^1605|^1604', MC2_edges_no_dup$hscod
 ```
 
 ## 2.3 Preparation of Edges
+
+We will perform a group by 'source', 'target' and 'arrivaldate' and aggregate the total count of interactions, 'Weight', between each pair of companies. We will not consider weight 10 and below. Because we are interested to see whether there are patterns of self-loops, we will not be removing any company shipping to itself.
 
 ```{r}
 #unique(mc2_seafood_edges$hscode)
@@ -630,7 +633,7 @@ Analysis of the plot above:
 
 ## 3.3 Trading patterns of Volga River LLC Enterprises
 
-Let us examine the trading patterns of 'Volga River LLC Enterprises', the third in place in terms of ''in-deg' company with its six suppliers (as seen from the interactive graph).
+Let us examine the trading patterns of 'Volga River LLC Enterprises', one of the few top leading companies in terms of ''in-deg' with its four biggest suppliers (as seen from the interactive graph).
 
 First, filter records with only Volga River LLC Enterprises and its suppliers.
 
@@ -639,46 +642,24 @@ First, filter records with only Volga River LLC Enterprises and its suppliers.
   filter(to %in% 'Volga River LLC Enterprises')
 ```
 
-Next, plot a time series using `geom_line()` and `geom_point()`.
+Next, plot a time series using `geom_line()` and `geom_point_interactive()`.
 
 ```{r}
 #| fig-width: 12
-#| fig-height: 20
-volga_in<- ggplot(volga_in_df, aes(x=arrivaldate, y=Weight)) +
-  geom_line( color="steelblue", size = 0.5) + 
-  geom_point(size = 0.3) +
-  xlab("") +
-  facet_wrap(~from, ncol = 1)+
-  theme_light() +
-  theme(panel.spacing = unit(2, "lines"),
-        axis.text.x=element_text(angle=60, hjust=1),
-        panel.grid.major.x = element_blank()) +
-  scale_x_date(
-    breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), by = "3 months"),
-    labels = function(x) format(x, "%b %Y")) +
-  labs(title='Volga River LLC Enterprises activity with suppliers', 
-         x = 'Date',
-         y='Number of trading occurrence')
+#| fig-height: 30
+volga_in_df <- volga_in_df %>% 
+  mutate(tooltip = paste0('# of interaction: ', Weight, '\nDate :', arrivaldate))
 
-volga_in
-
-#ggplotly(volga_in)
-```
-
-\[WORK IN PROGRESS\] trying to fix my interactive plot below..
-
-```{r}
-#| fig-width: 12
-#| fig-height: 24
 volga_in1<- ggplot(volga_in_df %>% filter(from=='Estrella de la Costa SRL'), aes(x=arrivaldate, y=Weight)) +
   geom_line( color="steelblue", size = 0.8) + 
-  geom_point_interactive(aes(tooltip= Weight), 
+  geom_point_interactive(aes(tooltip= tooltip), 
                          size = 0.5) +
   xlab("") +
   theme_light() +
   theme(#panel.spacing = unit(2, "lines"),
         axis.text.x=element_text(angle=60, hjust=1),
-        panel.grid.major.x = element_blank()) +
+        panel.grid.major.x = element_blank(),
+        axis.title.y = element_text(size = 10)) +
   scale_x_date(
     breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), by = "3 months"),
     labels = function(x) format(x, "%b %Y")) +
@@ -688,13 +669,14 @@ volga_in1<- ggplot(volga_in_df %>% filter(from=='Estrella de la Costa SRL'), aes
 
 volga_in2<- ggplot(volga_in_df %>% filter(from=='Náutica del Sol Brothers'), aes(x=arrivaldate, y=Weight)) +
   geom_line( color="steelblue", size = 0.8) + 
-  geom_point_interactive(aes(tooltip= Weight),
+  geom_point_interactive(aes(tooltip= tooltip),
                          size = 0.5) +
   xlab("") +
   theme_light() +
   theme(#panel.spacing = unit(2, "lines"),
         axis.text.x=element_text(angle=60, hjust=1),
-        panel.grid.major.x = element_blank()) +
+        panel.grid.major.x = element_blank(),
+        axis.title.y = element_text(size = 10)) +
   scale_x_date(
     breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), 
                  by = "3 months"),
@@ -714,13 +696,14 @@ volga_in2<- ggplot(volga_in_df %>% filter(from=='Náutica del Sol Brothers'), ae
 
 volga_in3<- ggplot(volga_in_df %>% filter(from=='Pez Dorado Inc Freight '), aes(x=arrivaldate, y=Weight)) +
   geom_line( color="steelblue", size = 0.8) + 
-  geom_point_interactive(aes(tooltip= Weight),
+  geom_point_interactive(aes(tooltip= tooltip),
                          size = 0.5) +
   xlab("") +
   theme_light() +
   theme(#panel.spacing = unit(2, "lines"),
         axis.text.x=element_text(angle=60, hjust=1),
-        panel.grid.major.x = element_blank()) +
+        panel.grid.major.x = element_blank(),
+        axis.title.y = element_text(size = 10)) +
   scale_x_date(
     breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), by = "3 months"),
     limits = c(as.Date("2028-01-01"), as.Date("2034-12-31")),
@@ -736,13 +719,14 @@ volga_in3<- ggplot(volga_in_df %>% filter(from=='Pez Dorado Inc Freight '), aes(
 
 volga_in4<- ggplot(volga_in_df %>% filter(from=='Seaside Summit SE Merchants'), aes(x=arrivaldate, y=Weight)) +
   geom_line( color="steelblue", size = 0.8) + 
-  geom_point_interactive(aes(tooltip= Weight),
+  geom_point_interactive(aes(tooltip= tooltip),
                          size = 0.5) +
   xlab("") +
   theme_light() +
   theme(#panel.spacing = unit(2, "lines"),
         axis.text.x=element_text(angle=60, hjust=1),
-        panel.grid.major.x = element_blank()) +
+        panel.grid.major.x = element_blank(),
+        axis.title.y = element_text(size = 10)) +
   scale_x_date(
     breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), by = "3 months"),
     limits = c(as.Date("2028-01-01"), as.Date("2034-12-31")),
@@ -755,9 +739,22 @@ volga_in4<- ggplot(volga_in_df %>% filter(from=='Seaside Summit SE Merchants'), 
        x = 'Date',
        y='Number of trading occurrence')
 
+girafe(code = print(volga_in1 / volga_in2 / volga_in3 / volga_in4),
+       #width_svg = 6,
+       height_svg =8,
+       options = list(
+         opts_hover(css = "fill: #202020;"),
+         opts_hover_inv(css = "opacity:0.2;")
+         )
+       ) 
+```
+
+```{r}
+#| eval: false
+#| echo: false
 volga_in5<- ggplot(volga_in_df %>% filter(from=='irish trout NV Carriers'), aes(x=arrivaldate, y=Weight)) +
   geom_line( color="steelblue", size = 0.8) + 
-  geom_point_interactive(aes(tooltip= Weight),
+  geom_point_interactive(aes(tooltip= tooltip),
                          size = 0.5) +
   xlab("") +
   theme_light() +
@@ -778,7 +775,7 @@ volga_in5<- ggplot(volga_in_df %>% filter(from=='irish trout NV Carriers'), aes(
 
 volga_in6<- ggplot(volga_in_df %>% filter(from=='Mar y Viento Abalone N.V. Marine conservation'), aes(x=arrivaldate, y=Weight)) +
   geom_line( color="steelblue", size = 0.8) + 
-  geom_point_interactive(aes(tooltip= Weight),
+  geom_point_interactive(aes(tooltip= tooltip),
                          size = 0.5) +
   xlab("") +
   theme_light() +
@@ -796,22 +793,11 @@ volga_in6<- ggplot(volga_in_df %>% filter(from=='Mar y Viento Abalone N.V. Marin
   labs(title='Mar y Viento Abalone N.V. Marine conservation', 
        x = 'Date',
        y='Number of trading occurrence')
-
-
-
-girafe(code = print(volga_in1 / volga_in2 / volga_in3 / volga_in4 / volga_in5 / volga_in6),
-       #width_svg = 6,
-       height_svg =8,
-       options = list(
-         opts_hover(css = "fill: #202020;"),
-         opts_hover_inv(css = "opacity:0.2;")
-         )
-       ) 
 ```
 
-Analysis of the plot above: In the earlier years, Volga River LLC Enterprises receives goods from three shipping companies. However, it has been receiving only from Estrella de la Coasta SRL very frequently from 2032 Nov onwards. There were two occurrence of interaction with 'Seaside Summit SE Merchants' which can be considered short and abrupt. It dawned on me that we can identify IUU companies that frequently close down and re-register their companies from the plot above. For such companies, I would expect the buyer's graph to show that buyer has been changing suppliers and over different time periods.
+Analysis of the plot above: Throughout the years, Volga River LLC Enterprises has interactions with Esstrella de la Coasta SRL, and with spikes in interaction in recent years. There were four interactions with 'Seaside Summit SE Merchants' and only 3 interactions with Nautical del Sol Brothers; these are considered short and abrupt interactions. It dawned on me that we can identify IUU companies that frequently close down and re-register their companies from the tye of plot above. For such companies, I would expect the buyer's graph to show that buyer has been changing suppliers very frequently.
 
-For our group project we can consider creating drop down list of 'buying companies' for user to interact with and see each of the buyers interaction with their suppliers over the years.
+For our group project we can consider creating drop down list of 'buying companies' for user to interact with and see each of the buyer's interaction with their top n suppliers over the years. A coordinated view can be created with social network graph such that when a buyer / supplier node is selected on the network graph, its trading activity over time with top n suppliers/ buyers is automatically generated.
 
 ## 3.4 Interactive graph grouped by OUT-DEGREE CENTRALITY scores
 
@@ -1013,7 +999,91 @@ Analysis of the plot above:
 
 Observe the different shipping companies were active for different period of time. Most of them have low interactions consistently throughout 2028-2034 (Like 'Estrella', 'Oceanic' and 'Shou gan') while some have stopped activity for some time (like 'Gujarat', 'Nautica' and 'Diao er'). The most unique of all is 'Playa del Tesoro OJSC' - some of it interactions are extremely high for a specific period of time. To capture suspicious companies that are in operation for only a short period of time, we can consider plotting more horizon plots.
 
-## 3.6 Treemap of business relationship between shipping and receiving companies
+## 3.6 Comparison of centrality values across shipping countries
+
+In this section, we will compare the centrality values of companies from different countries.
+
+```{r}
+nodes_seafood_vis %>% 
+  group_by(shpcountry) %>% 
+  summarise(med = median(out_deg_centrality)) %>% 
+  arrange(desc(med)) %>% 
+  head(n=5)
+```
+
+```{r}
+ggbetweenstats(data = nodes_seafood_vis %>% filter(shpcountry %in% c("Quirinelle", "Isla Solmar", "Osterivella", "Mawazam", "Kondanovia")), x = shpcountry, y = out_deg_centrality,
+               xlab = "Shipping Country", ylab = "Out-Deg centrality",
+               type = "np", pairwise.comparisons = TRUE, pairwise.display = "s",
+               sort = "descending",
+               sort.fun = median,
+               mean.ci = T, p.adjust.method = "fdr",  conf.level = 0.95,
+               title = "Comparison of Median Out-Deg centrality across Shipping Countries") +
+  scale_y_continuous(limits = c(0, 4000)) +
+   theme(axis.title.y=element_text(angle = 0,
+                                  vjust=0.9))
+```
+
+```{r}
+nodes_seafood_vis %>% 
+  group_by(rcvcountry) %>% 
+  summarise(med = median(in_deg_centrality)) %>% 
+  arrange(desc(med)) %>% 
+  head(n=5)
+```
+
+```{r}
+ggbetweenstats(data = nodes_seafood_vis %>% filter(rcvcountry %in% c("Utoporiana", "Oceanus")), x = rcvcountry, y = in_deg_centrality,
+               xlab = "Shipping Country", ylab = "In-Deg centrality",
+               type = "np", pairwise.comparisons = TRUE, pairwise.display = "s",
+               sort = "descending",
+               sort.fun = median,
+               mean.ci = T, p.adjust.method = "fdr",  conf.level = 0.95,
+               title = "Comparison of Median In-Deg centrality across Shipping Countries") +
+  scale_y_continuous(limits = c(0, 200)) +
+   theme(axis.title.y=element_text(angle = 0,
+                                  vjust=0.9))
+```
+
+Another section --- work in progress
+
+```{r}
+cor <- mc2_seafood_edges_agg_vis %>% 
+  group_by(from, to) %>% 
+  summarise(trading_days=as.integer(max(arrivaldate)-min(arrivaldate)+1),
+            total_interaction = sum(Weight),
+            median_interaction = median(Weight)) %>% 
+  ungroup() %>% 
+  arrange(trading_days)
+```
+
+```{r}
+kable(cor)
+```
+
+Correlation graph
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+library(scales)
+low_correl <- ggscatterstats(data = cor, 
+                           x = trading_days, y = total_interaction,
+                           type = "nonparametric") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  scale_x_continuous(limits = c(0, 2600), 
+                     breaks=seq(0, 2600, 365), 
+                     labels= comma) + 
+  scale_y_continuous(limits = c(0, 6500), 
+                     breaks=seq(0, 6500, 1000), 
+                     labels= comma) +
+  
+  labs(title = "Number of interactions and period of trading (days)", 
+       x = "Days(365)", y = "Number of interactions") 
+low_correl
+```
+
+## 3.7 Treemap of business relationship between shipping and receiving companies
 
 We have almost come to the end of this exercise. Before we finish, lets build a treemap to get a high level view of the current status of this business (who are the bigger suppliers and their corresponding buyers).
 

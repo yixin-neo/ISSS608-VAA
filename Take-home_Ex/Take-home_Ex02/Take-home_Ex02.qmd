@@ -127,7 +127,37 @@ glimpse(MC2_edges)
 
 # 2 Data cleaning
 
-## 2.1 Check for null values
+## 2.1 Lets check for duplicates
+
+For MC2_nodes dataframe:
+
+There are no duplicated nodes, which is great.
+
+```{r}
+#| eval: false
+# check for any duplicates
+any(duplicated(MC2_nodes))
+```
+
+For MC2_edges dataframe:
+
+There are about 155291 records (2% out of total records) that are duplicated.
+
+```{r}
+#duplicated only
+# print(any(duplicated(MC2_edges)))
+MC2_edges_dup <- MC2_edges[duplicated(MC2_edges), ]
+print(nrow(MC2_edges_dup))
+```
+
+We will drop the duplicates.
+
+```{r}
+# Drop duplicate rows from the dataframe
+MC2_edges_no_dup <- MC2_edges[!duplicated(MC2_edges), ]
+```
+
+## 2.2 Check for null values
 
 Check whether each column in MC2_nodes and MC2_edges contains null and prints the percentage of null for each column.
 
@@ -156,22 +186,22 @@ We can see that the columns `valueofgoods_omu` and `volumeteu` are mainly null. 
 
 ```{r}
 # Check for null values in each column
-null_counts <- sapply(MC2_edges, function(x) sum(is.null(x) | is.na(x) | x==0))
+null_counts <- sapply(MC2_edges_no_dup, function(x) sum(is.null(x) | is.na(x) | x==0))
 
 # Calculate the percentage of null values for each column
-null_percentages <- null_counts / nrow(MC2_edges) * 100
+null_percentages <- null_counts / nrow(MC2_edges_no_dup) * 100
 
 # Display the results
 #print(null_percentages)
 
-knitr::kable(null_percentages, "simple", col.names = c("Null Percentage"))
+knitr::kable(null_percentages, "simple", col.names = c('Percentage null'))
 
 ```
 
 We will be dropping the `valueofgoods_omu` , `valueofgoodusd`and `volumeteu` columns from our dataframe.
 
 ```{r}
-MC2_edges <- MC2_edges %>% select('source','target', 'arrivaldate', 'hscode','weightkg')
+MC2_edges_no_dup <- MC2_edges_no_dup %>% select('source','target', 'arrivaldate', 'hscode','weightkg')
 ```
 
 ```{r}
@@ -179,41 +209,11 @@ MC2_edges <- MC2_edges %>% select('source','target', 'arrivaldate', 'hscode','we
 #| echo: false
 
 # Filter rows where 'source' column contains 0
-filtered_df <- MC2_edges %>% filter(source == 0)
+filtered_df <- MC2_edges_no_dup %>% filter(source == 0)
 
 # Display the filtered dataframe
 print(filtered_df)
 
-```
-
-## 2.2 Lets check for duplicates
-
-**For MC2_nodes dataframe:**
-
-There are no duplicated nodes, which is great.
-
-```{r}
-#| eval: false
-# check for nay duplicates
-any(duplicated(MC2_nodes))
-```
-
-**For MC2_edges dataframe:**
-
-There are about 273971 records (4% out of total records) that are duplicated.
-
-```{r}
-#duplicated only
-# print(any(duplicated(MC2_edges)))
-MC2_edges_dup <- MC2_edges[duplicated(MC2_edges), ]
-print(nrow(MC2_edges_dup))
-```
-
-We will drop the duplicates.
-
-```{r}
-# Drop duplicate rows from the dataframe
-MC2_edges_no_dup <- MC2_edges[!duplicated(MC2_edges), ]
 ```
 
 ### 1.3.3 Check on the HScodes
@@ -230,7 +230,6 @@ With reference to [World Custom Organisation Harmonized System codes](https://ww
 
 ```{r}
 mc2_seafood_edges<- MC2_edges_no_dup[grepl('^1605|^1604', MC2_edges_no_dup$hscode), ]
-#MC2_edges[startsWith(MC2_edges$hscode, "1601"), ]
 
 ```
 
@@ -244,7 +243,7 @@ mc2_seafood_edges_agg <- mc2_seafood_edges %>%
   summarise(Weight=n(),
             Totalweight = sum(weightkg),
             hscode=first(hscode)) %>% 
-  filter(Weight >=6) %>% 
+  filter(Weight >=10) %>% 
   ungroup()
 ```
 
@@ -284,7 +283,6 @@ valid_source <- names(frequency_table[frequency_table >= 5])
 # Subset the dataframe to keep only rows with valid values in 'col1'
 mc2_seafood_edges_agg <- mc2_seafood_edges_agg[mc2_seafood_edges_agg$source %in% valid_source, ]
 
-
 ```
 
 Next, remove target actors with frequency count less than 5:
@@ -308,11 +306,11 @@ Based on some checks on the dataset, there were three pairs of actors that exist
 
 ```{r}
 # Specify the values to be excluded
-values_to_exclude <- c('Rift Valley fishery OJSC', 'Bujagali Falls Pic Family', 'Neptune\'s Realm NV Navigation', 'Rybachit Sagl and Son\'s', 'Mar de la Aventura Rybachit', 'Olas del Sur Ltd')
+#values_to_exclude <- c('Rift Valley fishery OJSC', 'Bujagali Falls Pic Family', 'Neptune\'s Realm NV Navigation', 'Rybachit Sagl and Son\'s', 'Mar de la Aventura Rybachit', 'Olas del Sur Ltd')
 
 # Delete rows with specified values in 'from' or 'to' columns
-mc2_seafood_edges_agg <- mc2_seafood_edges_agg %>%
-  filter(!(source %in% values_to_exclude | target %in% values_to_exclude))
+#mc2_seafood_edges_agg <- mc2_seafood_edges_agg %>%
+  #filter(!(source %in% values_to_exclude | target %in% values_to_exclude))
 
 # Display the updated data frame
 #print(mc2_seafood_edges_agg)
@@ -383,7 +381,7 @@ seafood_graph<- seafood_graph %>%
                                         directed = TRUE)) %>% 
   mutate(community = as.factor(group_edge_betweenness(weights = Weight, 
                                                       directed = TRUE,
-                                                      n = 20)))
+                                                      n = 10)))
 
 ```
 
@@ -552,7 +550,7 @@ top_10_in_list <- mc2_seafood_edges_agg_vis %>%
   pull(to)
 
 
-kable(top_10_in_list)
+kable(top_10_in_list, col.names=c('Top 10 in-deg companies'))
 ```
 
 Subset the dataset to filter records from top 10 buyer companies
@@ -632,7 +630,7 @@ Analysis of the plot above:
 
 ## 3.3 Trading patterns of Volga River LLC Enterprises
 
-Let us examine the trading patterns of 'Volga River LLC Enterprises', the second top ''in-deg' company with its four suppliers (as seen from the interactive graph).
+Let us examine the trading patterns of 'Volga River LLC Enterprises', the third in place in terms of ''in-deg' company with its six suppliers (as seen from the interactive graph).
 
 First, filter records with only Volga River LLC Enterprises and its suppliers.
 
@@ -645,7 +643,7 @@ Next, plot a time series using `geom_line()` and `geom_point()`.
 
 ```{r}
 #| fig-width: 12
-#| fig-height: 12
+#| fig-height: 20
 volga_in<- ggplot(volga_in_df, aes(x=arrivaldate, y=Weight)) +
   geom_line( color="steelblue", size = 0.5) + 
   geom_point(size = 0.3) +
@@ -675,9 +673,8 @@ volga_in
 volga_in1<- ggplot(volga_in_df %>% filter(from=='Estrella de la Costa SRL'), aes(x=arrivaldate, y=Weight)) +
   geom_line( color="steelblue", size = 0.8) + 
   geom_point_interactive(aes(tooltip= Weight), 
-                           size = 0.5) +
+                         size = 0.5) +
   xlab("") +
-  #facet_wrap(~from, ncol = 1)+
   theme_light() +
   theme(#panel.spacing = unit(2, "lines"),
         axis.text.x=element_text(angle=60, hjust=1),
@@ -686,15 +683,14 @@ volga_in1<- ggplot(volga_in_df %>% filter(from=='Estrella de la Costa SRL'), aes
     breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), by = "3 months"),
     labels = function(x) format(x, "%b %Y")) +
   labs(title='Estrella de la Costa SRL', 
-         x = 'Date',
-         y='Number of trading occurrence')
+       x = 'Date',
+       y='Number of trading occurrence')
 
 volga_in2<- ggplot(volga_in_df %>% filter(from=='Náutica del Sol Brothers'), aes(x=arrivaldate, y=Weight)) +
   geom_line( color="steelblue", size = 0.8) + 
   geom_point_interactive(aes(tooltip= Weight),
-                           size = 0.5) +
+                         size = 0.5) +
   xlab("") +
-  #facet_wrap(~from, ncol = 1)+
   theme_light() +
   theme(#panel.spacing = unit(2, "lines"),
         axis.text.x=element_text(angle=60, hjust=1),
@@ -704,23 +700,23 @@ volga_in2<- ggplot(volga_in_df %>% filter(from=='Náutica del Sol Brothers'), ae
                  by = "3 months"),
     limits = c(as.Date("2028-01-01"), as.Date("2034-12-31")),
     labels = function(x) format(x, "%b %Y")) +
-   scale_y_continuous(
+  scale_y_continuous(
     limits = c(0, 30),  # Set the y-axis limits
     breaks = seq(0, 30, by = 5),  # Set the y-axis breaks at intervals of 5
     #minor_breaks = seq(0, 30, by = 1),  # Set the y-axis minor breaks at intervals of 1
-    expand = c(0, 0)  # Remove padding around the y-axis limits
-  )
+    expand = c(0, 0)) +  # Remove padding around the y-axis limits
+
       
   labs(title='Náutica del Sol Brothers', 
-         x = 'Date',
-         y='Number of trading occurrence')
+       x = 'Date',
+       y='Number of trading occurrence')
 
-volga_in3<- ggplot(volga_in_df %>% filter(from=='Pez Dorado Inc Freight'), aes(x=arrivaldate, y=Weight)) +
+
+volga_in3<- ggplot(volga_in_df %>% filter(from=='Pez Dorado Inc Freight '), aes(x=arrivaldate, y=Weight)) +
   geom_line( color="steelblue", size = 0.8) + 
   geom_point_interactive(aes(tooltip= Weight),
-                           size = 0.5) +
+                         size = 0.5) +
   xlab("") +
-  #facet_wrap(~from, ncol = 1)+
   theme_light() +
   theme(#panel.spacing = unit(2, "lines"),
         axis.text.x=element_text(angle=60, hjust=1),
@@ -729,16 +725,20 @@ volga_in3<- ggplot(volga_in_df %>% filter(from=='Pez Dorado Inc Freight'), aes(x
     breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), by = "3 months"),
     limits = c(as.Date("2028-01-01"), as.Date("2034-12-31")),
     labels = function(x) format(x, "%b %Y")) +
+  scale_y_continuous(
+    limits = c(0, 30),
+    breaks = seq(0, 30, by = 5), 
+    expand = c(0, 0)) +
+  
   labs(title='Pez Dorado Inc Freight', 
-         x = 'Date',
-         y='Number of trading occurrence')
+       x = 'Date',
+       y='Number of trading occurrence')
 
 volga_in4<- ggplot(volga_in_df %>% filter(from=='Seaside Summit SE Merchants'), aes(x=arrivaldate, y=Weight)) +
   geom_line( color="steelblue", size = 0.8) + 
   geom_point_interactive(aes(tooltip= Weight),
-                           size = 0.5) +
+                         size = 0.5) +
   xlab("") +
-  #facet_wrap(~from, ncol = 1)+
   theme_light() +
   theme(#panel.spacing = unit(2, "lines"),
         axis.text.x=element_text(angle=60, hjust=1),
@@ -747,13 +747,61 @@ volga_in4<- ggplot(volga_in_df %>% filter(from=='Seaside Summit SE Merchants'), 
     breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), by = "3 months"),
     limits = c(as.Date("2028-01-01"), as.Date("2034-12-31")),
     labels = function(x) format(x, "%b %Y")) +
+  scale_y_continuous(
+    limits = c(0, 30),
+    breaks = seq(0, 30, by = 5), 
+    expand = c(0, 0)) +
   labs(title='Seaside Summit SE Merchants', 
-         x = 'Date',
-         y='Number of trading occurrence')
+       x = 'Date',
+       y='Number of trading occurrence')
 
-girafe(code = print(volga_in1 / volga_in2 / volga_in3 / volga_in4),
+volga_in5<- ggplot(volga_in_df %>% filter(from=='irish trout NV Carriers'), aes(x=arrivaldate, y=Weight)) +
+  geom_line( color="steelblue", size = 0.8) + 
+  geom_point_interactive(aes(tooltip= Weight),
+                         size = 0.5) +
+  xlab("") +
+  theme_light() +
+  theme(#panel.spacing = unit(2, "lines"),
+        axis.text.x=element_text(angle=60, hjust=1),
+        panel.grid.major.x = element_blank()) +
+  scale_x_date(
+    breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), by = "3 months"),
+    limits = c(as.Date("2028-01-01"), as.Date("2034-12-31")),
+    labels = function(x) format(x, "%b %Y")) +
+  scale_y_continuous(
+    limits = c(0, 30),
+    breaks = seq(0, 30, by = 5), 
+    expand = c(0, 0)) +
+  labs(title='irish trout NV Carriers', 
+       x = 'Date',
+       y='Number of trading occurrence')
+
+volga_in6<- ggplot(volga_in_df %>% filter(from=='Mar y Viento Abalone N.V. Marine conservation'), aes(x=arrivaldate, y=Weight)) +
+  geom_line( color="steelblue", size = 0.8) + 
+  geom_point_interactive(aes(tooltip= Weight),
+                         size = 0.5) +
+  xlab("") +
+  theme_light() +
+  theme(#panel.spacing = unit(2, "lines"),
+        axis.text.x=element_text(angle=60, hjust=1),
+        panel.grid.major.x = element_blank()) +
+  scale_x_date(
+    breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), by = "3 months"),
+    limits = c(as.Date("2028-01-01"), as.Date("2034-12-31")),
+    labels = function(x) format(x, "%b %Y")) +
+  scale_y_continuous(
+    limits = c(0, 30),
+    breaks = seq(0, 30, by = 5), 
+    expand = c(0, 0)) +
+  labs(title='Mar y Viento Abalone N.V. Marine conservation', 
+       x = 'Date',
+       y='Number of trading occurrence')
+
+
+
+girafe(code = print(volga_in1 / volga_in2 / volga_in3 / volga_in4 / volga_in5 / volga_in6),
        #width_svg = 6,
-       height_svg =6,
+       height_svg =8,
        options = list(
          opts_hover(css = "fill: #202020;"),
          opts_hover_inv(css = "opacity:0.2;")
@@ -809,7 +857,7 @@ The chart highlights actors with high out-deg centrality scores over 2028 to 203
 
 ## 3.3 Temporal analysis of top supplier company in trading occurrence over the years
 
-Let us visualise the horizon plot of the number of trading activities of the top supplier company 'Playa del Tesoro OJSC ' over the years.
+Let us visualise the horizon plot of the number of trading activities of the top supplier company 'Playa del Tesoro OJSC' over the years.
 
 First filter records of this company.
 
@@ -880,7 +928,7 @@ playa %>% ggplot() +
   ggtitle('Trading interactions of Playa del Tesoro OJSC from 2028 to 2034')
 ```
 
-Blue regions represents cold trading intervals while red regions represents high trading occurrence for this company. The chart is faceted by year. Observe that the company was cold from Apr 2031 to May 2033 and trading occurrence pick up in the last quarter of 2033. This pattern with ocassional spikes is indeed unusual and some investigation could be done regarding this company and its buyer (discussed earlier).
+Blue regions represents cold trading intervals while red regions represents high trading occurrence for this company. The chart is faceted by year. Observe that the company was cold from Apr 2031 to May 2033 and trading occurrence pick up in the last quarter of 2033. This pattern with occassional spikes is indeed unusual and some investigation could be done regarding this company and its buyer (discussed earlier).
 
 ## 3.4 Temporal analysis of top 10 'out-deg' centrality companies in trading occurrence over the years
 
@@ -892,10 +940,20 @@ Use the code chunk below to get the top 10 supplier companies
 mc2_seafood_edges_agg_vis %>%  group_by(from) %>%  summarise(Allweight = sum(Weight)) %>% arrange(desc(Allweight))
 ```
 
+```{r}
+top_10_out_list <- mc2_seafood_edges_agg_vis %>%  
+  group_by(from) %>%  
+  summarise(Allweight = sum(Weight)) %>% 
+  arrange(desc(Allweight)) %>% top_n(10) %>%
+  pull(from)
+
+kable(top_10_out_list, col.names=c('Top 10 out-deg companies'))
+```
+
 Subset the entire dataset to filter records of these 10 companies
 
 ```{r}
-top10_outdeg <-subset(mc2_seafood_edges_agg_vis, from %in% c('Playa del Tesoro OJSC', 'Estrella de la Costa SRL', 'OceanicOrigin Foods Co Consulting', 'Náutica del Sol Brothers', 'Beachcomber\'s Bounty Sea spray', 'Mar de la Aventura Limited Liability Company', 'Shou gan  Oyj Overseas', 'Diao er  Limited Liability Company', 'Oceanfront Oasis Company Green ', 'Gujarat   Tide NV Solutions'))
+top10_outdeg <-subset(mc2_seafood_edges_agg_vis, from %in% top_10_out_list)
 ```
 
 Repeat the steps as explained previously to prepare for the horizon plot

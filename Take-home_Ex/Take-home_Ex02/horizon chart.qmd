@@ -1,5 +1,20 @@
 ---
 title: "gghorizon"
+author: "NYX"
+date: '22 May 2023'
+date-modified: "`r Sys.Date()`"
+editor: visual
+execute: 
+  freeze: auto
+  warning: false
+  #echo: false
+  #message: false
+format:
+  html:
+    code-fold: True
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
 ---
 
 ```{r}
@@ -266,4 +281,10 @@ top10_outdeg %>% ggplot() +
                date_labels = "%b") +
   xlab('Date') +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+TRYING FOR DISCONNECTED COMPONENETS
+
+```{r}
+mc2_seafood_edges_agg_vis_with_disconnected<- readRDS("C:/yixin-neo/ISSS608-VAA/Project/data/mc2_seafood_edges_agg_vis_withdisconnected.rds")
 ```

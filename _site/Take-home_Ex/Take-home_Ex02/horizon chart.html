@@ -6,6 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="NYX">
+<meta name="dcterms.date" content="2023-05-22">
 
 <title>NYX VA - gghorizon</title>
 <style>
@@ -183,6 +185,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex09/Hands-on_Ex09.html">
  <span class="dropdown-text">Hands-on Exercise 9</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex10/Hands-on_Ex10.qmd">
+ <span class="dropdown-text">Hands-on Exercise 10</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex11/Hands-on_Ex11.qmd">
+ <span class="dropdown-text">Hands-on Exercise 11</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex12/Hands-on_Ex12.qmd">
+ <span class="dropdown-text">Hands-on Exercise 12</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex13/Hands-on_Ex13.qmd">
+ <span class="dropdown-text">Hands-on Exercise 13</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -224,6 +242,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>
     <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html">
  <span class="dropdown-text">Take-home Exercise 2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex03/Take-home_Ex03.html">
+ <span class="dropdown-text">Take-home Exercise 3</span></a>
   </li>  
     </ul>
   </li>
@@ -307,9 +329,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../Hands-on_Ex/Hands-on_Ex09/Hands-on_Ex09.html" class="sidebar-item-text sidebar-link">Hands-on_Ex09</a>
+  <a href="../../Hands-on_Ex/Hands-on_Ex09/Hands-on_Ex09.html" class="sidebar-item-text sidebar-link">Hands-on_Ex09 (Week 6: Building Ternary Plot with R</a>
   </div>
 </li>
+          <li class="sidebar-item">
+  Hands-on_Ex/Hands-on_Ex10/Hands-on_Ex10.qmd
+  </li>
+          <li class="sidebar-item">
+  Hands-on_Ex/Hands-on_Ex11/Hands-on_Ex11.qmd
+  </li>
+          <li class="sidebar-item">
+  Hands-on_Ex/Hands-on_Ex12/Hands-on_Ex12.qmd
+  </li>
+          <li class="sidebar-item">
+  Hands-on_Ex/Hands-on_Ex13/Hands-on_Ex13.qmd
+  </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -365,6 +399,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <a href="../../Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html" class="sidebar-item-text sidebar-link">Take-home_Ex02</a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Take-home_Ex/Take-home_Ex03/Take-home_Ex03.html" class="sidebar-item-text sidebar-link">Take-home_Ex03</a>
+  </div>
+</li>
       </ul>
   </li>
     </ul>
@@ -392,8 +431,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>NYX </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">May 22, 2023</p>
+    </div>
+  </div>
   
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">May 23, 2023</p>
+    </div>
+  </div>
     
   </div>
   
@@ -401,16 +458,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </header>
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(jsonlite, igraph, tidygraph, ggraph,</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               visNetwork, lubridate, clock,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>               tidyverse, graphlayouts,knitr,plotly, </span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>               ggHoriPlot, ggthemes,patchwork)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(jsonlite, igraph, tidygraph, ggraph,</span>
+<span id="cb1-2"><a href="#cb1-2"></a>               visNetwork, lubridate, clock,</span>
+<span id="cb1-3"><a href="#cb1-3"></a>               tidyverse, graphlayouts,knitr,plotly, </span>
+<span id="cb1-4"><a href="#cb1-4"></a>               ggHoriPlot, ggthemes,patchwork)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>utils<span class="sc">::</span><span class="fu">data</span>(climate_CPH)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>utils<span class="sc">::</span><span class="fu">data</span>(climate_CPH)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(climate_CPH)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">glimpse</span>(climate_CPH)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 9,132
 Columns: 9
@@ -433,15 +499,18 @@ $ date_mine      &lt;date&gt; 2021-01-01, 2021-01-02, 2021-01-03, 2021-01-04, 20
 <li><p>Finally, the <strong><code>filter()</code></strong> function is used to keep only the rows where the “outlier” column has a value of <strong><code>TRUE</code></strong>, effectively filtering out the rows that do not meet the outlier criteria based on the “AvgTemperature” values.</p></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cutpoints <span class="ot">&lt;-</span> climate_CPH  <span class="sc">%&gt;%</span> </span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">outlier =</span> <span class="fu">between</span>(</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>      AvgTemperature, </span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">quantile</span>(AvgTemperature, <span class="fl">0.25</span>, <span class="at">na.rm=</span>T)<span class="sc">-</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        <span class="fl">1.5</span><span class="sc">*</span><span class="fu">IQR</span>(AvgTemperature, <span class="at">na.rm=</span>T),</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">quantile</span>(AvgTemperature, <span class="fl">0.75</span>, <span class="at">na.rm=</span>T)<span class="sc">+</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        <span class="fl">1.5</span><span class="sc">*</span><span class="fu">IQR</span>(AvgTemperature, <span class="at">na.rm=</span>T))) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(outlier)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>cutpoints <span class="ot">&lt;-</span> climate_CPH  <span class="sc">%&gt;%</span> </span>
+<span id="cb5-2"><a href="#cb5-2"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-3"><a href="#cb5-3"></a>    <span class="at">outlier =</span> <span class="fu">between</span>(</span>
+<span id="cb5-4"><a href="#cb5-4"></a>      AvgTemperature, </span>
+<span id="cb5-5"><a href="#cb5-5"></a>      <span class="fu">quantile</span>(AvgTemperature, <span class="fl">0.25</span>, <span class="at">na.rm=</span>T)<span class="sc">-</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>        <span class="fl">1.5</span><span class="sc">*</span><span class="fu">IQR</span>(AvgTemperature, <span class="at">na.rm=</span>T),</span>
+<span id="cb5-7"><a href="#cb5-7"></a>      <span class="fu">quantile</span>(AvgTemperature, <span class="fl">0.75</span>, <span class="at">na.rm=</span>T)<span class="sc">+</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a>        <span class="fl">1.5</span><span class="sc">*</span><span class="fu">IQR</span>(AvgTemperature, <span class="at">na.rm=</span>T))) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-9"><a href="#cb5-9"></a>  <span class="fu">filter</span>(outlier)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <ol type="1">
 <li><p>The <strong><code>sum()</code></strong> function is used to calculate the sum of the minimum and maximum values of the “AvgTemperature” column in the <strong><code>cutpoints</code></strong> dataframe. The <strong><code>range()</code></strong> function returns a vector containing the minimum and maximum values of the specified column. The result is divided by 2 to obtain the midpoint of the range. This midpoint is stored in the variable <strong><code>ori</code></strong>.</p></li>
@@ -449,24 +518,36 @@ $ date_mine      &lt;date&gt; 2021-01-01, 2021-01-02, 2021-01-03, 2021-01-04, 20
 </ol>
 <p>Overall, the code calculates the midpoint of the range of values in the “AvgTemperature” column and generates a sequence of values based on the minimum and maximum values in the same column. The generated sequence is used for further analysis or plotting purposes.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ori <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">range</span>(cutpoints<span class="sc">$</span>AvgTemperature))<span class="sc">/</span><span class="dv">2</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>sca <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">range</span>(cutpoints<span class="sc">$</span>AvgTemperature)[<span class="dv">1</span>], </span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>           <span class="fu">range</span>(cutpoints<span class="sc">$</span>AvgTemperature)[<span class="dv">2</span>], </span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">length.out =</span> <span class="dv">7</span>)[<span class="sc">-</span><span class="dv">4</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>ori <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">range</span>(cutpoints<span class="sc">$</span>AvgTemperature))<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a></span>
+<span id="cb6-3"><a href="#cb6-3"></a>sca <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">range</span>(cutpoints<span class="sc">$</span>AvgTemperature)[<span class="dv">1</span>], </span>
+<span id="cb6-4"><a href="#cb6-4"></a>           <span class="fu">range</span>(cutpoints<span class="sc">$</span>AvgTemperature)[<span class="dv">2</span>], </span>
+<span id="cb6-5"><a href="#cb6-5"></a>           <span class="at">length.out =</span> <span class="dv">7</span>)[<span class="sc">-</span><span class="dv">4</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(ori, <span class="dv">2</span>) <span class="co"># The origin</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">round</span>(ori, <span class="dv">2</span>) <span class="co"># The origin</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 6.58</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 6.58</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(sca, <span class="dv">2</span>) <span class="co"># The horizon scale cutpoints</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co">#&gt; [1] 6.58</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="fu">round</span>(sca, <span class="dv">2</span>) <span class="co"># The horizon scale cutpoints</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -12.11  -5.88   0.35  12.81  19.05  25.28</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -12.11  -5.88   0.35  12.81  19.05  25.28</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="co">#&gt; [1] -12.11  -5.88   0.35  12.81  19.05  25.28</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>Plotting the horizon</p>
 <ol type="1">
@@ -483,36 +564,31 @@ $ date_mine      &lt;date&gt; 2021-01-01, 2021-01-02, 2021-01-03, 2021-01-04, 20
 <li><p>The <strong><code>ggtitle()</code></strong> function sets the plot title and subtitle.</p></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>climate_CPH <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_horizon</span>(<span class="fu">aes</span>(date_mine, </span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>                   AvgTemperature,</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">fill =</span> ..Cutpoints..), </span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">origin =</span> ori, <span class="at">horizonscale =</span> sca) <span class="sc">+</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_hcl</span>(<span class="at">palette =</span> <span class="st">'RdBu'</span>, <span class="at">reverse =</span> T) <span class="sc">+</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(Year<span class="sc">~</span>.) <span class="sc">+</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_few</span>() <span class="sc">+</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.spacing.y=</span><span class="fu">unit</span>(<span class="dv">0</span>, <span class="st">"lines"</span>),</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">strip.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>, <span class="at">angle =</span> <span class="dv">0</span>, <span class="at">hjust =</span> <span class="dv">0</span>),</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.border =</span> <span class="fu">element_blank</span>()</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">expand=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>), </span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>               <span class="at">date_breaks =</span> <span class="st">"1 month"</span>, </span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>               <span class="at">date_labels =</span> <span class="st">"%b"</span>) <span class="sc">+</span></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">'Date'</span>) <span class="sc">+</span></span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">'Average daily temperature in Copenhagen'</span>, </span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>          <span class="st">'from 1995 to 2019'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: The dot-dot notation (`..Cutpoints..`) was deprecated in ggplot2 3.4.0.
-ℹ Please use `after_stat(Cutpoints)` instead.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Using the `size` aesthetic in this geom was deprecated in ggplot2 3.4.0.
-ℹ Please use `linewidth` in the `default_aes` field and elsewhere instead.</code></pre>
-</div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>climate_CPH <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>  <span class="fu">geom_horizon</span>(<span class="fu">aes</span>(date_mine, </span>
+<span id="cb12-3"><a href="#cb12-3"></a>                   AvgTemperature,</span>
+<span id="cb12-4"><a href="#cb12-4"></a>                   <span class="at">fill =</span> ..Cutpoints..), </span>
+<span id="cb12-5"><a href="#cb12-5"></a>               <span class="at">origin =</span> ori, <span class="at">horizonscale =</span> sca) <span class="sc">+</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a>  <span class="fu">scale_fill_hcl</span>(<span class="at">palette =</span> <span class="st">'RdBu'</span>, <span class="at">reverse =</span> T) <span class="sc">+</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a>  <span class="fu">facet_grid</span>(Year<span class="sc">~</span>.) <span class="sc">+</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a>  <span class="fu">theme_few</span>() <span class="sc">+</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a>  <span class="fu">theme</span>(</span>
+<span id="cb12-10"><a href="#cb12-10"></a>    <span class="at">panel.spacing.y=</span><span class="fu">unit</span>(<span class="dv">0</span>, <span class="st">"lines"</span>),</span>
+<span id="cb12-11"><a href="#cb12-11"></a>    <span class="at">strip.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>, <span class="at">angle =</span> <span class="dv">0</span>, <span class="at">hjust =</span> <span class="dv">0</span>),</span>
+<span id="cb12-12"><a href="#cb12-12"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb12-13"><a href="#cb12-13"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb12-14"><a href="#cb12-14"></a>    <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb12-15"><a href="#cb12-15"></a>    <span class="at">panel.border =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb12-16"><a href="#cb12-16"></a>    ) <span class="sc">+</span></span>
+<span id="cb12-17"><a href="#cb12-17"></a>  <span class="fu">scale_x_date</span>(<span class="at">expand=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>), </span>
+<span id="cb12-18"><a href="#cb12-18"></a>               <span class="at">date_breaks =</span> <span class="st">"1 month"</span>, </span>
+<span id="cb12-19"><a href="#cb12-19"></a>               <span class="at">date_labels =</span> <span class="st">"%b"</span>) <span class="sc">+</span></span>
+<span id="cb12-20"><a href="#cb12-20"></a>  <span class="fu">xlab</span>(<span class="st">'Date'</span>) <span class="sc">+</span></span>
+<span id="cb12-21"><a href="#cb12-21"></a>  <span class="fu">ggtitle</span>(<span class="st">'Average daily temperature in Copenhagen'</span>, </span>
+<span id="cb12-22"><a href="#cb12-22"></a>          <span class="st">'from 1995 to 2019'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="horizon-chart_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -520,10 +596,16 @@ $ date_mine      &lt;date&gt; 2021-01-01, 2021-01-02, 2021-01-03, 2021-01-04, 20
 <section id="trying-it-on-nodes_seafood_vis" class="level1">
 <h1>2 Trying it on nodes_seafood_vis</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mc2_seafood_edges_agg_vis<span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"C:/yixin-neo/ISSS608-VAA/Project/data/mc2_seafood_edges_agg_vis.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>mc2_seafood_edges_agg_vis<span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"C:/yixin-neo/ISSS608-VAA/Project/data/mc2_seafood_edges_agg_vis.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(mc2_seafood_edges_agg_vis)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">glimpse</span>(mc2_seafood_edges_agg_vis)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 2,054
 Columns: 12
@@ -542,8 +624,11 @@ $ title       &lt;chr&gt; "Total Weight =  143655 \n HSCODE = 160414", "Total We
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>mc2_seafood_edges_agg_vis <span class="sc">%&gt;%</span>  <span class="fu">group_by</span>(from) <span class="sc">%&gt;%</span>  <span class="fu">summarise</span>(<span class="at">Allweight =</span> <span class="fu">sum</span>(Weight)) <span class="sc">%&gt;%</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Allweight))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>mc2_seafood_edges_agg_vis <span class="sc">%&gt;%</span>  <span class="fu">group_by</span>(from) <span class="sc">%&gt;%</span>  <span class="fu">summarise</span>(<span class="at">Allweight =</span> <span class="fu">sum</span>(Weight)) <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Allweight))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 76 × 2
    from                                           Allweight
@@ -562,134 +647,174 @@ $ title       &lt;chr&gt; "Total Weight =  143655 \n HSCODE = 160414", "Total We
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>playa <span class="ot">&lt;-</span> mc2_seafood_edges_agg_vis <span class="sc">%&gt;%</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(from <span class="sc">==</span> <span class="st">"Playa del Tesoro OJSC"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>playa <span class="ot">&lt;-</span> mc2_seafood_edges_agg_vis <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a>  <span class="fu">filter</span>(from <span class="sc">==</span> <span class="st">"Playa del Tesoro OJSC"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>cutpoints_playa <span class="ot">&lt;-</span> playa  <span class="sc">%&gt;%</span> </span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">outlier =</span> <span class="fu">between</span>(</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>      Weight, </span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">quantile</span>(Weight, <span class="fl">0.25</span>, <span class="at">na.rm=</span>T)<span class="sc">-</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>        <span class="fl">1.5</span><span class="sc">*</span><span class="fu">IQR</span>(Weight, <span class="at">na.rm=</span>T),</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">quantile</span>(Weight, <span class="fl">0.75</span>, <span class="at">na.rm=</span>T)<span class="sc">+</span></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>        <span class="fl">1.5</span><span class="sc">*</span><span class="fu">IQR</span>(Weight, <span class="at">na.rm=</span>T))) <span class="sc">%&gt;%</span> </span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(outlier)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>cutpoints_playa <span class="ot">&lt;-</span> playa  <span class="sc">%&gt;%</span> </span>
+<span id="cb19-2"><a href="#cb19-2"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb19-3"><a href="#cb19-3"></a>    <span class="at">outlier =</span> <span class="fu">between</span>(</span>
+<span id="cb19-4"><a href="#cb19-4"></a>      Weight, </span>
+<span id="cb19-5"><a href="#cb19-5"></a>      <span class="fu">quantile</span>(Weight, <span class="fl">0.25</span>, <span class="at">na.rm=</span>T)<span class="sc">-</span></span>
+<span id="cb19-6"><a href="#cb19-6"></a>        <span class="fl">1.5</span><span class="sc">*</span><span class="fu">IQR</span>(Weight, <span class="at">na.rm=</span>T),</span>
+<span id="cb19-7"><a href="#cb19-7"></a>      <span class="fu">quantile</span>(Weight, <span class="fl">0.75</span>, <span class="at">na.rm=</span>T)<span class="sc">+</span></span>
+<span id="cb19-8"><a href="#cb19-8"></a>        <span class="fl">1.5</span><span class="sc">*</span><span class="fu">IQR</span>(Weight, <span class="at">na.rm=</span>T))) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-9"><a href="#cb19-9"></a>  <span class="fu">filter</span>(outlier)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>ori <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">range</span>(cutpoints_playa<span class="sc">$</span>Weight))<span class="sc">/</span><span class="dv">2</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>sca <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">range</span>(cutpoints_playa<span class="sc">$</span>Weight)[<span class="dv">1</span>], </span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>           <span class="fu">range</span>(cutpoints_playa<span class="sc">$</span>Weight)[<span class="dv">2</span>], </span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">length.out =</span> <span class="dv">7</span>)[<span class="sc">-</span><span class="dv">4</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>ori <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">range</span>(cutpoints_playa<span class="sc">$</span>Weight))<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a></span>
+<span id="cb20-3"><a href="#cb20-3"></a>sca <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">range</span>(cutpoints_playa<span class="sc">$</span>Weight)[<span class="dv">1</span>], </span>
+<span id="cb20-4"><a href="#cb20-4"></a>           <span class="fu">range</span>(cutpoints_playa<span class="sc">$</span>Weight)[<span class="dv">2</span>], </span>
+<span id="cb20-5"><a href="#cb20-5"></a>           <span class="at">length.out =</span> <span class="dv">7</span>)[<span class="sc">-</span><span class="dv">4</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>First we have to fix the arrivaldate column such that all the year value are the same (for the purpose for plotting horizon chart later). All the year values will get a default ‘2021’</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>playa<span class="sc">$</span>mine_date <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">"2021-%s-%s"</span>, <span class="fu">substr</span>(playa<span class="sc">$</span>arrivaldate, <span class="dv">6</span>, <span class="dv">7</span>), <span class="fu">substr</span>(playa<span class="sc">$</span>arrivaldate, <span class="dv">9</span>, <span class="dv">10</span>))</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>playa<span class="sc">$</span>mine_date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(playa<span class="sc">$</span>mine_date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>playa<span class="sc">$</span>mine_date <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">"2021-%s-%s"</span>, <span class="fu">substr</span>(playa<span class="sc">$</span>arrivaldate, <span class="dv">6</span>, <span class="dv">7</span>), <span class="fu">substr</span>(playa<span class="sc">$</span>arrivaldate, <span class="dv">9</span>, <span class="dv">10</span>))</span>
+<span id="cb21-2"><a href="#cb21-2"></a>playa<span class="sc">$</span>mine_date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(playa<span class="sc">$</span>mine_date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell" data-fig.asp="0.618">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>playa <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_horizon</span>(<span class="fu">aes</span>(mine_date, </span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>                   Weight,</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">fill =</span> ..Cutpoints..), </span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">origin =</span> ori, <span class="at">horizonscale =</span> sca) <span class="sc">+</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_hcl</span>(<span class="at">palette =</span> <span class="st">'RdBu'</span>, <span class="at">reverse =</span> T) <span class="sc">+</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(year<span class="sc">~</span>.) <span class="sc">+</span></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_few</span>() <span class="sc">+</span></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.spacing.y=</span><span class="fu">unit</span>(<span class="dv">0</span>, <span class="st">"lines"</span>),</span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">strip.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>, <span class="at">angle =</span> <span class="dv">0</span>, <span class="at">hjust =</span> <span class="dv">0</span>),</span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.border =</span> <span class="fu">element_blank</span>()</span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">expand=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>), </span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>               <span class="at">date_breaks =</span> <span class="st">"1 month"</span>, </span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>               <span class="at">date_labels =</span> <span class="st">"%b"</span>) <span class="sc">+</span></span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">'Date'</span>) <span class="sc">+</span></span>
-<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">'Weight of goods trade by Playa del Tesoro OJSC from 2028 to 2034'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>playa <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb22-2"><a href="#cb22-2"></a>  <span class="fu">geom_horizon</span>(<span class="fu">aes</span>(mine_date, </span>
+<span id="cb22-3"><a href="#cb22-3"></a>                   Weight,</span>
+<span id="cb22-4"><a href="#cb22-4"></a>                   <span class="at">fill =</span> ..Cutpoints..), </span>
+<span id="cb22-5"><a href="#cb22-5"></a>               <span class="at">origin =</span> ori, <span class="at">horizonscale =</span> sca) <span class="sc">+</span></span>
+<span id="cb22-6"><a href="#cb22-6"></a>  <span class="fu">scale_fill_hcl</span>(<span class="at">palette =</span> <span class="st">'RdBu'</span>, <span class="at">reverse =</span> T) <span class="sc">+</span></span>
+<span id="cb22-7"><a href="#cb22-7"></a>  <span class="fu">facet_grid</span>(year<span class="sc">~</span>.) <span class="sc">+</span></span>
+<span id="cb22-8"><a href="#cb22-8"></a>  <span class="fu">theme_few</span>() <span class="sc">+</span></span>
+<span id="cb22-9"><a href="#cb22-9"></a>  <span class="fu">theme</span>(</span>
+<span id="cb22-10"><a href="#cb22-10"></a>    <span class="at">panel.spacing.y=</span><span class="fu">unit</span>(<span class="dv">0</span>, <span class="st">"lines"</span>),</span>
+<span id="cb22-11"><a href="#cb22-11"></a>    <span class="at">strip.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>, <span class="at">angle =</span> <span class="dv">0</span>, <span class="at">hjust =</span> <span class="dv">0</span>),</span>
+<span id="cb22-12"><a href="#cb22-12"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb22-13"><a href="#cb22-13"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb22-14"><a href="#cb22-14"></a>    <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb22-15"><a href="#cb22-15"></a>    <span class="at">panel.border =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb22-16"><a href="#cb22-16"></a>    ) <span class="sc">+</span></span>
+<span id="cb22-17"><a href="#cb22-17"></a>  <span class="fu">scale_x_date</span>(<span class="at">expand=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>), </span>
+<span id="cb22-18"><a href="#cb22-18"></a>               <span class="at">date_breaks =</span> <span class="st">"1 month"</span>, </span>
+<span id="cb22-19"><a href="#cb22-19"></a>               <span class="at">date_labels =</span> <span class="st">"%b"</span>) <span class="sc">+</span></span>
+<span id="cb22-20"><a href="#cb22-20"></a>  <span class="fu">xlab</span>(<span class="st">'Date'</span>) <span class="sc">+</span></span>
+<span id="cb22-21"><a href="#cb22-21"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb22-22"><a href="#cb22-22"></a>  <span class="fu">ggtitle</span>(<span class="st">'Weight of goods trade by Playa del Tesoro OJSC from 2028 to 2034'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="horizon-chart_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="1152"></p>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>asd <span class="ot">&lt;-</span>playa <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_horizon</span>(<span class="fu">aes</span>(arrivaldate, </span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>                   Weight,</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">fill =</span> ..Cutpoints..), </span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">origin =</span> ori, <span class="at">horizonscale =</span> sca) <span class="sc">+</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_hcl</span>(<span class="at">palette =</span> <span class="st">'RdBu'</span>, <span class="at">reverse =</span> T) <span class="sc">+</span></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">#facet_grid(year~.) +</span></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_few</span>() <span class="sc">+</span></span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.spacing.y=</span><span class="fu">unit</span>(<span class="dv">0</span>, <span class="st">"lines"</span>),</span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">strip.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>, <span class="at">angle =</span> <span class="dv">0</span>, <span class="at">hjust =</span> <span class="dv">0</span>),</span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.border =</span> <span class="fu">element_blank</span>()</span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">expand=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>), </span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>               <span class="at">date_breaks =</span> <span class="st">"6 month"</span>,</span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>               <span class="at">date_labels =</span> <span class="st">"%b"</span>) <span class="sc">+</span></span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">'Date'</span>) <span class="sc">+</span></span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>asd <span class="ot">&lt;-</span>playa <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a>  <span class="fu">geom_horizon</span>(<span class="fu">aes</span>(arrivaldate, </span>
+<span id="cb23-3"><a href="#cb23-3"></a>                   Weight,</span>
+<span id="cb23-4"><a href="#cb23-4"></a>                   <span class="at">fill =</span> ..Cutpoints..), </span>
+<span id="cb23-5"><a href="#cb23-5"></a>               <span class="at">origin =</span> ori, <span class="at">horizonscale =</span> sca) <span class="sc">+</span></span>
+<span id="cb23-6"><a href="#cb23-6"></a>  <span class="fu">scale_fill_hcl</span>(<span class="at">palette =</span> <span class="st">'RdBu'</span>, <span class="at">reverse =</span> T) <span class="sc">+</span></span>
+<span id="cb23-7"><a href="#cb23-7"></a>  <span class="co">#facet_grid(year~.) +</span></span>
+<span id="cb23-8"><a href="#cb23-8"></a>  <span class="fu">theme_few</span>() <span class="sc">+</span></span>
+<span id="cb23-9"><a href="#cb23-9"></a>  <span class="fu">theme</span>(</span>
+<span id="cb23-10"><a href="#cb23-10"></a>    <span class="at">panel.spacing.y=</span><span class="fu">unit</span>(<span class="dv">0</span>, <span class="st">"lines"</span>),</span>
+<span id="cb23-11"><a href="#cb23-11"></a>    <span class="at">strip.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>, <span class="at">angle =</span> <span class="dv">0</span>, <span class="at">hjust =</span> <span class="dv">0</span>),</span>
+<span id="cb23-12"><a href="#cb23-12"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb23-13"><a href="#cb23-13"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb23-14"><a href="#cb23-14"></a>    <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb23-15"><a href="#cb23-15"></a>    <span class="at">panel.border =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb23-16"><a href="#cb23-16"></a>    ) <span class="sc">+</span></span>
+<span id="cb23-17"><a href="#cb23-17"></a>  <span class="fu">scale_x_date</span>(<span class="at">expand=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>), </span>
+<span id="cb23-18"><a href="#cb23-18"></a>               <span class="at">date_breaks =</span> <span class="st">"6 month"</span>,</span>
+<span id="cb23-19"><a href="#cb23-19"></a>               <span class="at">date_labels =</span> <span class="st">"%b"</span>) <span class="sc">+</span></span>
+<span id="cb23-20"><a href="#cb23-20"></a>  <span class="fu">xlab</span>(<span class="st">'Date'</span>) <span class="sc">+</span></span>
+<span id="cb23-21"><a href="#cb23-21"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>FOR ENTIRE except playa</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>top10_outdeg <span class="ot">&lt;-</span><span class="fu">subset</span>(mc2_seafood_edges_agg_vis, from <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'Playa del Tesoro OJSC'</span>, <span class="st">'Estrella de la Costa SRL'</span>, <span class="st">'OceanicOrigin Foods Co Consulting'</span>, <span class="st">'Náutica del Sol Brothers'</span>, <span class="st">'Beachcomber</span><span class="sc">\'</span><span class="st">s Bounty Sea spray'</span>, <span class="st">'Mar de la Aventura Limited Liability Company'</span>, <span class="st">'Shou gan  Oyj Overseas'</span>, <span class="st">'Diao er  Limited Liability Company'</span>, <span class="st">'Oceanfront Oasis Company Green '</span>, <span class="st">'Gujarat   Tide NV Solutions'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>top10_outdeg <span class="ot">&lt;-</span><span class="fu">subset</span>(mc2_seafood_edges_agg_vis, from <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'Playa del Tesoro OJSC'</span>, <span class="st">'Estrella de la Costa SRL'</span>, <span class="st">'OceanicOrigin Foods Co Consulting'</span>, <span class="st">'Náutica del Sol Brothers'</span>, <span class="st">'Beachcomber</span><span class="sc">\'</span><span class="st">s Bounty Sea spray'</span>, <span class="st">'Mar de la Aventura Limited Liability Company'</span>, <span class="st">'Shou gan  Oyj Overseas'</span>, <span class="st">'Diao er  Limited Liability Company'</span>, <span class="st">'Oceanfront Oasis Company Green '</span>, <span class="st">'Gujarat   Tide NV Solutions'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>cutpoints_top10_outdeg <span class="ot">&lt;-</span> top10_outdeg  <span class="sc">%&gt;%</span> </span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">outlier =</span> <span class="fu">between</span>(</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>      Weight, </span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">quantile</span>(Weight, <span class="fl">0.25</span>, <span class="at">na.rm=</span>T)<span class="sc">-</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>        <span class="fl">1.5</span><span class="sc">*</span><span class="fu">IQR</span>(Weight, <span class="at">na.rm=</span>T),</span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">quantile</span>(Weight, <span class="fl">0.75</span>, <span class="at">na.rm=</span>T)<span class="sc">+</span></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>        <span class="fl">1.5</span><span class="sc">*</span><span class="fu">IQR</span>(Weight, <span class="at">na.rm=</span>T))) <span class="sc">%&gt;%</span> </span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(outlier)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>cutpoints_top10_outdeg <span class="ot">&lt;-</span> top10_outdeg  <span class="sc">%&gt;%</span> </span>
+<span id="cb25-2"><a href="#cb25-2"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb25-3"><a href="#cb25-3"></a>    <span class="at">outlier =</span> <span class="fu">between</span>(</span>
+<span id="cb25-4"><a href="#cb25-4"></a>      Weight, </span>
+<span id="cb25-5"><a href="#cb25-5"></a>      <span class="fu">quantile</span>(Weight, <span class="fl">0.25</span>, <span class="at">na.rm=</span>T)<span class="sc">-</span></span>
+<span id="cb25-6"><a href="#cb25-6"></a>        <span class="fl">1.5</span><span class="sc">*</span><span class="fu">IQR</span>(Weight, <span class="at">na.rm=</span>T),</span>
+<span id="cb25-7"><a href="#cb25-7"></a>      <span class="fu">quantile</span>(Weight, <span class="fl">0.75</span>, <span class="at">na.rm=</span>T)<span class="sc">+</span></span>
+<span id="cb25-8"><a href="#cb25-8"></a>        <span class="fl">1.5</span><span class="sc">*</span><span class="fu">IQR</span>(Weight, <span class="at">na.rm=</span>T))) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-9"><a href="#cb25-9"></a>  <span class="fu">filter</span>(outlier)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>ori <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">range</span>(top10_outdeg<span class="sc">$</span>Weight))<span class="sc">/</span><span class="dv">2</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>sca <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">range</span>(top10_outdeg<span class="sc">$</span>Weight)[<span class="dv">1</span>], </span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>           <span class="fu">range</span>(top10_outdeg<span class="sc">$</span>Weight)[<span class="dv">2</span>], </span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">length.out =</span> <span class="dv">7</span>)[<span class="sc">-</span><span class="dv">4</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>ori <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">range</span>(top10_outdeg<span class="sc">$</span>Weight))<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb26-2"><a href="#cb26-2"></a></span>
+<span id="cb26-3"><a href="#cb26-3"></a>sca <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">range</span>(top10_outdeg<span class="sc">$</span>Weight)[<span class="dv">1</span>], </span>
+<span id="cb26-4"><a href="#cb26-4"></a>           <span class="fu">range</span>(top10_outdeg<span class="sc">$</span>Weight)[<span class="dv">2</span>], </span>
+<span id="cb26-5"><a href="#cb26-5"></a>           <span class="at">length.out =</span> <span class="dv">7</span>)[<span class="sc">-</span><span class="dv">4</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>top10_outdeg<span class="sc">$</span>mine_date <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">"2021-%s-%s"</span>, <span class="fu">substr</span>(top10_outdeg<span class="sc">$</span>arrivaldate, <span class="dv">6</span>, <span class="dv">7</span>), <span class="fu">substr</span>(top10_outdeg<span class="sc">$</span>arrivaldate, <span class="dv">9</span>, <span class="dv">10</span>))</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>top10_outdeg<span class="sc">$</span>mine_date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(top10_outdeg<span class="sc">$</span>mine_date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>top10_outdeg<span class="sc">$</span>mine_date <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">"2021-%s-%s"</span>, <span class="fu">substr</span>(top10_outdeg<span class="sc">$</span>arrivaldate, <span class="dv">6</span>, <span class="dv">7</span>), <span class="fu">substr</span>(top10_outdeg<span class="sc">$</span>arrivaldate, <span class="dv">9</span>, <span class="dv">10</span>))</span>
+<span id="cb27-2"><a href="#cb27-2"></a></span>
+<span id="cb27-3"><a href="#cb27-3"></a>top10_outdeg<span class="sc">$</span>mine_date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(top10_outdeg<span class="sc">$</span>mine_date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>top10_outdeg <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_horizon</span>(<span class="fu">aes</span>(arrivaldate, </span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>                   Weight,</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">fill =</span> ..Cutpoints..), </span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">origin =</span> ori, <span class="at">horizonscale =</span> sca) <span class="sc">+</span></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_hcl</span>(<span class="at">palette =</span> <span class="st">'RdBu'</span>, <span class="at">reverse =</span> T) <span class="sc">+</span></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(from<span class="sc">~</span>.) <span class="sc">+</span></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_few</span>() <span class="sc">+</span></span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.spacing.y=</span><span class="fu">unit</span>(<span class="dv">0</span>, <span class="st">"lines"</span>),</span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">strip.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>, <span class="at">angle =</span> <span class="dv">0</span>, <span class="at">hjust =</span> <span class="dv">0</span>),</span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.border =</span> <span class="fu">element_blank</span>()</span>
-<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
-<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">expand=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>), </span>
-<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>               <span class="at">date_breaks =</span> <span class="st">"6 month"</span>,</span>
-<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>               <span class="at">date_labels =</span> <span class="st">"%b"</span>) <span class="sc">+</span></span>
-<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">'Date'</span>) <span class="sc">+</span></span>
-<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>top10_outdeg <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb28-2"><a href="#cb28-2"></a>  <span class="fu">geom_horizon</span>(<span class="fu">aes</span>(arrivaldate, </span>
+<span id="cb28-3"><a href="#cb28-3"></a>                   Weight,</span>
+<span id="cb28-4"><a href="#cb28-4"></a>                   <span class="at">fill =</span> ..Cutpoints..), </span>
+<span id="cb28-5"><a href="#cb28-5"></a>               <span class="at">origin =</span> ori, <span class="at">horizonscale =</span> sca) <span class="sc">+</span></span>
+<span id="cb28-6"><a href="#cb28-6"></a>  <span class="fu">scale_fill_hcl</span>(<span class="at">palette =</span> <span class="st">'RdBu'</span>, <span class="at">reverse =</span> T) <span class="sc">+</span></span>
+<span id="cb28-7"><a href="#cb28-7"></a>  <span class="fu">facet_grid</span>(from<span class="sc">~</span>.) <span class="sc">+</span></span>
+<span id="cb28-8"><a href="#cb28-8"></a>  <span class="fu">theme_few</span>() <span class="sc">+</span></span>
+<span id="cb28-9"><a href="#cb28-9"></a>  <span class="fu">theme</span>(</span>
+<span id="cb28-10"><a href="#cb28-10"></a>    <span class="at">panel.spacing.y=</span><span class="fu">unit</span>(<span class="dv">0</span>, <span class="st">"lines"</span>),</span>
+<span id="cb28-11"><a href="#cb28-11"></a>    <span class="at">strip.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>, <span class="at">angle =</span> <span class="dv">0</span>, <span class="at">hjust =</span> <span class="dv">0</span>),</span>
+<span id="cb28-12"><a href="#cb28-12"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb28-13"><a href="#cb28-13"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb28-14"><a href="#cb28-14"></a>    <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb28-15"><a href="#cb28-15"></a>    <span class="at">panel.border =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb28-16"><a href="#cb28-16"></a>    ) <span class="sc">+</span></span>
+<span id="cb28-17"><a href="#cb28-17"></a>  <span class="fu">scale_x_date</span>(<span class="at">expand=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>), </span>
+<span id="cb28-18"><a href="#cb28-18"></a>               <span class="at">date_breaks =</span> <span class="st">"6 month"</span>,</span>
+<span id="cb28-19"><a href="#cb28-19"></a>               <span class="at">date_labels =</span> <span class="st">"%b"</span>) <span class="sc">+</span></span>
+<span id="cb28-20"><a href="#cb28-20"></a>  <span class="fu">xlab</span>(<span class="st">'Date'</span>) <span class="sc">+</span></span>
+<span id="cb28-21"><a href="#cb28-21"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="horizon-chart_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="1152"></p>
 </div>
+</div>
+<p>TRYING FOR DISCONNECTED COMPONENETS</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>mc2_seafood_edges_agg_vis_with_disconnected<span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"C:/yixin-neo/ISSS608-VAA/Project/data/mc2_seafood_edges_agg_vis_withdisconnected.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 
 

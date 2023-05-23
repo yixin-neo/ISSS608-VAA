@@ -1,8 +1,10 @@
 {
-  "hash": "5cfca50ab9e05dac93f1b49d233aed43",
+  "hash": "3d1eb886c0f23d6f91d1360d90d35d12",
   "result": {
-    "markdown": "---\ntitle: \"Hands-on_Ex09\"\nauthor: \"NYX\"\ndate: '19 May 2023'\ndate-modified: \"2023-05-15\"\neditor: visual\nexecute: \n  freeze: auto\n  warning: false\n  #echo: false\n  #message: false\nformat:\n  html:\n    code-fold: True\n    code-overflow: scroll\n    code-summary: \"Show the code\"\n    code-line-numbers: true\n---\n\n::: {.cell}\n\n:::\n\n\n# \n",
-    "supporting": [],
+    "markdown": "---\ntitle: \"Hands-on_Ex09 (Week 6: Building Ternary Plot with R\"\nauthor: \"NYX\"\ndate: '?? May 2023'\ndate-modified: \"2023-05-23\"\neditor: visual\nexecute: \n  freeze: auto\n  warning: false\n  #echo: false\n  #message: false\nformat:\n  html:\n    code-fold: True\n    code-overflow: scroll\n    code-summary: \"Show the code\"\n    code-line-numbers: true\n---\n\n::: {.cell}\n\n:::\n\n\n# \n",
+    "supporting": [
+      "Hands-on_Ex09_files"
+    ],
     "filters": [
       "rmarkdown/pagebreak.lua"
     ],

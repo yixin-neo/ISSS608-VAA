@@ -1,0 +1,154 @@
+---
+title: "Take-home_Ex03"
+author: "NeoYX"
+date: '28 May 2023'
+date-modified: "`r Sys.Date()`"
+editor: visual
+execute: 
+  freeze: auto
+  warning: false
+  echo: true
+  message: true
+format:
+  html:
+    code-fold: true
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
+---
+
+::: callout-note
+**Edge data** should be organised as such: (can use dplyr methods)
+
+First column: Source id (FK to Node second column) - compulsory
+
+Second column: Target id (FK to Node second column) - compulsory
+
+**Node data**
+
+First column: ID (contains all the distinct values of source and target in Edge data) - compulsory
+
+-   Nodes present in edge data must exists in ID of node data, must not have missing in node ID.
+
+Second column: Label (only need if Id are all integers)
+:::
+
+::: callout-warning
+Try not to use R built-in NA/NULL function. Manually type "unknown' / 'missing' as a value instead.
+:::
+
+# Vast Challenge 2023 Mini Challenge 3 (Subtask: 1)
+
+In this challenge, my group and I seek to use visual analytics to identify temporal patterns for individual entities and between entities using the knowledge graph the FishEye Organisation has provided us with. We will also be categorising the type of business relationship patterns found.
+
+# 1 About the dataset
+
+## 1.1 Data dictionary
+
+**Node Attributes:**
+
+-   id \-- Name of the company that originated (or received) the shipment
+
+-   shpcountry \-- Country the company most often associated with when shipping
+
+-   rcvcountry \-- Country the company most often associated with when receiving
+
+-   dataset \-- Always 'MC2'
+
+**Edge Attributes:**
+
+-   arrivaldate \-- Date the shipment arrived at port in YYYY-MM-DD format.
+
+-   hscode \-- Harmonized System code for the shipment. Can be joined with the hscodes table to get additional details.
+
+-   valueofgoods_omu \-- Customs-declared value of the total shipment, in Oceanus
+
+-   Monetary Units (OMU)
+
+-   volumeteu \-- The volume of the shipment in 'Twenty-foot equivalent units', roughly how many 20-foot standard containers would be required. (Actual number of containers may have been different as there are 20ft and 40ft standard containers and tankers that do not use containers)
+
+-   weightkg \-- The weight of the shipment in kilograms (if known)
+
+-   dataset \-- Always 'MC2'
+
+-   type \-- Always 'shipment' for MC2
+
+-   generated_by \-- Name of the program that generated the edge. (Only found on 'bundle' records.)
+
+## 1.2 Importing the datasets
+
+Import libraries
+
+The new libraries used today are :
+
+-   `jsonlite` to import json file
+
+```{r}
+pacman::p_load(jsonlite, igraph, tidygraph, ggraph,
+               visNetwork, lubridate, clock,
+               tidyverse, graphlayouts,knitr,plotly, 
+               ggHoriPlot, ggthemes,hrbrthemes,treemap,patchwork, ggiraph)
+```
+
+```{r}
+#| eval: false
+#| echo: false
+MC2 <- jsonlite::fromJSON("C:/yixin-neo/ISSS608-VAA/Project/data/mc2_challenge_graph.json")
+```
+
+```{r}
+#| eval: false
+#| echo: false
+carp <- jsonlite::fromJSON("C:/yixin-neo/ISSS608-VAA/Project/data/bundles/carp.json")
+```
+
+Pull out the nodes and edge data and save them as tibble data frames.
+
+```{r}
+#| eval: false
+#| echo: false
+MC2_nodes <- as_tibble(MC2$nodes) %>% 
+  select(id,shpcountry,rcvcountry)
+```
+
+```{r}
+#| eval: false
+#| echo: false
+glimpse(MC2_nodes)
+```
+
+Rearranging the columns in edge file as we require `source` and `target` columns to be the first two columns.
+
+```{r}
+#| eval: false
+#| echo: false
+MC2_edges <- as_tibble(MC2$links) %>% 
+  select(source,target,arrivaldate,hscode,valueofgoods_omu,volumeteu,weightkg,valueofgoodsusd)  
+# can exclude dataste column as they all contain the same values.
+```
+
+```{r}
+#| eval: false
+#| echo: false
+glimpse(MC2_edges)
+```
+
+# 2 Data cleaning
+
+## 2.1 Check for null values
+
+# 4 References
+
+https://hohenfeld.is/posts/graphs-are-fun-an-introduction-to-graphs-in-r/
+
+On ggraph edgelink
+
+https://cran.r-project.org/web/packages/ggraph/vignettes/Edges.html
+
+Visnetwork
+
+http://datastorm-open.github.io/visNetwork/
+
+Horizon plot
+
+https://rivasiker.github.io/ggHoriPlot/

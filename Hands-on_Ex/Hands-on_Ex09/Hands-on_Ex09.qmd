@@ -1,7 +1,7 @@
 ---
-title: "Hands-on_Ex09"
+title: "Hands-on_Ex09 (Week 6: Building Ternary Plot with R"
 author: "NYX"
-date: '19 May 2023'
+date: '?? May 2023'
 date-modified: "`r Sys.Date()`"
 editor: visual
 execute: 

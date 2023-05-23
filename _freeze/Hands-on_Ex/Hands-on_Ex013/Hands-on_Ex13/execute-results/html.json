@@ -1,7 +1,7 @@
 {
   "hash": "3108436827f4d8d079482d8a156dee8a",
   "result": {
-    "markdown": "---\ntitle: \"Hands-on Exercise 13 (Week 6: Building Treemap Visualisation with R)\"\nauthor: \"NYX\"\ndate: '?? May 2023'\ndate-modified: \"2023-05-23\"\neditor: visual\nexecute: \n  freeze: auto\n  warning: false\n  #echo: false\n  #message: false\nformat:\n  html:\n    code-fold: True\n    code-overflow: scroll\n    code-summary: \"Show the code\"\n    code-line-numbers: true\n---\n",
+    "markdown": "---\ntitle: \"Hands-on Exercise 13 (Week 6: Building Treemap Visualisation with R)\"\nauthor: \"NYX\"\ndate: '?? May 2023'\ndate-modified: \"2023-05-24\"\neditor: visual\nexecute: \n  freeze: auto\n  warning: false\n  #echo: false\n  #message: false\nformat:\n  html:\n    code-fold: True\n    code-overflow: scroll\n    code-summary: \"Show the code\"\n    code-line-numbers: true\n---\n",
     "supporting": [],
     "filters": [
       "rmarkdown/pagebreak.lua"

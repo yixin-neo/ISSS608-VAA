@@ -246,7 +246,7 @@ mc2_seafood_edges_agg <- mc2_seafood_edges %>%
   summarise(Weight=n(),
             Totalweight = sum(weightkg),
             hscode=first(hscode)) %>% 
-  filter(Weight >=10) %>% 
+  filter(Weight >=8) %>% 
   ungroup()
 ```
 
@@ -477,7 +477,8 @@ nodes_seafood_vis <- as.data.frame(seafood_graph %>% activate(nodes))
 nodes_seafood_vis <- nodes_seafood_vis %>% 
   #rename(group= rcvcountry)  %>% 
   mutate(pagerank = round(pagerank, 5)) %>% 
-  mutate(title = paste('rcvcountry =', rcvcountry, ',',
+  mutate(title = paste('shpcountry =', shpcountry, ',',
+                       'rcvcountry =', rcvcountry, ',',
                        '\n In-deg = ',in_deg_centrality, ',',
                        "\n Pagerank =", pagerank, ',',
                        "\n Out-deg =", out_deg_centrality))
@@ -532,14 +533,14 @@ visNetwork(nodes_seafood_vis,
 
 \(4\) Drag a particular node away from the cluster to admire it.
 
-\(5\) Hover mouse over a node will display tooltip (In-deg, pagerank and out-deg score). It will also display the 'ego' network with itself at the ego. Click on the node freeze the ego network. Click on blank space to reset.
+\(5\) Hover mouse over a node will display tooltip (shpcountry, rcvcountry, In-deg, pagerank and out-deg score). It will also display the 'ego' network with itself at the ego. Click on the node to freeze the ego network. Click on blank space to reset.
 
 \(6\) Hovering the mouse over an edge will display tooltip (Total weight of cargo, hscode of cargo)
 
 \(7\) Click and Drag on the graph to move the canvas around, will also temporary disable the edge lines.
 :::
 
-From the plot above, we can see there are a few top shipping companies that has high interactions with receiving companies. Try selecting '1001 - 2000' from the group drop down list, we will see three companies with similar range of 'in-deg' centrality scores. The company with the highest 'in-deg' centrality score is 'Fresh Wharf SRL Consulting', but note that it receives only from one shipping company 'Playa del Tesoro OJSC' , that ships only to two companies.
+From the plot above, we can see there are a few top shipping companies that has high interactions with receiving companies. Try selecting '1001 - 2000' from the group drop down list, we will see three companies with similar range of 'in-deg' centrality scores. The company with the highest 'in-deg' centrality score is 'Fresh Wharf SRL Consulting', but note that it receives only from one shipping company 'Playa del Tesoro OJSC' .
 
 ## 3.2 Temporal analysis of top 10 'in-deg' centrality companies in trading occurrence over the years
 
@@ -1003,85 +1004,275 @@ Observe the different shipping companies were active for different period of tim
 
 In this section, we will compare the centrality values of companies from different countries.
 
+### 3.6.1 Comparison of  out-deg centrality between top shipping countries
+
+Let us compute top 5 shipping countries in terms of out-deg centrality scores.
+
 ```{r}
 nodes_seafood_vis %>% 
   group_by(shpcountry) %>% 
-  summarise(med = median(out_deg_centrality)) %>% 
-  arrange(desc(med)) %>% 
-  head(n=5)
+  summarise(sum_out_deg = sum(out_deg_centrality)) %>% 
+  arrange(desc(sum_out_deg)) %>% 
+  head(n=5) %>% kable()
 ```
 
+The code chunk below filters the top 5 shipping countries and non parametric one way anova test is performed to compare for significance in difference in median of number of interactions between them.
+
 ```{r}
-ggbetweenstats(data = nodes_seafood_vis %>% filter(shpcountry %in% c("Quirinelle", "Isla Solmar", "Osterivella", "Mawazam", "Kondanovia")), x = shpcountry, y = out_deg_centrality,
+#| fig-width: 12
+#| fig-asp: 0.618
+ggbetweenstats(data = nodes_seafood_vis %>% 
+                 filter(shpcountry %in% c("Quirinelle", "Marebak", "Arreciviento", "Mawazam", "Merigrad")),
+               x = shpcountry, 
+               y = out_deg_centrality,
                xlab = "Shipping Country", ylab = "Out-Deg centrality",
                type = "np", pairwise.comparisons = TRUE, pairwise.display = "s",
                sort = "descending",
                sort.fun = median,
                mean.ci = T, p.adjust.method = "fdr",  conf.level = 0.95,
-               title = "Comparison of Median Out-Deg centrality across Shipping Countries") +
+               title = "Comparison of Median Out-Deg centrality across shipping Countries") +
   scale_y_continuous(limits = c(0, 4000)) +
-   theme(axis.title.y=element_text(angle = 0,
+  theme(axis.title.y=element_text(angle = 0,
                                   vjust=0.9))
 ```
+
+The P - value is above 0.05, so there is not enough statistical evidence to reject the null hypothesis that the median out-deg centrality scores between top 5 shipping countries are different.
+
+### 3.6.2 Comparison of in-deg centrality between top receiving countries
+
+Let us compute top 5 receiving countries in terms of in-deg centrality scores.
 
 ```{r}
 nodes_seafood_vis %>% 
   group_by(rcvcountry) %>% 
-  summarise(med = median(in_deg_centrality)) %>% 
-  arrange(desc(med)) %>% 
+  summarise(sum_in_deg = sum(in_deg_centrality)) %>% 
+  arrange(desc(sum_in_deg)) %>% 
   head(n=5)
 ```
 
+There are only 3 major receiving countries in our filtered dataset .
+
 ```{r}
-ggbetweenstats(data = nodes_seafood_vis %>% filter(rcvcountry %in% c("Utoporiana", "Oceanus")), x = rcvcountry, y = in_deg_centrality,
+ggbetweenstats(data = nodes_seafood_vis %>% filter(rcvcountry %in% c("Utoporiana", "Oceanus",'Coralmarica')), x = rcvcountry, y = in_deg_centrality,
                xlab = "Shipping Country", ylab = "In-Deg centrality",
                type = "np", pairwise.comparisons = TRUE, pairwise.display = "s",
                sort = "descending",
                sort.fun = median,
                mean.ci = T, p.adjust.method = "fdr",  conf.level = 0.95,
-               title = "Comparison of Median In-Deg centrality across Shipping Countries") +
-  scale_y_continuous(limits = c(0, 200)) +
+               title = "Comparison of Median In-Deg centrality across receiving Countries") +
+  scale_y_continuous(limits = c(0, 215)) +
    theme(axis.title.y=element_text(angle = 0,
                                   vjust=0.9))
 ```
 
-Scatter plot of number of interaction and trading period between pairs of companies.
+The P - value is above 0.05, so there is not enough statistical evidence to reject the null hypothesis that the median in-deg centrality scores between top 5 receiving countries are different.
 
-WORK IN PROGRESS
+## 
+
+3.7 Correlationship between partnership intervals (in days) and total number of interactions between companies
+
+We will prepare the dataframe needed for the plot. First, for each group of `from`, `to`, `year`:
+
+1\) `partner_days` : the number of days within the year that each pair of companies had interactions
+
+2\) `total_interaction` : sum of all the Weights between each pair of companies
 
 ```{r}
 cor <- mc2_seafood_edges_agg_vis %>% 
-  group_by(from, to) %>% 
-  summarise(trading_days=as.integer(max(arrivaldate)-min(arrivaldate)+1),
+  group_by(from, to,year) %>% 
+  summarise(partnership_days=as.integer(max(arrivaldate)-min(arrivaldate)+1),
             total_interaction = sum(Weight),
             median_interaction = median(Weight)) %>% 
   ungroup() %>% 
-  arrange(trading_days)
+  arrange(partnership_days)
 ```
 
-Correlation graph
+Filter the above dateframe by year
 
 ```{r}
 #| fig-width: 12
 #| fig-asp: 0.618
 library(scales)
-low_correl <- ggscatterstats(data = cor, 
-                           x = trading_days, y = total_interaction,
+correl_2028 <- ggscatterstats(data = cor %>% filter(year==2028), 
+                           x = partnership_days, y = total_interaction,
                            type = "nonparametric") + 
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-  scale_x_continuous(limits = c(0, 2600), 
-                     breaks=seq(0, 2600, 365), 
+  scale_x_continuous(limits = c(0, 365), 
+                     breaks=seq(0, 365, 30), 
                      labels= comma) + 
-  scale_y_continuous(limits = c(0, 6500), 
-                     breaks=seq(0, 6500, 1000), 
+  scale_y_continuous(limits = c(0, 1250), 
+                     breaks=seq(0, 1250, 250), 
                      labels= comma) +
   
-  labs(title = "Number of interactions and period of trading (days)", 
-       x = "Days(365)", y = "Number of interactions") 
-low_correl
+  labs(title = "Sum of interactions and partnership duration (days) in 2028", 
+       x = "days", y = "Number of interactions") 
+
+correl_2029 <- ggscatterstats(data = cor %>% filter(year==2029), 
+                           x = partnership_days, y = total_interaction,
+                           type = "nonparametric") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  scale_x_continuous(limits = c(0, 365), 
+                     breaks=seq(0, 365, 30), 
+                     labels= comma) + 
+  scale_y_continuous(limits = c(0, 1250), 
+                     breaks=seq(0, 1250, 250), 
+                     labels= comma) +
+  
+  labs(title = "Sum of interactions and partnership duration (days) in 2029", 
+       x = "days", y = "Number of interactions") 
+
+correl_2028 <- ggscatterstats(data = cor %>% filter(year==2028), 
+                           x = partnership_days, y = total_interaction,
+                           type = "nonparametric") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  scale_x_continuous(limits = c(0, 365), 
+                     breaks=seq(0, 365, 30), 
+                     labels= comma) + 
+  scale_y_continuous(limits = c(0, 1250), 
+                     breaks=seq(0, 1250, 250), 
+                     labels= comma) +
+  
+  labs(title = "Sum of interactions and partnership duration (days) in 2028", 
+       x = "days", y = "Number of interactions") 
+
+
+correl_2030 <- ggscatterstats(data = cor %>% filter(year==2030), 
+                           x = partnership_days, y = total_interaction,
+                           type = "nonparametric") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  scale_x_continuous(limits = c(0, 365), 
+                     breaks=seq(0, 365, 30), 
+                     labels= comma) + 
+  scale_y_continuous(limits = c(0, 1250), 
+                     breaks=seq(0, 1250, 250), 
+                     labels= comma) +
+  
+  labs(title = "Sum of interactions and partnership duration (days) in 2030", 
+       x = "days", y = "Number of interactions") 
+
+
+correl_2031 <- ggscatterstats(data = cor %>% filter(year==2031), 
+                           x = partnership_days, y = total_interaction,
+                           type = "nonparametric") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  scale_x_continuous(limits = c(0, 365), 
+                     breaks=seq(0, 365, 30), 
+                     labels= comma) + 
+  scale_y_continuous(limits = c(0, 1250), 
+                     breaks=seq(0, 1250, 250), 
+                     labels= comma) +
+  
+  labs(title = "Sum of interactions and partnership duration (days) in 2031", 
+       x = "days", y = "Number of interactions") 
+
+
+correl_2032 <- ggscatterstats(data = cor %>% filter(year==2032), 
+                           x = partnership_days, y = total_interaction,
+                           type = "nonparametric") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  scale_x_continuous(limits = c(0, 365), 
+                     breaks=seq(0, 365, 30), 
+                     labels= comma) + 
+  scale_y_continuous(limits = c(0, 1250), 
+                     breaks=seq(0, 1250, 250), 
+                     labels= comma) +
+  
+  labs(title = "Sum of interactions and partnership duration (days) in 2032", 
+       x = "days", y = "Number of interactions") 
+
+
+correl_2033 <- ggscatterstats(data = cor %>% filter(year==2033), 
+                           x = partnership_days, y = total_interaction,
+                           type = "nonparametric") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  scale_x_continuous(limits = c(0, 365), 
+                     breaks=seq(0, 365, 30), 
+                     labels= comma) + 
+  scale_y_continuous(limits = c(0, 1250), 
+                     breaks=seq(0, 1250, 250), 
+                     labels= comma) +
+  
+  labs(title = "Sum of interactions and partnership duration (days) in 2033", 
+       x = "days", y = "Number of interactions") 
+
+
+
+correl_2034 <- ggscatterstats(data = cor %>% filter(year==2034), 
+                           x = partnership_days, y = total_interaction,
+                           type = "nonparametric") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  scale_x_continuous(limits = c(0, 365), 
+                     breaks=seq(0, 365, 30), 
+                     labels= comma) + 
+  scale_y_continuous(limits = c(0, 1250), 
+                     breaks=seq(0, 1250, 250), 
+                     labels= comma) +
+  
+  labs(title = "Sum of interactions and partnership duration (days) in 2034", 
+       x = "days", y = "Number of interactions") 
+
+# combining plots using patchwork
+p_correl <- (correl_2028 + correl_2029) / (correl_2030 + correl_2031) / (correl_2032 + correl_2033) # + plot_spacer() + plot_spacer()
+p_correl + plot_annotation(title = "Correlation between Numer of interactions and partnership duration (days)", 
+                           theme = theme(plot.title = element_text(size = 18),
+                                         plot.subtitle = element_text(size = 12))) + plot_layout(ncol = 1, nrow = 3,
+                                                                                                 heights = c(2,2))
 ```
 
-We hope that from graphs like above, we can identify companies that has short period of interations but high number of interactions.
+The plots (non-parametric) above has p-values less than 0.05 and it suggests that there is a correlation between the rank-transformed data . The upper outliers could be worth investigating because they have exceptionally high number of interactions for a particular partnership duration with another company. For example, if a company A had interaction with company B for only 3 months but with exceptionally high number of trading interactions, should both companies be worth investigating?
+
+```{r}
+cor <- cor %>%
+  mutate(label1 = group_indices(., from, to))
+```
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+scatter_2034 <- ggplot(data=cor%>% filter(year==2034),
+       aes(x=partnership_days, y=total_interaction)) +
+  geom_point_interactive(aes(data_id = label1,
+                             tooltip= label1)) +
+  geom_smooth(method='lm') +
+  #ylim(0,100) +
+  #xlim(0,100) +
+  #geom_vline(xintercept=50, linetype='dashed') +
+  #geom_hline(yintercept=50, linetype='dashed') +
+  ggtitle('Scatterplot of Number of interactions and Partnership duration (Days)') +
+  theme_minimal()
+  #theme(legend.position='bottom') +
+  #scale_color_gradient(low="darkgreen", high="green")
+
+scatter_2033 <- ggplot(data=cor%>% filter(year==2033),
+       aes(x=partnership_days, y=total_interaction)) +
+  geom_point_interactive(aes(data_id = label1,
+                             tooltip= label1)) +
+  geom_smooth(method='lm') +
+  #ylim(0,100) +
+  #xlim(0,100) +
+  #geom_vline(xintercept=50, linetype='dashed') +
+  #geom_hline(yintercept=50, linetype='dashed') +
+  ggtitle('Scatterplot of # of interactions and Partnership duration (Days) in 2033') +
+  theme_minimal()
+
+
+girafe(code = print(scatter_2033 / scatter_2034),
+       width_svg = 6,
+       height_svg = 4,
+       options = list(
+         opts_hover(css = "fill: #202020;"),
+         opts_hover_inv(css = "opacity:0.2;")
+         )
+       ) 
+```
+
+girafe(ggobj=scatter_2033,
+
+width_svg = 6,
+
+height_svg = 6\*0.618
+
+)
 
 ## 3.7 Treemap of business relationship between shipping and receiving companies
 
@@ -1123,9 +1314,9 @@ The largest player here is 'Playa del Tesoro OJSC' (no pun intended) and it ship
 
 Are there communities inside this network graph?
 
-The group_edge_betweenness() function is typically used in community detection algorithms, such as the Girvan-Newman algorithm. It is a top down approach by calculating the edge betweenness centrality for each edge in the graph (in each iteration) and progressively removes the edges with the highest betweenness centrality until the desired number of communities is reached. The n parameter specifies the number of edges to remove. The more times we cut an edge, the more communities we get.
+The group_edge_betweenness() function is typically used in community detection algorithms, such as the Girvan-Newman algorithm. It is a top down approach by calculating the edge betweenness centrality for each edge in the graph (in each iteration) and progressively removes the edges with the highest betweenness centrality until the desired number of communities is reached. The `n` parameter specifies the number of edges to remove. The more times we cut an edge, the more communities we get. I have specified for 20 cuts, however 10 communities were detected.
 
-I am not very certain at the number of communities I should get, in R shiny, we could set n as an interactive component for users to play with. The tags obtained from community detection could be analysed with the nodes attributes.
+I am not very certain at the number of communities I should get, in R shiny, we could set `n` as an interactive component for users to play with. The tags obtained from community detection could be analysed with the nodes attributes.
 
 ```{r}
 #| fig-width: 12
@@ -1149,7 +1340,7 @@ visNetwork(nodes_seafood_vis,
            dash = FALSE) %>% 
   visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T),
              nodesIdSelection = TRUE,
-             selectedBy = "group") %>%
+             selectedBy = "shpcountry") %>%
   visInteraction(hideEdgesOnDrag = TRUE) %>% 
   #visLegend() %>%
   visLayout(randomSeed = 123)
@@ -1163,16 +1354,14 @@ saveRDS(mc2_seafood_edges_agg_vis, "C:/yixin-neo/ISSS608-VAA/Project/data/mc2_se
 
 # 4 References
 
-https://hohenfeld.is/posts/graphs-are-fun-an-introduction-to-graphs-in-r/
+Hohenfeld, F. (2021, August 12). Graphs Are Fun: An Introduction to Graphs in R. Hohenfeld.is. Retrieved from **https://hohenfeld.is/posts/graphs-are-fun-an-introduction-to-graphs-in-r/**
 
 On ggraph edgelink
+R Core Team. (2021, September 13). ggraph: A Grammar of Graphics for Graphs and Networks. The Comprehensive R Archive Network (CRAN). Retrieved from <https://cran.r-project.org/web/packages/ggraph/vignettes/Edges.html>
 
-https://cran.r-project.org/web/packages/ggraph/vignettes/Edges.html
-
-Visnetwork
-
-http://datastorm-open.github.io/visNetwork/
+[Visnetwork]{.underline}
+Datastorm-Open. (n.d.). visNetwork. GitHub Pages. Retrieved from http://datastorm-open.github.io/visNetwork/
 
 Horizon plot
 
-https://rivasiker.github.io/ggHoriPlot/
+Rivasiker, G. (n.d.). ggHoriPlot: Interactive Horizon Plot for R. GitHub Pages. Retrieved from <https://rivasiker.github.io/ggHoriPlot/>

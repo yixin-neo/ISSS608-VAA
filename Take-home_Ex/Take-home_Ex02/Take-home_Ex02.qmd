@@ -39,7 +39,15 @@ Try not to use R built-in NA/NULL function. Manually type "unknown' / 'missing' 
 
 # Vast Challenge 2023 Mini Challenge 2 (Subtask: 1)
 
-In this challenge, my group and I seek to use visual analytics to identify temporal patterns for individual entities and between entities using the knowledge graph the FishEye Organisation has provided us with. We will also be categorising the type of business relationship patterns found.
+In this challenge, my group and I seek to use visual analytics to identify temporal patterns for individual entities and between entities using the knowledge graph the FishEye Organisation has provided us with. We will also be categorising the type of business relationship patterns found. The visualisation outputs:
+
+1\) Interactive network graph with nodes coloured by varying range of in-deg and out-deg centrality scores to spot the companies with high / low centrality scores easily.
+
+2\) Horizon plot for top n companies (shipping and receiving) over the years 2028 to 2034 allows us to see all trading activities at one glance. We could try to spot companies with short trading duration.
+
+3\) Using a top receiving company 'Volga River LLC Enterprise' as an example, an interactive time-series chart (line chart) is plot with all of its supplier companies to spot trends and anomalies. We could try to spot receiving companies who keeps changing suppliers with this.
+
+4\) Coordinated and interactive scatterplots of 'number of interactions' and 'partnership duration' between each unique pair of ship-receive companies were plotted. We could try to spot outliers and investigate them!
 
 # 1 About the dataset
 
@@ -1000,80 +1008,15 @@ Analysis of the plot above:
 
 Observe the different shipping companies were active for different period of time. Most of them have low interactions consistently throughout 2028-2034 (Like 'Estrella', 'Oceanic' and 'Shou gan') while some have stopped activity for some time (like 'Gujarat', 'Nautica' and 'Diao er'). The most unique of all is 'Playa del Tesoro OJSC' - some of it interactions are extremely high for a specific period of time. To capture suspicious companies that are in operation for only a short period of time, we can consider plotting more horizon plots.
 
-## 3.6 Comparison of centrality values across shipping countries
+## 3.5 Correlationship between partnership intervals (in days) and total number of interactions between company pairs
 
-In this section, we will compare the centrality values of companies from different countries.
+In this section, lets examine whether there is a correlationship between the `interval of interaction within a year` and the `number of interactions` between each pairs of companies. Will there be companies with short partnership duration and high number of interactions (e.g. shipping in high frequency for only 1 week within a year) ?
 
-### 3.6.1 Comparison of  out-deg centrality between top shipping countries
+We will prepare the dataframe needed for the plot.
 
-Let us compute top 5 shipping countries in terms of out-deg centrality scores.
+First, for each group of `from`, `to`, `year`:
 
-```{r}
-nodes_seafood_vis %>% 
-  group_by(shpcountry) %>% 
-  summarise(sum_out_deg = sum(out_deg_centrality)) %>% 
-  arrange(desc(sum_out_deg)) %>% 
-  head(n=5) %>% kable()
-```
-
-The code chunk below filters the top 5 shipping countries and non parametric one way anova test is performed to compare for significance in difference in median of number of interactions between them.
-
-```{r}
-#| fig-width: 12
-#| fig-asp: 0.618
-ggbetweenstats(data = nodes_seafood_vis %>% 
-                 filter(shpcountry %in% c("Quirinelle", "Marebak", "Arreciviento", "Mawazam", "Merigrad")),
-               x = shpcountry, 
-               y = out_deg_centrality,
-               xlab = "Shipping Country", ylab = "Out-Deg centrality",
-               type = "np", pairwise.comparisons = TRUE, pairwise.display = "s",
-               sort = "descending",
-               sort.fun = median,
-               mean.ci = T, p.adjust.method = "fdr",  conf.level = 0.95,
-               title = "Comparison of Median Out-Deg centrality across shipping Countries") +
-  scale_y_continuous(limits = c(0, 4000)) +
-  theme(axis.title.y=element_text(angle = 0,
-                                  vjust=0.9))
-```
-
-The P - value is above 0.05, so there is not enough statistical evidence to reject the null hypothesis that the median out-deg centrality scores between top 5 shipping countries are different.
-
-### 3.6.2 Comparison of in-deg centrality between top receiving countries
-
-Let us compute top 5 receiving countries in terms of in-deg centrality scores.
-
-```{r}
-nodes_seafood_vis %>% 
-  group_by(rcvcountry) %>% 
-  summarise(sum_in_deg = sum(in_deg_centrality)) %>% 
-  arrange(desc(sum_in_deg)) %>% 
-  head(n=5)
-```
-
-There are only 3 major receiving countries in our filtered dataset .
-
-```{r}
-ggbetweenstats(data = nodes_seafood_vis %>% filter(rcvcountry %in% c("Utoporiana", "Oceanus",'Coralmarica')), x = rcvcountry, y = in_deg_centrality,
-               xlab = "Shipping Country", ylab = "In-Deg centrality",
-               type = "np", pairwise.comparisons = TRUE, pairwise.display = "s",
-               sort = "descending",
-               sort.fun = median,
-               mean.ci = T, p.adjust.method = "fdr",  conf.level = 0.95,
-               title = "Comparison of Median In-Deg centrality across receiving Countries") +
-  scale_y_continuous(limits = c(0, 215)) +
-   theme(axis.title.y=element_text(angle = 0,
-                                  vjust=0.9))
-```
-
-The P - value is above 0.05, so there is not enough statistical evidence to reject the null hypothesis that the median in-deg centrality scores between top 5 receiving countries are different.
-
-## 
-
-3.7 Correlationship between partnership intervals (in days) and total number of interactions between companies
-
-We will prepare the dataframe needed for the plot. First, for each group of `from`, `to`, `year`:
-
-1\) `partner_days` : the number of days within the year that each pair of companies had interactions
+1\) `partnership_days` : the number of days within the year that each pair of companies had interactions
 
 2\) `total_interaction` : sum of all the Weights between each pair of companies
 
@@ -1087,7 +1030,7 @@ cor <- mc2_seafood_edges_agg_vis %>%
   arrange(partnership_days)
 ```
 
-Filter the above dateframe by year
+### 3.5.1 Checking for statistical significance in correlationship
 
 ```{r}
 #| fig-width: 12
@@ -1104,8 +1047,8 @@ correl_2028 <- ggscatterstats(data = cor %>% filter(year==2028),
                      breaks=seq(0, 1250, 250), 
                      labels= comma) +
   
-  labs(title = "Sum of interactions and partnership duration (days) in 2028", 
-       x = "days", y = "Number of interactions") 
+  labs(title = "Number of interactions and partnership duration in 2028", 
+       x = "Partnership days", y = "Total interactions") 
 
 correl_2029 <- ggscatterstats(data = cor %>% filter(year==2029), 
                            x = partnership_days, y = total_interaction,
@@ -1118,22 +1061,8 @@ correl_2029 <- ggscatterstats(data = cor %>% filter(year==2029),
                      breaks=seq(0, 1250, 250), 
                      labels= comma) +
   
-  labs(title = "Sum of interactions and partnership duration (days) in 2029", 
-       x = "days", y = "Number of interactions") 
-
-correl_2028 <- ggscatterstats(data = cor %>% filter(year==2028), 
-                           x = partnership_days, y = total_interaction,
-                           type = "nonparametric") + 
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-  scale_x_continuous(limits = c(0, 365), 
-                     breaks=seq(0, 365, 30), 
-                     labels= comma) + 
-  scale_y_continuous(limits = c(0, 1250), 
-                     breaks=seq(0, 1250, 250), 
-                     labels= comma) +
-  
-  labs(title = "Sum of interactions and partnership duration (days) in 2028", 
-       x = "days", y = "Number of interactions") 
+  labs(title = "Number of interactions and partnership duration in 2029", 
+       x = "Partnership days", y = "Total interactions") 
 
 
 correl_2030 <- ggscatterstats(data = cor %>% filter(year==2030), 
@@ -1147,8 +1076,8 @@ correl_2030 <- ggscatterstats(data = cor %>% filter(year==2030),
                      breaks=seq(0, 1250, 250), 
                      labels= comma) +
   
-  labs(title = "Sum of interactions and partnership duration (days) in 2030", 
-       x = "days", y = "Number of interactions") 
+  labs(title = "Number of interactions and partnership duration in 2030", 
+       x = "Partnership days", y = "Total interactions") 
 
 
 correl_2031 <- ggscatterstats(data = cor %>% filter(year==2031), 
@@ -1162,8 +1091,8 @@ correl_2031 <- ggscatterstats(data = cor %>% filter(year==2031),
                      breaks=seq(0, 1250, 250), 
                      labels= comma) +
   
-  labs(title = "Sum of interactions and partnership duration (days) in 2031", 
-       x = "days", y = "Number of interactions") 
+  labs(title = "Number of interactions and partnership duration in 2031", 
+       x = "Partnership days", y = "Total interactions") 
 
 
 correl_2032 <- ggscatterstats(data = cor %>% filter(year==2032), 
@@ -1177,8 +1106,8 @@ correl_2032 <- ggscatterstats(data = cor %>% filter(year==2032),
                      breaks=seq(0, 1250, 250), 
                      labels= comma) +
   
-  labs(title = "Sum of interactions and partnership duration (days) in 2032", 
-       x = "days", y = "Number of interactions") 
+  labs(title = "Number of interactions and partnership duration in 2032", 
+       x = "Partnership days", y = "Total interactions") 
 
 
 correl_2033 <- ggscatterstats(data = cor %>% filter(year==2033), 
@@ -1192,8 +1121,8 @@ correl_2033 <- ggscatterstats(data = cor %>% filter(year==2033),
                      breaks=seq(0, 1250, 250), 
                      labels= comma) +
   
-  labs(title = "Sum of interactions and partnership duration (days) in 2033", 
-       x = "days", y = "Number of interactions") 
+  labs(title = "Number of interactions and partnership duration in 2033", 
+       x = "Partnership days", y = "Total interactions") 
 
 
 
@@ -1208,23 +1137,37 @@ correl_2034 <- ggscatterstats(data = cor %>% filter(year==2034),
                      breaks=seq(0, 1250, 250), 
                      labels= comma) +
   
-  labs(title = "Sum of interactions and partnership duration (days) in 2034", 
-       x = "days", y = "Number of interactions") 
+  labs(title = "Number of interactions and partnership duration in 2034", 
+       x = "Partnership days", y = "Total interactions") 
 
 # combining plots using patchwork
-p_correl <- (correl_2028 + correl_2029) / (correl_2030 + correl_2031) / (correl_2032 + correl_2033) # + plot_spacer() + plot_spacer()
-p_correl + plot_annotation(title = "Correlation between Numer of interactions and partnership duration (days)", 
+p_correl <- (correl_2034 + correl_2033) / (correl_2032 + correl_2031) / (correl_2030 + correl_2029) # + plot_spacer() + plot_spacer()
+p_correl + plot_annotation(title = "Correlation between Number of interactions and partnership duration (days)", 
                            theme = theme(plot.title = element_text(size = 18),
                                          plot.subtitle = element_text(size = 12))) + plot_layout(ncol = 1, nrow = 3,
                                                                                                  heights = c(2,2))
 ```
 
-The plots (non-parametric) above has p-values less than 0.05 and it suggests that there is a correlation between the rank-transformed data . The upper outliers could be worth investigating because they have exceptionally high number of interactions for a particular partnership duration with another company. For example, if a company A had interaction with company B for only 3 months but with exceptionally high number of trading interactions, should both companies be worth investigating?
+The plots (non-parametric) above has p-values less than 0.05 and it suggests that there is a correlationship between the rank-transformed data of total interactions and partnership duration between companies . The upper outliers pairs of companies could be worth investigating because they have high number of interactions for a particular partnership duration in a year. For example, if a company A had interaction with company B for only 3 months but with exceptionally high number of trading interactions, should both companies be worth investigating?
+
+### 3.5.2 Coordinated and interactive scatterplot 
+
+For usability , lets us plot an interactive and coordinate equivalent plot of the above scatterplot chart for the most recent four years 2034, 2033, 2032 and 2031.
+
+First we will prepare the tooltip to be shown.
 
 ```{r}
 cor <- cor %>%
-  mutate(label1 = group_indices(., from, to))
+  mutate(label1 = group_indices(., from, to)) %>% 
+  mutate(fromto = paste('From: ', from,
+                        'To: ', to)) %>% 
+  mutate(tooltip = paste(fromto,
+                         '\nTotal interaction: ', total_interaction,
+                         '\nPartnership duration: ', partnership_days, 'days'))
+
 ```
+
+Next, we will filter and use `geom_point_interactive()` of ggiraph library to plot.
 
 ```{r}
 #| fig-width: 12
@@ -1232,33 +1175,87 @@ cor <- cor %>%
 scatter_2034 <- ggplot(data=cor%>% filter(year==2034),
        aes(x=partnership_days, y=total_interaction)) +
   geom_point_interactive(aes(data_id = label1,
-                             tooltip= label1)) +
-  geom_smooth(method='lm') +
-  #ylim(0,100) +
-  #xlim(0,100) +
-  #geom_vline(xintercept=50, linetype='dashed') +
-  #geom_hline(yintercept=50, linetype='dashed') +
-  ggtitle('Scatterplot of Number of interactions and Partnership duration (Days)') +
-  theme_minimal()
-  #theme(legend.position='bottom') +
-  #scale_color_gradient(low="darkgreen", high="green")
+                             tooltip= tooltip),
+                         size = 0.8) +
+  geom_smooth(method='lm',
+              size = 0.5) +
+  scale_x_continuous(limits = c(0, 365), breaks = seq(0, 365, 30)) +
+  scale_y_continuous(limits = c(0, 1000), breaks = seq(0, 1000, 200)) +
+
+  labs(title = "Scatterplot of # of interactions and Partnership duration in 2034",
+       y = "Total interactions",
+       x = "Partnership duration") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 12, face ='bold'),
+        axis.title = element_text(size = 8, face= 'bold'),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.text = element_text(size = 8))
+
 
 scatter_2033 <- ggplot(data=cor%>% filter(year==2033),
        aes(x=partnership_days, y=total_interaction)) +
   geom_point_interactive(aes(data_id = label1,
-                             tooltip= label1)) +
-  geom_smooth(method='lm') +
-  #ylim(0,100) +
-  #xlim(0,100) +
-  #geom_vline(xintercept=50, linetype='dashed') +
-  #geom_hline(yintercept=50, linetype='dashed') +
-  ggtitle('Scatterplot of # of interactions and Partnership duration (Days) in 2033') +
-  theme_minimal()
+                             tooltip= tooltip),
+                         size = 0.8) +
+  geom_smooth(method='lm',
+              size = 0.5) +
+  scale_x_continuous(limits = c(0, 365), breaks = seq(0, 365, 30)) +
+  scale_y_continuous(limits = c(0, 1000), breaks = seq(0, 1000, 200)) +
+
+  labs(title = "Scatterplot of # of interactions and Partnership duration in 2033",
+       y = "Total interactions",
+       x = "Partnership duration") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 12,face = 'bold'),
+        axis.title = element_text(size = 8, face= 'bold'),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.text = element_text(size = 8))
+
+scatter_2032 <- ggplot(data=cor%>% filter(year==2032),
+       aes(x=partnership_days, y=total_interaction)) +
+  geom_point_interactive(aes(data_id = label1,
+                             tooltip= tooltip),
+                         size = 0.8) +
+  geom_smooth(method='lm',
+              size = 0.5) +
+  scale_x_continuous(limits = c(0, 365), breaks = seq(0, 365, 30)) +
+  scale_y_continuous(limits = c(0, 1000), breaks = seq(0, 1000, 200)) +
+
+  labs(title = "Scatterplot of # of interactions and Partnership duration in 2032",
+       y = "Total interactions",
+       x = "Partnership duration") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 12,face = 'bold'),
+        axis.title = element_text(size = 8, face= 'bold'),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.text = element_text(size = 8))
 
 
-girafe(code = print(scatter_2033 / scatter_2034),
+scatter_2031 <- ggplot(data=cor%>% filter(year==2031),
+       aes(x=partnership_days, y=total_interaction)) +
+  geom_point_interactive(aes(data_id = label1,
+                             tooltip= tooltip),
+                         size = 0.8) +
+  geom_smooth(method='lm',
+              size = 0.5) +
+  scale_x_continuous(limits = c(0, 365), breaks = seq(0, 365, 30)) +
+  scale_y_continuous(limits = c(0, 1000), breaks = seq(0, 1000, 200)) +
+
+  labs(title = "Scatterplot of # of interactions and Partnership duration in 2031",
+       y = "Total interactions",
+       x = "Partnership duration") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 12,face = 'bold'),
+        axis.title = element_text(size = 8, face= 'bold'),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.text = element_text(size = 8))
+
+
+
+
+girafe(code = print(scatter_2034 / scatter_2033 /scatter_2032 /scatter_2031),
        width_svg = 6,
-       height_svg = 4,
+       height_svg = 7,
        options = list(
          opts_hover(css = "fill: #202020;"),
          opts_hover_inv(css = "opacity:0.2;")
@@ -1266,17 +1263,19 @@ girafe(code = print(scatter_2033 / scatter_2034),
        ) 
 ```
 
-girafe(ggobj=scatter_2033,
+::: callout-note
+Features of the chart above
 
-width_svg = 6,
+-   Each point in chart represents a pair of companies that ships and receives, hover mouse over to see 'company pair names', 'total interaction' and 'partnership days' inside tooltip
 
-height_svg = 6\*0.618
+-   If a particular company pair exists in more than one chart , its corresponding point will also be highlighted in the other charts.
+:::
 
-)
+If two companies consistently have similar number of interactions within similar partnership days across the years, then there is no issue. Explore the interactive chart to spot pairs of companies with 'solo' occurrence throughout the years and is also one of the outlier pairs. Those pair of companies could be worth investigating.
 
-## 3.7 Treemap of business relationship between shipping and receiving companies
+## 3.6 Treemap of business relationship between shipping and receiving companies
 
-We have almost come to the end of this exercise. Before we finish, lets build a treemap to get a high level view of the current status of this business (who are the bigger suppliers and their corresponding buyers).
+Finally, lets build a treemap to get a high level view of the current status of this business network (who are the bigger suppliers and their corresponding buyers).
 
 The code chunk below groups the data by from and to columns and aggregating the TotalInteractions and MedianCargoWeight_daily between each pair shipping and receiving company by hscode.
 
@@ -1310,7 +1309,74 @@ The most outer layer refers to shipping companies while the tiles within represe
 
 The largest player here is 'Playa del Tesoro OJSC' (no pun intended) and it ships in high frequency and large volume mainly to one receiving compmany called 'Fresh Wharf SRL Consulting' over the years 2028 to 2034.
 
-## 3.7 Interactive graph grouped by community
+## 3.7 Comparison of centrality values across shipping countries
+
+In this section, we will compare the centrality values of companies from different countries.
+
+### 3.7.1 Comparison of  out-deg centrality between top shipping countries
+
+Let us compute top 5 shipping countries in terms of out-deg centrality scores.
+
+```{r}
+nodes_seafood_vis %>% 
+  group_by(shpcountry) %>% 
+  summarise(sum_out_deg = sum(out_deg_centrality)) %>% 
+  arrange(desc(sum_out_deg)) %>% 
+  head(n=5) %>% kable()
+```
+
+The code chunk below filters the top 5 shipping countries and non parametric one way anova test is performed to compare for significance in difference in median of number of interactions between them.
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+ggbetweenstats(data = nodes_seafood_vis %>% 
+                 filter(shpcountry %in% c("Quirinelle", "Marebak", "Arreciviento", "Mawazam", "Merigrad")),
+               x = shpcountry, 
+               y = out_deg_centrality,
+               xlab = "Shipping Country", ylab = "Out-Deg centrality",
+               type = "np", pairwise.comparisons = TRUE, pairwise.display = "s",
+               sort = "descending",
+               sort.fun = median,
+               mean.ci = T, p.adjust.method = "fdr",  conf.level = 0.95,
+               title = "Comparison of Median Out-Deg centrality across shipping Countries") +
+  scale_y_continuous(limits = c(0, 4000)) +
+  theme(axis.title.y=element_text(angle = 0,
+                                  vjust=0.9))
+```
+
+The P - value is above 0.05, so there is not enough statistical evidence to reject the null hypothesis that the median out-deg centrality scores between top 5 shipping countries are different.
+
+### 3.7.2 Comparison of in-deg centrality between top receiving countries
+
+Let us compute top 5 receiving countries in terms of in-deg centrality scores.
+
+```{r}
+nodes_seafood_vis %>% 
+  group_by(rcvcountry) %>% 
+  summarise(sum_in_deg = sum(in_deg_centrality)) %>% 
+  arrange(desc(sum_in_deg)) %>% 
+  head(n=5)
+```
+
+There are only 3 major receiving countries in our filtered dataset .
+
+```{r}
+ggbetweenstats(data = nodes_seafood_vis %>% filter(rcvcountry %in% c("Utoporiana", "Oceanus",'Coralmarica')), x = rcvcountry, y = in_deg_centrality,
+               xlab = "Shipping Country", ylab = "In-Deg centrality",
+               type = "np", pairwise.comparisons = TRUE, pairwise.display = "s",
+               sort = "descending",
+               sort.fun = median,
+               mean.ci = T, p.adjust.method = "fdr",  conf.level = 0.95,
+               title = "Comparison of Median In-Deg centrality across receiving Countries") +
+  scale_y_continuous(limits = c(0, 215)) +
+   theme(axis.title.y=element_text(angle = 0,
+                                  vjust=0.9))
+```
+
+The P - value is above 0.05, so there is not enough statistical evidence to reject the null hypothesis that the median in-deg centrality scores between top 5 receiving countries are different.
+
+## 3.8 Interactive graph grouped by community
 
 Are there communities inside this network graph?
 

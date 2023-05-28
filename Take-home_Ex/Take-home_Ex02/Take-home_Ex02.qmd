@@ -41,11 +41,11 @@ Try not to use R built-in NA/NULL function. Manually type "unknown' / 'missing' 
 
 In this challenge, my group and I seek to use visual analytics to identify temporal patterns for individual entities and between entities using the knowledge graph the FishEye Organisation has provided us with. We will also be categorising the type of business relationship patterns found. The visualisation outputs:
 
-1\) Interactive network graph with nodes coloured by varying range of in-deg and out-deg centrality scores to spot the companies with high / low centrality scores easily.
+1\) Interactive network graph with nodes coloured by varying range of betweenness, in-deg and out-deg centrality scores to spot the companies with high / low centrality scores easily.
 
-2\) Horizon plot for top n companies (shipping and receiving) over the years 2028 to 2034 allows us to see all trading activities at one glance. We could try to spot companies with short trading duration.
+2\) Heatmap for top n companies (shipping and receiving) over the years 2028 to 2034 allows us to see all trading activities at one glance. We could try to spot companies with short trading duration.
 
-3\) Using a top receiving company 'Volga River LLC Enterprise' as an example, an interactive time-series chart (line chart) is plot with all of its supplier companies to spot trends and anomalies. We could try to spot receiving companies who keeps changing suppliers with this.
+3\) Using two top receiving companies as an example, iteractive time-series charts (line chart) are plotted with four of their supplier companies to spot trends and anomalies. We could try to spot receiving companies who keeps changing suppliers with this.
 
 4\) Coordinated and interactive scatterplots of 'number of interactions' and 'partnership duration' between each unique pair of ship-receive companies were plotted. We could try to spot outliers and investigate them!
 

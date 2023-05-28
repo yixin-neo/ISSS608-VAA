@@ -120,7 +120,6 @@ Rearranging the columns in edge file as we require `source` and `target` columns
 ```{r}
 MC2_edges <- as_tibble(MC2$links) %>% 
   select(source,target,arrivaldate,hscode,valueofgoods_omu,volumeteu,weightkg,valueofgoodsusd)  
-# can exclude dataste column as they all contain the same values.
 ```
 
 ```{r}
@@ -207,7 +206,7 @@ We will be dropping the `valueofgoods_omu` , `valueofgoodusd`and `volumeteu` col
 MC2_edges_no_dup <- MC2_edges_no_dup %>% select('source','target', 'arrivaldate', 'hscode','weightkg')
 ```
 
-### 1.3.3 Check on the HScodes
+## 2.3 Check on the HScodes
 
 Check the unique number of hscodes in the dataset. There are 4761 unique HScodes, however many are not related to fishing related activties.
 
@@ -224,7 +223,7 @@ mc2_seafood_edges<- MC2_edges_no_dup[grepl('^1605|^1604|^301|^302|^303|^304|^305
 
 ```
 
-## 2.3 Preparation of Edges
+## 2.4 Preparation of Edges
 
 We will perform a group by 'source', 'target' and 'arrivaldate' and aggregate the total count of interactions, 'Weight', between each pair of companies. At this moment, we should not be filtering the records because we would like to calculate the network centrality scores first before zooming into records of interest. As we are interested to see whether there are patterns of self-loops, we will not be removing any company shipping to itself.
 
@@ -299,28 +298,22 @@ mc2_seafood_edges_agg <- mc2_seafood_edges_agg[mc2_seafood_edges_agg$target %in%
 #print(mc2_seafood_edges_agg)
 ```
 
-TBC: For community detection, we will try to remove the disconnected components of the graph so that as to detect groups within the connected component. Using the interactive network graph created earlier, there were several pairs of actors that exist as disconnected components. They are 'Rift Valley fishery OJSC', 'Bujagali Falls Pic Family', 'Neptune's Realm NV Navigation', 'Rybachit Sagl and Son's', 'Mar de la Aventura Rybachit' and 'Olas del Sur Ltd'. Lets remove the edge records if either `source` or `target` columns contains any of these four nodes.
-
-```{r}
-# Specify the values to be excluded
-#values_to_exclude <- c('Rift Valley fishery OJSC', 'Bujagali Falls Pic Family', 'Neptune\'s Realm NV Navigation', 'Rybachit Sagl and Son\'s', 'Mar de la Aventura Rybachit', 'Olas del Sur Ltd')
-
-# Delete rows with specified values in 'from' or 'to' columns
-#mc2_seafood_edges_agg <- mc2_seafood_edges_agg %>%
-  #filter(!(source %in% values_to_exclude | target %in% values_to_exclude))
-
-# Display the updated data frame
-#print(mc2_seafood_edges_agg)
-
-```
-
 ```{r}
 #| eval: false
 #| echo: false
-#sort(table(mc2_seafood_edges_agg$target))
+# Specify the values to be excluded
+values_to_exclude <- c('Rift Valley fishery OJSC', 'Bujagali Falls Pic Family', 'Neptune\'s Realm NV Navigation', 'Rybachit Sagl and Son\'s', 'Mar de la Aventura Rybachit', 'Olas del Sur Ltd')
+
+# Delete rows with specified values in 'from' or 'to' columns
+mc2_seafood_edges_agg <- mc2_seafood_edges_agg %>%
+  filter(!(source %in% values_to_exclude | target %in% values_to_exclude))
+
+# Display the updated data frame
+print(mc2_seafood_edges_agg)
+
 ```
 
-## 2.4 Preparation of Nodes
+## 2.5 Preparation of Nodes
 
 We will include only nodes that are in 'source' and 'target' columns in the `mc2_seafood_edges_agg` dataframe after the first round of data filtering.
 
@@ -329,7 +322,7 @@ nodes_seafood <- MC2_nodes %>%
   filter (id %in% c(mc2_seafood_edges_agg$source, mc2_seafood_edges_agg$target))
 ```
 
-## 2.5 Creating the network graph dataframe using tbl_graph() of the tidygraph package.
+## 2.6 Creating the network graph dataframe using tbl_graph() of the tidygraph package.
 
 ::: callout-note
 Node file needs to have ID of nodes as first column.
@@ -358,7 +351,7 @@ Running the code chunk below to confirm that 'seafood_graph' is not a connected 
 is.connected(seafood_graph)
 ```
 
-## 2.6 Calculate the various centrality measures of seafood_graph.
+## 2.7 Calculate the various centrality measures of seafood_graph.
 
 The top 10 nodes with reference to various centrality scores are printed using `kable()` function from `knitr`.
 
@@ -391,8 +384,8 @@ seafood_graph %>%
   activate("nodes") %>% 
   as_tibble() %>% 
   arrange(desc(betweenness_centrality)) %>% 
-  select(id,betweenness_centrality) %>% 
-  head(n=20) %>% 
+  select(id,betweenness_centrality, out_deg_centrality,in_deg_centrality) %>% 
+  head(n=5) %>%
   kable()
 ```
 
@@ -452,33 +445,188 @@ b  + theme_graph() + theme(legend.key.size = unit(1, "lines"),
 
 # 3 Interactive graphs of network structure, temporal analysis and business patterns detection
 
-## 3.1 Interactive graph grouped by IN-DEGREE CENTRALITY scores
+## 3.1 Interactive graph for top 3 BETWEENNESS CENTRALITY companies
 
-Obtain the list of top 20 in deg companies
+We will attempt to plot a network involving the top `3` companies including 'Drakensberg S.A. de C.V. Marine ecology','Playa de Oro BV' and 'bái suō wěn lú S.p.A.' in terms of high betweenness centrality scores. We might be able to see their relationship through the graph.
+
+Getting a list of top 3 companies in terms of betweeness scores.
 
 ```{r}
- top_20_in_list <- seafood_graph %>% 
+n <- 3
+top_n_bet_list <- seafood_graph %>% 
+  activate("nodes") %>% 
+  as_tibble() %>% 
+  arrange(desc(betweenness_centrality)) %>% 
+  top_n(n,wt = betweenness_centrality) %>%
+  pull(id)
+```
+
+Filter all records in the edge file involving the top 3 companies. There are 586 records after this step.
+
+```{r}
+mc2_seafood_edges_agg_bet <- mc2_seafood_edges_agg %>%
+  filter(target %in% top_n_bet_list | source %in% top_n_bet_list)
+
+```
+
+The code chunk below first extracts the node dataframe from tbl_graph() object 'seafood_graph' created earlier. The reason for doing so is because we want the centrality values inside for tooltip later.
+
+Next, trim this node dataframe by including nodes found only in the 'from' and 'target' columns in 'mc2_seafood_edges_agg_bet' edge file. There are 96 nodes after this step.
+
+```{r}
+nodes_seafood_bet <- as.data.frame(seafood_graph %>% activate(nodes))
+
+nodes_seafood_bet <- nodes_seafood_bet %>%
+  filter (id %in% c(mc2_seafood_edges_agg_bet$source, mc2_seafood_edges_agg_bet$target))
+```
+
+Calculate the total goods shipped between each pair of companies (for edge tooltip later)
+
+```{r}
+mc2_seafood_edges_agg_bet <- mc2_seafood_edges_agg_bet %>%
+  group_by(source, target) %>%
+  mutate(total_shipped_weightkg = sum(sum_goods_weightkg))
+
+```
+
+Rename the first two columns in the edge file to `from` and `to` for visNetwork to be able to recognize them. Create a `title` column for visNetwork to display the tooltip when we hover our mouse over the edges later.
+
+```{r}
+mc2_seafood_edges_agg_vis_bet <- mc2_seafood_edges_agg_bet %>% 
+  rename(from = source) %>% 
+  rename(to = target) %>% 
+  mutate(title = paste('Total shipment weight = ',total_shipped_weightkg, "\n HSCODE =", hscode))
+```
+
+Similarly, in the nodes file we add a column `title` We will be displaying the 'in-deg', 'betweenness' and 'out-deg' scores in the tooltip. If we want to colour the nodes by their shipping countries, then we would have to rename the `shpcountry` column to `group` because visNetwork looks for `group` column to colour the nodes. However, we will not do this now.
+
+```{r}
+# further processing
+nodes_seafood_vis_bet <- nodes_seafood_bet %>% 
+  #rename(group= rcvcountry)  %>% 
+  mutate(pagerank = round(pagerank, 5)) %>% 
+  mutate(title = paste('shpcountry =', shpcountry, ',',
+                       'rcvcountry =', rcvcountry, ',',
+                       '\n In-deg = ',in_deg_centrality, ',',
+                       "\n Betweenness =", betweenness_centrality, ',',
+                       "\n Out-deg =", out_deg_centrality))
+```
+
+As we want the nodes to be colour-coded by the betweenness centrality scores, we have first have to bin the betweenness scores into intervals using the `cut()` function. Next, rename the `bet_grp` column to `group` column for VisNetwork to colour nodes by betweenness intervals.
+
+```{r}
+bet_brks <- c(0, 500000, 1000000, 1500000)
+grps <- c('500,000 & Below','500,001 -1,000,000', '1,000,000 - 1,254,681')
+
+nodes_seafood_vis_bet$bet_grp <- cut(nodes_seafood_vis_bet$betweenness_centrality, breaks=bet_brks, labels = grps,include.lowest = TRUE)
+
+#nodes_seafood_vis_in$in_deg_grp <- factor(nodes_seafood_vis$in_deg_grp, ordered = TRUE, levels = c('3001-6132','2001-3000','1001-2000','501-1000','500 & Below'))
+
+nodes_seafood_vis_bet <- nodes_seafood_vis_bet %>% 
+  rename(group = bet_grp)
+```
+
+The code chunk below plots the interactive network graph.
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+set.seed(1234)
+visNetwork(nodes_seafood_vis_bet,
+           mc2_seafood_edges_agg_vis_bet,
+           main = "Ego Network of top 3 Betweenness companies",
+           height = "500px", width = "100%") %>%
+  visIgraphLayout(layout = "layout_nicely") %>%
+  visEdges(arrows = 'to',
+           smooth = list(enables = TRUE,
+                         type= 'straightCross'),
+           shadow = FALSE,
+           dash = FALSE) %>% 
+  visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T),
+             nodesIdSelection = TRUE,
+             selectedBy = "group") %>%
+  visInteraction(hideEdgesOnDrag = TRUE) %>% 
+  visLegend() %>%
+  visLayout(randomSeed = 123)
+```
+
+::: callout-note
+Interactive features of the graph above
+
+\(1\) Select Id dropdown list
+
+\(2\) Select Group dropdown list: The values inside refers to the range of 'in-deg' centrality scores of the nodes. The pink colour node will represent the highest in-deg centrality score, followed by green, yellow, red and blue.
+
+\(3\) Zoom in to see the node labels, and arrows direction.
+
+\(4\) Drag a particular node away from the cluster to admire it.
+
+\(5\) Hover mouse over a node will display tooltip (shpcountry, rcvcountry, In-deg, pagerank and out-deg score). It will also display the 'ego' network with itself at the ego. Click on the node to freeze the ego network. Click on blank space to reset.
+
+\(6\) Hovering the mouse over an edge will display tooltip (Total weight of cargo, hscode of cargo)
+
+\(7\) Click and Drag on the graph to move the canvas around, will also temporary disable the edge lines.
+:::
+
+The graph above shows the egonetwork of the top 3 betweenness companies and we can even see their tradiing relationship. The nodes in red are the companies with the top 2 betweenness centrality values, the nodes in yellow are ranked lower while the nodes in blue have relatively much lower centrality scores. The table below shows the top 10 companies in terms of centrality values.
+
+```{r}
+seafood_graph %>% 
+  activate("nodes") %>% 
+  as_tibble() %>% 
+  arrange(desc(betweenness_centrality)) %>% 
+  select(id,betweenness_centrality, out_deg_centrality,in_deg_centrality) %>% 
+  head(n=10) %>%
+  kable()
+```
+
+It is observed that the companies with high betweenness scores served as both 'source' and 'target' companies; meaning they buy and sell seafood related products. Companies like 'Drakensberg S.A. de C.V. Marine ecology' focus more on buying than selling, while 'Playa de Oro BV' focuses more on selling than buying.
+
+The business relationship observed: 'Drakensberg S.A. de C.V. Marine ecology' (ranked 1st) is one of the suppliers to 'Playa de Oro BV' (ranked 2nd) who in turns supplies to 'bái suō wěn lú S.p.A.' (ranked 3rd) who sells to many other companies. To reveal more relationships, the graph can be extended (to see the egonetwork of more yellow nodes ) by increasing the top n companies in the first code chunk in this section. For example, if we increase the size of the our network graph to ego network of top 5 betweenness companies (instead of 3), we would get
+
+![](between.png){width="364"}
+
+## 3.2 Interactive graph for top 5 IN_DEG CENTRALITY companies
+
+In this section, we will focus on companies with top in-deg centrality scores.
+
+First, obtain the list of top 5 in deg companies
+
+```{r}
+n <- 5
+top_n_in_list <- seafood_graph %>% 
   activate("nodes") %>% 
   as_tibble() %>% 
   arrange(desc(in_deg_centrality)) %>% 
-  top_n(20,wt = in_deg_centrality) %>%
+  top_n(n,wt = in_deg_centrality) %>%
   pull(id)
  
  #kable(top_20_in_list, col.names=c('Top 20 in-deg companies'))
 ```
 
-Preparing the edges dataframe by filtering to keep only nodes in the top 20 in-deg centrality list above. To further reduce the number of nodes, we will also remove records when the 'weight' column of these nodes is less than 10. There are 3196 edges after this step.
+Filter all records in the edge file involving the top 5 in-deg companies.
+
+Next calculate the sum of all shipments between each company and each of it supplier company.
+
+To further reduce the number of nodes, we will keep the records when the 'total_shipped_weightkg' is above 10,000,000 kg. This will retain only trading interactions involving a sizable weight (kg) of goods traded. This is an alternative to filtering using the 'weight' column which indicates the number of trading interactions. There are 19k edges after this step.
 
 ```{r}
 # Subset the dataframe to keep only rows with valid values (top 20 in-deg) in 'target' column
-mc2_seafood_edges_agg_in <- mc2_seafood_edges_agg[mc2_seafood_edges_agg$target %in% top_20_in_list, ]
+mc2_seafood_edges_agg_in <- mc2_seafood_edges_agg[mc2_seafood_edges_agg$target %in% top_n_in_list, ]
+
+# Calculate the sum of all the shipment weight between each pair of companies in edge file.
+mc2_seafood_edges_agg_in <- mc2_seafood_edges_agg_in %>%
+  group_by(source, target) %>%
+  mutate(total_shipped_weightkg = sum(sum_goods_weightkg))
 
 # further removal of records where 'weight' column is less than  10
 mc2_seafood_edges_agg_in <- mc2_seafood_edges_agg_in %>% 
-  filter(weight>=8)
+  filter(total_shipped_weightkg>=10000000)
 ```
 
-Prepare the nodes dataframe by including nodes found only in the 'from' and 'target' columns in 'mc2_seafood_edges_agg_in' edge file. There are 288 nodes after this step.
+The code chunk below first extracts the node dataframe from tbl_graph() object 'seafood_graph' created earlier. The reason for doing so is because we want the centrality values inside for tooltip later.
+
+Next, trim this node dataframe by including nodes found only in the 'from' and 'target' columns in 'mc2_seafood_edges_agg_in' edge file. There are 62 nodes after this step.
 
 ```{r}
 nodes_seafood_in <- as.data.frame(seafood_graph %>% activate(nodes))
@@ -487,18 +635,16 @@ nodes_seafood_in <- nodes_seafood_in %>%
   filter (id %in% c(mc2_seafood_edges_agg_in$source, mc2_seafood_edges_agg_in$target))
 ```
 
-We first need to rename the edge file first two columns to `from` and `to` for visNetwork to be able to regconise them. `title` column has been created for tooltip when we hover over each of the edges.
+Rename the first two columns of the edge file to `from` and `to` for visNetwork to be able to recognise them. Create a `title` column for visNetwork to display the tooltip when we hover our mouse over the edges later.
 
 ```{r}
 mc2_seafood_edges_agg_vis_in <- mc2_seafood_edges_agg_in %>% 
   rename(from = source) %>% 
   rename(to = target) %>% 
-  mutate(title = paste('Total Weight = ',sum_goods_weightkg, "\n HSCODE =", hscode))
+  mutate(title = paste('Total shipment weight = ',total_shipped_weightkg, "\n HSCODE =", hscode))
 ```
 
-The code chunk below extracts the node table from tbl_graph() object 'seafood_graph' created earlier. The reason for donig so is because it contains the centrality values that were calculated using the tidyverse centrality functions.
-
-Next, add a column `title` because it is the column that VisNetwork will search for to display tooltip when the mouse hovers over the nodes. We will be displaying the 'in-deg', 'betweenness' and 'out-deg' scores in the tooltip. If we want to colour the nodes by their shipping countries, then we would have to rename the `shpcountry` column to `group` because visNetwork looks for `group` column to colour the nodes. However, we will not do this now.
+Similarly, in the nodes file we add a column `title` We will be displaying the 'in-deg', 'betweenness' and 'out-deg' scores in the tooltip.
 
 ```{r}
 # extract nodes file from seafood_graph as a data frame
@@ -516,7 +662,7 @@ nodes_seafood_vis_in <- nodes_seafood_in %>%
 
 ```
 
-The code chunk below binned the in-deg scores into intervals using the `cut()` function. Next, rename the `in_deg_grp` column to `group` column for VisNetwork to colour nodes by in-deg intervals.
+As we want the nodes to be colour-coded by the in-deg centrality scores, we have first have to bin the in-deg scores into intervals using the `cut()` function. Next, rename the `in_deg_grp` column to `group` column for VisNetwork to colour nodes by in-deg score intervals.
 
 ```{r}
 in_deg_brks <- c(0, 10000, 20000,30000,40000,50000, 60000,70000)
@@ -535,9 +681,10 @@ The code chunk below plots in interactive network graph using visNetwork.
 ```{r}
 #| fig-width: 12
 #| fig-asp: 0.618
+set.seed(1234)
 visNetwork(nodes_seafood_vis_in,
            mc2_seafood_edges_agg_vis_in,
-           main = "Seafood graph grouped by In-Deg centrality intervals",
+           main = "Ego Network of top 5 IN-DEG companies",
            height = "500px", width = "100%") %>%
   visIgraphLayout(layout = "layout_nicely") %>%
   visEdges(arrows = 'to',
@@ -553,48 +700,51 @@ visNetwork(nodes_seafood_vis_in,
   visLayout(randomSeed = 123)
 ```
 
-::: callout-note
-Interactivity features of this graph
+The plot above shows not only the filtered ego network of the top 5 companies (in terms of in-deg scores) but also how these five companies are related to one another. Red node has the highest in-deg centrality scores , followed by blue and yellow. The top 5 in-deg companies are all related and buys from 'Sea Breezes S.A de C.V Freight'.
 
-\(1\) Select Id dropdown list
-
-\(2\) Select Group dropdown list: The values inside refers to the range of 'in-deg' centrality scores of the nodes. The pink colour node will represent the highest in-deg centrality score, followed by green, yellow, red and blue.
-
-\(3\) Zoom in to see the node labels, and arrows direction.
-
-\(4\) Drag a particular node away from the cluster to admire it.
-
-\(5\) Hover mouse over a node will display tooltip (shpcountry, rcvcountry, In-deg, pagerank and out-deg score). It will also display the 'ego' network with itself at the ego. Click on the node to freeze the ego network. Click on blank space to reset.
-
-\(6\) Hovering the mouse over an edge will display tooltip (Total weight of cargo, hscode of cargo)
-
-\(7\) Click and Drag on the graph to move the canvas around, will also temporary disable the edge lines.
-:::
-
-Try selecting '50,001 to 60,000' from the group drop down list, we will see two companies with similar range of 'in-deg' centrality scores. The company with the highest 'in-deg' centrality score is 'Mar del Este CJSC', that has interactions with a lot of supplier companies. The table below shows the names of the top 5 in-deg companies.
+The table below shows the names of the top 5 in-deg companies.
 
 ```{r}
 seafood_graph %>% 
   activate("nodes") %>% 
   as_tibble() %>% 
   arrange(desc(in_deg_centrality), desc(pagerank)) %>% 
-  select(id,in_deg_centrality,pagerank) %>% 
-  head(n=3) %>% 
+  select(id,in_deg_centrality,pagerank, out_deg_centrality) %>% 
+  head(n=5) %>% 
   kable()
 ```
 
-## 3.2 Temporal analysis of top 20 'in-deg' centrality companies in trading occurrence over the years
+### 3.2.1 Temporal analysis of top 20 'in-deg' centrality companies in trading occurrence over the years
 
-Use the code chunk below to compute the sum of monthly weights.
+First, obtain the list of company ids in the top 20 in-deg ranking.
 
 ```{r}
-hm <- mc2_seafood_edges_agg_vis_in %>%
+n <- 20
+top_n_in_list <- seafood_graph %>% 
+  activate("nodes") %>% 
+  as_tibble() %>% 
+  arrange(desc(in_deg_centrality)) %>% 
+  top_n(n,wt = in_deg_centrality) %>%
+  pull(id)
+```
+
+Next, filter the edge file to keep only the records involving the top 20 in-deg companies. There are 185K records after this step.
+
+```{r}
+# Subset the dataframe to keep only rows with valid values (top 20 in-deg) in 'target' column
+mc2_seafood_edges_agg_in_hm <- mc2_seafood_edges_agg[mc2_seafood_edges_agg$target %in% top_n_in_list, ]
+```
+
+Use the first code chunk below to compute the sum of monthly weights (interactons) between each unique pair of company in our filtered data. The second code chunk is to compute the year-month in which a source company has the max number of shipping interaction throughout the years.
+
+```{r}
+hm <- mc2_seafood_edges_agg_in_hm %>%
   mutate(month = floor_date(arrivaldate, unit = "month")) %>%
-  group_by(to, month) %>%
+  group_by(target, month) %>%
   summarise(total_weight_by_month = sum(weight)) %>% 
   ungroup() 
 
-hm <- hm  %>%  group_by(to) %>%
+hm <- hm  %>%  group_by(target) %>%
   mutate(maxweightmonth = as.Date(month[which.max(total_weight_by_month)])) %>%
   ungroup()
 ```
@@ -607,7 +757,7 @@ Now lets plot heatmap
 plotfrom <- "2028-01-02"
 plotto <- '2034-01-02'
 
-ggplot(hm, aes(x = month, y = fct_reorder(to, maxweightmonth), fill = total_weight_by_month)) +
+ggplot(hm, aes(x = month, y = fct_reorder(target, maxweightmonth), fill = total_weight_by_month)) +
   geom_tile(colour="White", show.legend=FALSE) +
   scale_fill_distiller(palette="Spectral") +
   scale_y_discrete(name="", expand=c(0,0))+
@@ -628,13 +778,139 @@ ggplot(hm, aes(x = month, y = fct_reorder(to, maxweightmonth), fill = total_weig
 
 Analysis of the plot above:
 
-The first observation from the chart above is that not all receiving companies have interactions throughout the months and years. For example, '3 Oceanography' and 'Sailors and Surfers' - why do they only have interactions with their suppliers in certain months?
+The heatmap above tells us the temporal trading interactions of the top 20 in-deg companies through the years. It is observed that company 'Mar del Este CJSC' has 'hot' patterns in the most recent years.
 
-## 3.3 Trading patterns of Pao gan SE Seal
+### 3.2.2 Comparing trading patterns of Mar del Este CJSC company and Pao gan SE Seal company with their suppliers
 
-Let us examine the trading patterns of 'Pao gan SE Seal', one of the few top leading companies in terms of ''in-deg' with four out of its many suppliers (as seen from the interactive graph).
+Let us examine the trading patterns of 'Mar del Este', the top leading companies in terms of 'in-deg' with four out of its many suppliers (as seen from the interactive graph).
 
-First, filter records with only Volga River LLC Enterprises and its suppliers.
+First, filter records with only Mar del Este and 4 of its suppliers.
+
+```{r}
+mar_in_df<-mc2_seafood_edges_agg_vis_in %>%
+  filter(to %in% 'Mar del Este CJSC')
+```
+
+Next, plot a time series using `geom_line()` and `geom_point_interactive()`.
+
+```{r}
+#| fig-width: 12
+#| fig-height: 30
+mar_in_df <-  mar_in_df %>%
+  mutate(tooltip = paste0('# of interaction: ', weight, '\nDate :', arrivaldate))
+
+ 
+mar_in_df1<- ggplot(mar_in_df %>%
+                          filter(from=='Olas del Mar N.V.'),
+                        aes(x=arrivaldate, y=weight)) +
+  geom_line( color="steelblue", size = 0.8) +
+  geom_point_interactive(aes(tooltip= tooltip), 
+                         size = 0.5) +
+  xlab("") +
+  theme_light() +
+  theme(#panel.spacing = unit(2, "lines"),
+        axis.text.x=element_text(angle=60, hjust=1),
+        panel.grid.major.x = element_blank(),
+        axis.title.y = element_text(size = 10)) +
+  scale_x_date(
+    breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), by = "3 months"),
+    limits = c(as.Date("2028-01-01"), as.Date("2034-12-31")),
+    labels = function(x) format(x, "%b %Y")) +
+  scale_y_continuous(
+    limits = c(0, 30), 
+    breaks = seq(0, 30, by = 5),
+    expand = c(0, 0)) +
+  
+  labs(title='Olas del Mar N.V.', 
+       x = 'Date',
+       y='Number of trading occurrence')
+
+mar_in_df2<- ggplot(mar_in_df %>% filter(from=='Sea Breezes S.A. de C.V. Freight '), aes(x=arrivaldate, y=weight)) +
+  geom_line( color="steelblue", size = 0.8) + 
+  geom_point_interactive(aes(tooltip= tooltip),
+                         size = 0.5) +
+  xlab("") +
+  theme_light() +
+  theme(#panel.spacing = unit(2, "lines"),
+        axis.text.x=element_text(angle=60, hjust=1),
+        panel.grid.major.x = element_blank(),
+        axis.title.y = element_text(size = 10)) +
+  scale_x_date(
+    breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), 
+                 by = "3 months"),
+    limits = c(as.Date("2028-01-01"), as.Date("2034-12-31")),
+    labels = function(x) format(x, "%b %Y")) +
+  scale_y_continuous(
+    limits = c(0, 30),
+    breaks = seq(0, 30, by = 5),
+    expand = c(0, 0)) +  # Remove padding around the y-axis limits
+
+      
+  labs(title='Sea Breezes S.A. de C.V. Freight ', 
+       x = 'Date',
+       y='Number of trading occurrence')
+
+
+mar_in_df3<- ggplot(mar_in_df %>% filter(from=='Blue Horizon Family &'), aes(x=arrivaldate, y=weight)) +
+  geom_line( color="steelblue", size = 0.8) + 
+  geom_point_interactive(aes(tooltip= tooltip),
+                         size = 0.5) +
+  xlab("") +
+  theme_light() +
+  theme(#panel.spacing = unit(2, "lines"),
+        axis.text.x=element_text(angle=60, hjust=1),
+        panel.grid.major.x = element_blank(),
+        axis.title.y = element_text(size = 10)) +
+  scale_x_date(
+    breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), by = "3 months"),
+    limits = c(as.Date("2028-01-01"), as.Date("2034-12-31")),
+    labels = function(x) format(x, "%b %Y")) +
+  scale_y_continuous(
+    limits = c(0, 30), 
+    breaks = seq(0, 30, by = 5),
+    expand = c(0, 0)) +
+  
+  labs(title='Blue Horizon Family &', 
+       x = 'Date',
+       y='Number of trading occurrence')
+
+mar_in_df4<- ggplot(mar_in_df %>% filter(from=='Wave Watchers Ltd. Liability Co'), aes(x=arrivaldate, y=weight)) +
+  geom_line( color="steelblue", size = 0.8) + 
+  geom_point_interactive(aes(tooltip= tooltip),
+                         size = 0.5) +
+  xlab("") +
+  theme_light() +
+  theme(#panel.spacing = unit(2, "lines"),
+        axis.text.x=element_text(angle=60, hjust=1),
+        panel.grid.major.x = element_blank(),
+        axis.title.y = element_text(size = 10)) +
+  scale_x_date(
+    breaks = seq(as.Date("2028-01-01"), as.Date("2034-12-31"), by = "3 months"),
+    limits = c(as.Date("2028-01-01"), as.Date("2034-12-31")),
+    labels = function(x) format(x, "%b %Y")) +
+  scale_y_continuous(
+    limits = c(0, 30), 
+    breaks = seq(0, 30, by = 5),
+    expand = c(0, 0)) +
+  
+  labs(title='Wave Watchers Ltd. Liability Co', 
+       x = 'Date',
+       y='Number of trading occurrence')
+
+
+
+girafe(code = print(mar_in_df1 /mar_in_df2 /mar_in_df3/mar_in_df4),
+       #width_svg = 6,
+       height_svg =8,
+       options = list(
+         opts_hover(css = "fill: #202020;"),
+         opts_hover_inv(css = "opacity:0.2;")
+         )
+       ) 
+  
+```
+
+Now let us examine the trading patterns of 'Pao gan SE Seal', one of the few top leading companies in terms of 'in-deg' with four out of its many suppliers. First filter all records involving Pao gan and its 4 suppliers.
 
 ```{r}
 paogan_in_df<- mc2_seafood_edges_agg_vis_in %>%
@@ -757,38 +1033,48 @@ girafe(code = print(paogan_in_df1 /paogan_in_df2 /paogan_in_df3 /paogan_in_df4),
        ) 
 ```
 
-Analysis of the plot above: Throughout the years, 'Pao gan SE Seal' has interactions many suppliers but some of these relationships are short term. . It dawned on me that we can identify IUU companies that frequently close down and re-register their companies from the tpye of plot above. For such companies, I would expect the buyer's graph to show that buyer has been changing suppliers very frequently.
+Analysis of the plot above: The trading interaction of 'Mar del Este' with its suppliers is more consistent throughout as compared to 'Pao gan SE Seal'. Throughout the years, 'Pao gan SE Seal' has interactions many suppliers but some of these relationships are short term. . It dawned on me that we can identify IUU companies that frequently close down and re-register their companies from the type of plot above. For such companies, I would expect the buyer's graph to show that buyer has been changing suppliers very frequently.
 
 For our group project we can consider creating drop down list of 'buying companies' for user to interact with and see each of the buyer's interaction with their top n suppliers over the years. A coordinated view can be created with social network graph such that when a buyer / supplier node is selected on the network graph, its trading activity over time with top n suppliers/ buyers is automatically generated.
 
-## 3.4 Interactive graph grouped by OUT-DEGREE CENTRALITY scores
+## 3.3 Interactive graph for top 5 OUT-DEGREE CENTRALITY companies
 
-Let us get the top 20 company names in terms of out-deg centrality scores.
+Let us get the top 5 company names in terms of out-deg centrality scores.
 
 ```{r}
-top_20_out_list <- seafood_graph %>% 
+n <- 5
+top_n_out_list <- seafood_graph %>% 
   activate("nodes") %>% 
   as_tibble() %>% 
   arrange(desc(out_deg_centrality)) %>% 
-  top_n(20, wt = out_deg_centrality) %>%
+  top_n(n, wt = out_deg_centrality) %>%
   pull(id)
 #kable(top_20_out_list, col.names=c('Top 20 out-deg companies'))
 ```
 
-Preparing the edges dataframe by filtering to keep only nodes in the top 20 out-deg centrality list above. To further reduce the number of nodes, we will also remove records when the 'weight' column of these nodes is less than 10. There are 3938 edges after this step.
+Filter all records in the edge file involving the top 5 out-deg companies.
+
+Next calculate the sum of all shipments between each company and each of it buyercompany.
+
+To further reduce the number of nodes, we will keep the records when the 'total_shipped_weightkg' is above 10,000,000 kg. This will retain only trading interactions involving a sizable weight (kg) of goods traded. This is an alternative to filtering using the 'weight' column which indicates the number of trading interactions. There are 10k edges after this step.
 
 ```{r}
-# Subset the dataframe to keep only rows with valid values (top 20 out-deg) in 'from' column
-mc2_seafood_edges_agg_out <- mc2_seafood_edges_agg[mc2_seafood_edges_agg$source %in% top_20_out_list, ]
+# Subset the dataframe to keep only rows with valid values (top 5 out-deg) in 'from' column (15K rows)
+mc2_seafood_edges_agg_out <- mc2_seafood_edges_agg[mc2_seafood_edges_agg$source %in% top_n_out_list, ]
+
+# Calculate the sum of all the shipment weight between each pair of companies in edge file.
+mc2_seafood_edges_agg_out <- mc2_seafood_edges_agg_out %>%
+  group_by(source, target) %>%
+  mutate(total_shipped_weightkg = sum(sum_goods_weightkg))
 
 # further removal of records where 'weight' column is less than  10
 mc2_seafood_edges_agg_out <- mc2_seafood_edges_agg_out %>% 
-  filter(weight>=8)
+  filter(total_shipped_weightkg>=10000000)
 ```
 
-The first code chunk below extracts the 'nodes' table from tbl_graph() object 'seafood_graph' created earlier. The reason for doing so is because it contains the out-deg centrality values that were calculated using the tidyverse centrality functions. We would like to trim this nodes list to contain only companies in edges file.
+The first code chunk below extracts the 'nodes' table from tbl_graph() object 'seafood_graph' created earlier. The reason for doing so is because we want the centrality values inside for tooltip later.
 
-Prepare the nodes dataframe by including nodes found only in the 'from' and 'target' columns in 'mc2_seafood_edges_agg_out' edge file. There are 288 nodes after this step.
+Next, trim this node dataframe by including nodes found only in the 'from' and 'target' columns in 'mc2_seafood_edges_agg_in' edge file. There are 24 nodes after this step.
 
 ```{r}
 nodes_seafood_out <- as.data.frame(seafood_graph %>% activate(nodes))
@@ -797,21 +1083,21 @@ nodes_seafood_out <- nodes_seafood_out %>%
   filter (id %in% c(mc2_seafood_edges_agg_out$source, mc2_seafood_edges_agg_out$target))
 ```
 
-Rename the edge file's first two columns to `from` and `to` for visNetwork to be able to regconise them. `title` column has been created for tooltip when we hover over each of the edges.
+Rename the first two columns of the edge file to from and to for visNetwork to be able to recognise them. Create a title column for visNetwork to display the tooltip when we hover our mouse over the edges later.
 
 ```{r}
 mc2_seafood_edges_agg_vis_out <- mc2_seafood_edges_agg_out %>% 
   rename(from = source) %>% 
   rename(to = target) %>% 
-  mutate(title = paste('Total Weight = ',sum_goods_weightkg, "\n HSCODE =", hscode))
+  mutate(title = paste('Total shipment weight = '
+                       ,total_shipped_weightkg,
+                       "\n HSCODE =",
+                       hscode))
 ```
 
-Next, add a column title because it is the column that VisNetwork will search for to display tooltip when the mouse hovers over the nodes. We will be displaying the 'in-deg', 'betweenness' and 'out-deg' scores in the tooltip.
+Similarly, in the nodes file we add a column title We will be displaying the 'in-deg', 'betweenness' and 'out-deg' scores in the tooltip.
 
 ```{r}
-# extract nodes file from seafood_graph as a data frame
-
-# further processing
 nodes_seafood_vis_out <- nodes_seafood_out %>% 
   #rename(group= rcvcountry)  %>% 
   mutate(pagerank = round(pagerank, 5)) %>% 
@@ -822,7 +1108,7 @@ nodes_seafood_vis_out <- nodes_seafood_out %>%
                        "\n Out-deg =", out_deg_centrality))
 ```
 
-The code chunk below binned the out-deg scores into intervals using the `cut()` function. Next, rename the `group` column back to `in-deg` column followed by `out_deg_grp` column to `group` column for VisNetwork to colour nodes by out-deg intervals.
+As we want the nodes to be colour-coded by the out-deg centrality scores, we have first have to bin the out-deg scores into intervals using the cut() function. Next, rename the out_deg_grp column to group column for VisNetwork to colour nodes by out-deg score intervals.
 
 ```{r}
 out_deg_brks <- c(0,10000, 20000, 30000)
@@ -842,12 +1128,12 @@ The code chunk below plots the interactive graph.
 #| fig-asp: 0.618
 visNetwork(nodes_seafood_vis_out,
            mc2_seafood_edges_agg_vis_out,
-           main = "Seafood graph grouped by Out-Deg centrality intervals",
+           main = "Ego Network of top 5 OUT-DEG companies",
            height = "500px", width = "100%") %>%
   visIgraphLayout(layout = "layout_nicely") %>%
   visEdges(arrows = 'to',
            smooth = list(enables = TRUE,
-                         type= 'curvedCW'),
+                         type= 'straightCross'),
            shadow = FALSE,
            dash = FALSE) %>% 
   visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T),
@@ -858,20 +1144,52 @@ visNetwork(nodes_seafood_vis_out,
   visLayout(randomSeed = 123)
 ```
 
-The chart highlights actors with high out-deg centrality scores over 2028 to 2034. In this default view, we can quickly identify the 2 coloured nodes as top 2 suppliers.
+The chart highlights actors with high out-deg centrality scores over 2028 to 2034. In this default view, we can quickly identify the 2 coloured nodes as top 2 suppliers. Both top out-deg companies supplies to 3 common target companies; they are "Coasta de la Felicidad', 'Niger Bend Limited Liability..' and"Pao gan SE Seal'.
 
-## 3.5 Temporal analysis of top 20 'out-deg' centrality companies in trading occurrence over the years
-
-Use the code chunk below to compute the sum of monthly weights (total monthly shipping interactions of each company.
+The table below shows the names of the top 5 out-deg companies
 
 ```{r}
-hm <- mc2_seafood_edges_agg_vis_out %>%
+seafood_graph %>% 
+  activate("nodes") %>% 
+  as_tibble() %>% 
+  arrange(desc(out_deg_centrality)) %>% 
+  select(id,out_deg_centrality,in_deg_centrality,pagerank) %>% 
+  head(n=5) %>% 
+  kable()
+```
+
+### 3.3.1 Temporal analysis of top 20 'out-deg' centrality companies in trading occurrence over the years
+
+First, obtain the list of company ids in the top 20 in-deg ranking.
+
+```{r}
+n <- 20
+top_n_out_list <- seafood_graph %>% 
+  activate("nodes") %>% 
+  as_tibble() %>% 
+  arrange(desc(out_deg_centrality)) %>% 
+  top_n(n, wt = out_deg_centrality) %>%
+  pull(id)
+```
+
+Next, filter the edge file to keep only the records involving the top 20 out-deg companies. There are 43K records after this step
+
+```{r}
+# Subset the dataframe to keep only rows with valid values (top 20 out-deg) in 'target' column
+mc2_seafood_edges_agg_out_hm <- mc2_seafood_edges_agg[mc2_seafood_edges_agg$source %in% top_n_out_list, ]
+
+```
+
+Use the first code chunk below to compute the sum of monthly weights (interactions) between each unique pair of company in our filtered data. The second code chunk is to compute the year-month in which a source company has the max number of shipping interaction throughout the years.
+
+```{r}
+hm <- mc2_seafood_edges_agg_out_hm %>%
   mutate(month = floor_date(arrivaldate, unit = "month")) %>%
-  group_by(from, month) %>%
+  group_by(source, month) %>%
   summarise(total_weight_by_month = sum(weight)) %>% 
   ungroup() 
 
-hm <- hm  %>%  group_by(from) %>%
+hm <- hm  %>%  group_by(source) %>%
   mutate(maxweightmonth = as.Date(month[which.max(total_weight_by_month)])) %>%
   ungroup()
 ```
@@ -884,7 +1202,7 @@ We will now plot the heatmap of top 20 out-deg companies to show their shipping 
 plotfrom <- "2028-01-02"
 plotto <- '2034-01-02'
 
-ggplot(hm, aes(x = month, y = fct_reorder(from, maxweightmonth), fill = total_weight_by_month)) +
+ggplot(hm, aes(x = month, y = fct_reorder(source, maxweightmonth), fill = total_weight_by_month)) +
   geom_tile(colour="White", show.legend=FALSE) +
   scale_fill_distiller(palette="Spectral") +
   scale_y_discrete(name="", expand=c(0,0))+
@@ -909,19 +1227,19 @@ At a quick glance, three companies are hot, they are 'nian yu Ltd Corporation' ,
 
 'nian yu Ltd Corporation' had several instances of very high shipping activities in 2031 and 2032, which is worth looking into.
 
-There are also some supplier companies that do not have shipping interactions frequently. What is their main business? How are they involved in the fishing industry actually?
+'Madhya Pradesh Market LLC' had interactions only from 2029 to 2032 first quarter. What happened to it?
 
-### 3.5.1 Treemap of business relationship between shipping and receiving companies
+### 3.3.2 Treemap of business relationship between shipping and receiving companies
 
-Finally, lets build a treemap to get a high level view of the current status of this business network (who are the bigger suppliers and their corresponding buyers).
+Finally, lets build a treemap to get a high level view of the companies that these main out-deg companies ship the goods to.
 
 The code chunk below groups the data by from and to columns and aggregating the TotalInteractions and MedianCargoWeight_daily between each pair shipping and receiving company by hscode.
 
 ```{r}
-seafood_tree <-mc2_seafood_edges_agg_vis_out %>% 
-  group_by(from,to,hscode) %>% 
+seafood_tree <-mc2_seafood_edges_agg_out_hm %>% 
+  group_by(source,target) %>% 
   summarise(TotalInteractions=sum(weight),
-            MedianCargoWeight_daily= median(sum_goods_weightkg)) %>% 
+            Totalshipment= sum(sum_goods_weightkg)) %>% 
   ungroup() %>% 
   arrange(desc(TotalInteractions))
 
@@ -933,25 +1251,37 @@ The code chunk below plots the treemap using the treemap library.
 #| fig-width: 12
 #| fig-asp: 0.618
 tm<- treemap(seafood_tree,
-        index=c("from", "to"),
+        index=c("source", "target"),
         vSize="TotalInteractions",
-        vColor="MedianCargoWeight_daily",
+        vColor="Totalshipment",
         type="value",
         palette="RdYlBu", 
         algorithm = "squarified",
         title='Shipping and receiving companies interaction pattern',
-        title.legend = "Median Cargo Weight per day"
+        title.legend = "Total shipment weight"
         )
 
 ```
 
-The most outer layer refers to shipping companies while the tiles within represents the companies that they shipped their goods to. The bigger the tile size, the more the interaction. The darker the colour, the greater the daily median cargo weight.
+The most outer layer refers to shipping companies while the tiles within represents the companies that they shipped their goods to. The bigger the tile size, the more the interaction. The darker the colour, the greater the total shipment weight accumulated across the years.
 
 The largest player here is 'nian yu Ltd Corporation' .
 
-'Playa del Tesoro OJSC' is the second ranked in terms of out-deg centrailty and it ships in high frequency and large volume mainly to one receiving company called 'Fresh Wharf SRL Consulting' over the years 2028 to 2034.
+'Playa del Tesoro OJSC' is the ranked fifth in terms of out-deg centrailty and it ships in high frequency and large volume to its partners over the years 2028 to 2034.
 
-## 3.6 Correlationship between partnership intervals (in days) and total number of interactions between company pairs
+The interactive version created with `d3treeR` library. But since this is not available in CRAN, we might not be able to use this in Shiny.
+
+```{r}
+library(d3treeR)
+```
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+d3tree(tm,rootname = "Supplier Companies" )
+```
+
+## 3.4 Correlationship between partnership intervals (in days) and total number of interactions between company pairs
 
 In this section, lets examine whether there is a correlationship between the `interval of interaction within a year` and the `number of interactions` between each pairs of companies. Will there be companies with short partnership duration and high number of interactions (e.g. shipping in high frequency for only 1 week within a year) ?
 
@@ -973,7 +1303,7 @@ cor <- mc2_seafood_edges_agg_vis_in %>%
   arrange(partnership_days)
 ```
 
-### 3.6.1 Checking for statistical significance in correlationship
+### 3.4.1 Checking for statistical significance in correlationship
 
 ```{r}
 #| fig-width: 12
@@ -1093,7 +1423,7 @@ p_correl + plot_annotation(title = "Correlation between Number of interactions a
 
 The plots (non-parametric) above has p-values less than 0.05 and it suggests that there is a correlationship between the rank-transformed data of total interactions and partnership duration between companies . The upper outliers pairs of companies could be worth investigating because they have high number of interactions for a particular partnership duration in a year. For example, if a company A had interaction with company B for only 3 months but with exceptionally high number of trading interactions, should both companies be worth investigating?
 
-### 3.6.2 Coordinated and interactive scatterplot
+### 3.4.2 Coordinated and interactive scatterplot
 
 For usability , lets us plot an interactive and coordinate equivalent plot of the above scatterplot chart for the most recent four years 2034, 2033, 2032 and 2031.
 
@@ -1216,11 +1546,11 @@ Features of the chart above
 
 If two companies consistently have similar number of interactions within similar partnership days across the years, then there is no issue. Explore the interactive chart to spot pairs of companies with 'solo' occurrence throughout the years and is also one of the outlier pairs. Those pair of companies could be worth investigating.
 
-## 3.7 Comparison of centrality values across shipping countries
+## 3.5 Comparison of centrality values across shipping countries
 
 In this section, we will compare the centrality values of companies from different countries.
 
-### 3.7.1 Comparison of out-deg centrality between top shipping countries
+### 3.5.1 Comparison of out-deg centrality between top shipping countries
 
 Let us compute top 5 shipping countries in terms of out-deg centrality scores.
 
@@ -1254,7 +1584,7 @@ ggbetweenstats(data = nodes_seafood_vis_out %>%
 
 The P - value is above 0.05, so there is not enough statistical evidence to reject the null hypothesis that the median out-deg centrality scores between top 5 shipping countries are different.
 
-### 3.7.2 Comparison of in-deg centrality between top receiving countries
+### 3.5.2 Comparison of in-deg centrality between top receiving countries
 
 Let us compute top 5 receiving countries in terms of in-deg centrality scores.
 
@@ -1283,42 +1613,98 @@ ggbetweenstats(data = nodes_seafood_vis_in %>% filter(rcvcountry %in% c("Jiraput
 
 The P - value is above 0.05, so there is not enough statistical evidence to reject the null hypothesis that the median in-deg centrality scores between top 5 receiving countries are different.
 
-## 3.8 Interactive graph grouped by community
+## 3.6 Conclusion
 
-Are there communities inside this network graph?
+In this exercise, we have identified the key centrality actors in terms of betweenness, in-degree and out-degree. My key findings are such:
 
-The group_edge_betweenness() function is typically used in community detection algorithms, such as the Girvan-Newman algorithm. It is a top down approach by calculating the edge betweenness centrality for each edge in the graph (in each iteration) and progressively removes the edges with the highest betweenness centrality until the desired number of communities is reached. The `n` parameter specifies the number of edges to remove. The more times we cut an edge, the more communities we get. I have specified for 20 cuts, however 10 communities were detected.
+-   Companies high in betweenness scores 'buy' and 'sell', although they tend to focus on one of the two activities. However, this companies usually do not have the highest in and out degree scores. We can derive simple business relationships as seen in section 3.1 and to get more relationship, we can simply extend the network graph.
 
-I am not very certain at the number of communities I should get, in R shiny, we could set `n` as an interactive component for users to play with. The tags obtained from community detection could be analysed with the nodes attributes.
+-   Companies with high in-degree scores tend to focus heavily on buying only and companies with highh out-degree scores tend to focus on selling only. Companies with high in/out centrality scores can share similar suppliers/ buyers. A treemap (section 3.3.3) will be able to help us see such relationship.
+
+-   Heatmaps allows us to see shipping activities for many companies at one go. We can look out for companies who have spikes in their selling and buying patterns to fish out illegal activities.
+
+-   Multiple line plots (section 3.2.2) can show us the shipping patterns between a target company and some of its source companies over time. From target companies who keeps changing source companies, we could try to investigate them to check if they are dealing with companies who kept de-registering after being caught for IUU and re-registering to continue the business.
+
+My key takeaway from this exercise:
+
+-   I filtered records too early, even though some edge weights are small, but they could provide the link to finding high betweenness nodes. By chopping away these edges to early, I was unable to get any betweenness scores for the remaining network in my filtered dataset.
+
+```{r}
+#| echo: false
+#| eval: false
+
+n <- 15
+top_n_bet_list <- seafood_graph %>% 
+  activate("nodes") %>% 
+  as_tibble() %>% 
+  arrange(desc(betweenness_centrality)) %>% 
+  top_n(n,wt = betweenness_centrality) %>%
+  pull(id)
+
+
+
+
+mc2_seafood_edges_agg_bet <- mc2_seafood_edges_agg %>%
+  filter(target %in% top_n_bet_list | source %in% top_n_bet_list)
+
+
+
+nodes_seafood_bet <- as.data.frame(seafood_graph %>% activate(nodes))
+nodes_seafood_bet <- nodes_seafood_bet %>%
+  filter (id %in% c(mc2_seafood_edges_agg_bet$source, mc2_seafood_edges_agg_bet$target))
+
+mc2_seafood_edges_agg_bet <- mc2_seafood_edges_agg_bet %>%
+  group_by(source, target) %>%
+  mutate(total_shipped_weightkg = sum(sum_goods_weightkg))
+
+
+mc2_seafood_edges_agg_vis_bet <- mc2_seafood_edges_agg_bet %>% 
+  rename(from = source) %>% 
+  rename(to = target) %>% 
+  mutate(title = paste('Total shipment weight = ',total_shipped_weightkg, "\n HSCODE =", hscode))
+
+
+# further processing
+nodes_seafood_vis_bet <- nodes_seafood_bet %>% 
+  #rename(group= rcvcountry)  %>% 
+  mutate(pagerank = round(pagerank, 5)) %>% 
+  mutate(title = paste('shpcountry =', shpcountry, ',',
+                       'rcvcountry =', rcvcountry, ',',
+                       '\n In-deg = ',in_deg_centrality, ',',
+                       "\n Betweenness =", betweenness_centrality, ',',
+                       "\n Out-deg =", out_deg_centrality))
+
+```
+
+```{r}
+#| echo: false
+#| eval: false
+#Create tbl 
+com_graph<- tbl_graph(nodes=nodes_seafood_vis_bet,
+                          edges = mc2_seafood_edges_agg_vis_bet,
+                          directed = TRUE)
+
+```
 
 ```{r}
 #| echo: false
 #| eval: false
 #| fig-width: 12
 #| fig-asp: 0.618
-# use the out vis graph to calculate communitys
-# let the community community column be called group column
-nodes_seafood_vis <- nodes_seafood_vis %>% 
-  rename(out_deg_grp = group) %>% 
-  rename(group = community)
+set.seed (1234)
+b<- com_graph %>%
+  activate("nodes") %>% 
+  mutate(community = as.factor(group_edge_betweenness(weights = weight, 
+                                                      directed = TRUE,
+                                                      n = 20))) %>%
+  ggraph(layout = "fr") + 
+  geom_edge_link(aes(width=weight), 
+                 alpha=0.2) +
+  scale_edge_width(range = c(0.1, 5)) +
+  geom_node_point(aes(colour = community))  
 
-
-visNetwork(nodes_seafood_vis,
-           mc2_seafood_edges_agg_vis,
-           main = "Seafood graph grouped by Communities",
-           height = "500px", width = "100%") %>%
-  visIgraphLayout(layout = "layout_nicely") %>%
-  visEdges(arrows = 'to',
-           smooth = list(enables = TRUE,
-                         type= 'curvedCW'),
-           shadow = FALSE,
-           dash = FALSE) %>% 
-  visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T),
-             nodesIdSelection = TRUE,
-             selectedBy = "shpcountry") %>%
-  visInteraction(hideEdgesOnDrag = TRUE) %>% 
-  #visLegend() %>%
-  visLayout(randomSeed = 123)
+b  + theme_graph() + theme(legend.key.size = unit(1, "lines"),
+          legend.position = 'bottom')
 ```
 
 ```{r}
@@ -1329,12 +1715,14 @@ saveRDS(mc2_seafood_edges_agg_vis, "C:/yixin-neo/ISSS608-VAA/Project/data/mc2_se
 
 # 4 References
 
-Hohenfeld, F. (2021, August 12). Graphs Are Fun: An Introduction to Graphs in R. Hohenfeld.is. Retrieved from **https://hohenfeld.is/posts/graphs-are-fun-an-introduction-to-graphs-in-r/**
+Hohenfeld, F. (2021, August 12). Graphs Are Fun: An Introduction to Graphs in R. Hohenfeld.is. Retrieved from https://hohenfeld.is/posts/graphs-are-fun-an-introduction-to-graphs-in-r/
 
-On ggraph edgelink R Core Team. (2021, September 13). ggraph: A Grammar of Graphics for Graphs and Networks. The Comprehensive R Archive Network (CRAN). Retrieved from <https://cran.r-project.org/web/packages/ggraph/vignettes/Edges.html>
+R Core Team. (2021, September 13). ggraph: A Grammar of Graphics for Graphs and Networks. The Comprehensive R Archive Network (CRAN). Retrieved from <https://cran.r-project.org/web/packages/ggraph/vignettes/Edges.html>
 
-[Visnetwork]{.underline} Datastorm-Open. (n.d.). visNetwork. GitHub Pages. Retrieved from http://datastorm-open.github.io/visNetwork/
-
-Horizon plot
+Datastorm-Open. (n.d.). visNetwork. GitHub Pages. Retrieved from http://datastorm-open.github.io/visNetwork/
 
 Rivasiker, G. (n.d.). ggHoriPlot: Interactive Horizon Plot for R. GitHub Pages. Retrieved from <https://rivasiker.github.io/ggHoriPlot/>
+
+Designing Interactive Treemap Using D3TreeR." (n.d.). Retrieved from <https://r4va.netlify.app/chap16.html#designing-interactive-treemap-using-d3treer>
+
+Public Health England. (2020). Visualising the spread of COVID-19 in England \[PDF document\]. Retrieved from <https://extra.shu.ac.uk/ppp-online/wp-content/uploads/2020/11/visualising-spread-COVID19-england.pdf>

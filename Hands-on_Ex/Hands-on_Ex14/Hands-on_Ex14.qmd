@@ -1,0 +1,88 @@
+---
+title: "Hands-on Exercise 14 (Week 7: Visualising and Analysing Time-oriented Data)"
+author: "NYX"
+date: '3 June 2023'
+date-modified: "`r Sys.Date()`"
+editor: visual
+execute: 
+  freeze: auto
+  warning: false
+  #echo: false
+  #message: false
+format:
+  html:
+    code-fold: True
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
+---
+
+## **17.1 Learning Outcome**
+
+-   plotting a calender heatmap by using ggplot2 functions,
+
+-   plotting a cycle plot by using ggplot2 function,
+
+-   plotting a slopegraph
+
+-   plotting a horizon chart
+
+## **17.2 Getting Started**
+
+## **17.3 Do It Yourself**
+
+Write a code chunk to check, install and launch the following R packages: scales, viridis, lubridate, ggthemes, gridExtra, readxl, knitr, data.table and tidyverse.
+
+```{r}
+pacman::p_load(scales, viridis, lubridate, ggthemes, gridExtra, readxl, knitr, data.table, CGPfunctions, ggHoriPlot, tidyverse)
+```
+
+## **17.4 Plotting Calendar Heatmap**
+
+In this section, you will learn how to plot a calender heatmap programmetically by using ggplot2 package.
+
+Objectives for this section:
+
+-   plot a calender heatmap by using ggplot2 functions and extension,
+
+-   to write function using R programming,
+
+-   to derive specific date and time related field by using base R and lubridate packages
+
+-   to perform data preparation task by using tidyr and dplyr packages.
+
+### **17.4.1 The Data**
+
+For the purpose of this hands-on exercise, *eventlog.csv* file will be used. This data file consists of 199,999 rows of time-series cyber attack records by country.
+
+### **17.4.2 Importing the data**
+
+First, you will use the code chunk below to import *eventlog.csv* file into R environment and called the data frame as *attacks*.
+
+```{r}
+attacks <- read_csv("data/eventlog.csv")
+```
+
+### **17.4.3 Examining the data structure**
+
+It is always a good practice to examine the imported data frame before further analysis is performed.
+
+For example, *kable()* can be used to review the structure of the imported data frame.
+
+```{r}
+kable(head(attacks))
+```
+
+There are three columns, namely *timestamp*, *source_country* and *tz*.
+
+-   *timestamp* field stores date-time values in POSIXct format.
+
+-   *source_country* field stores the source of the attack. It is in *ISO 3166-1 alpha-2* country code.
+
+-   *tz* field stores time zone of the source IP address.
+
+### **17.4.4 Data Preparation**
+
+Step 1: Deriving *weekday* and *hour of day* fields
+
+Before we can plot the calender heatmap, two new fields namely *wkday* and *hour* need to be derived. In this step, we will write a function to perform the task.

@@ -9,7 +9,7 @@
 <meta name="author" content="NYX">
 <meta name="dcterms.date" content="2023-05-01">
 
-<title>NYX VA - Hands-on Exercise 13 (Week 6: Building Treemap Visualisation with R)</title>
+<title>NYX VA - Hands-on Exercise 12 (Week 6: Building Parallel Coordinates Plot with R)</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -123,20 +123,12 @@ ul.task-list li input[type="checkbox"] {
  <span class="dropdown-text">Hands-on Exercise 9</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex10/Hands-on_Ex10.qmd">
- <span class="dropdown-text">Hands-on Exercise 10</span></a>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex14/Hands-on_Ex14.html">
+ <span class="dropdown-text">Hands-on Exercise 14</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex11/Hands-on_Ex11.qmd">
- <span class="dropdown-text">Hands-on Exercise 11</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex12/Hands-on_Ex12.qmd">
- <span class="dropdown-text">Hands-on Exercise 12</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex13/Hands-on_Ex13.qmd">
- <span class="dropdown-text">Hands-on Exercise 13</span></a>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex15/Hands-on_Ex15.html">
+ <span class="dropdown-text">Hands-on Exercise 15</span></a>
   </li>  
     </ul>
   </li>
@@ -164,6 +156,10 @@ ul.task-list li input[type="checkbox"] {
         <li>
     <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex06/In-class_Ex06.html">
  <span class="dropdown-text">In-class Exercise 6</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex07/In-class_Ex07.html">
+ <span class="dropdown-text">In-class Exercise 7</span></a>
   </li>  
     </ul>
   </li>
@@ -203,7 +199,7 @@ ul.task-list li input[type="checkbox"] {
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Hands-on Exercise 13 (Week 6: Building Treemap Visualisation with R)</h1>
+      <h1 class="quarto-secondary-nav-title">Hands-on Exercise 12 (Week 6: Building Parallel Coordinates Plot with R)</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -270,17 +266,15 @@ ul.task-list li input[type="checkbox"] {
   </div>
 </li>
           <li class="sidebar-item">
-  Hands-on_Ex/Hands-on_Ex10/Hands-on_Ex10.qmd
-  </li>
+  <div class="sidebar-item-container"> 
+  <a href="../../Hands-on_Ex/Hands-on_Ex14/Hands-on_Ex14.html" class="sidebar-item-text sidebar-link">Hands-on Exercise 14 (Week 7: Visualising and Analysing Time-oriented Data)</a>
+  </div>
+</li>
           <li class="sidebar-item">
-  Hands-on_Ex/Hands-on_Ex11/Hands-on_Ex11.qmd
-  </li>
-          <li class="sidebar-item">
-  Hands-on_Ex/Hands-on_Ex12/Hands-on_Ex12.qmd
-  </li>
-          <li class="sidebar-item">
-  Hands-on_Ex/Hands-on_Ex13/Hands-on_Ex13.qmd
-  </li>
+  <div class="sidebar-item-container"> 
+  <a href="../../Hands-on_Ex/Hands-on_Ex15/Hands-on_Ex15.html" class="sidebar-item-text sidebar-link">Hands-on Exercise 15 (Week 7: Time on the Horizon: ggHoriPlot methods)</a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -316,6 +310,11 @@ ul.task-list li input[type="checkbox"] {
   <a href="../../In-class_Ex/In-class_Ex06/In-class_Ex06.html" class="sidebar-item-text sidebar-link">In-class_Ex06</a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../In-class_Ex/In-class_Ex07/In-class_Ex07.html" class="sidebar-item-text sidebar-link">In-class_Ex07</a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -348,14 +347,20 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#section" id="toc-section" class="nav-link active" data-scroll-target="#section"></a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">Hands-on Exercise 13 (Week 6: Building Treemap Visualisation with R)</h1>
+<h1 class="title d-none d-lg-block">Hands-on Exercise 12 (Week 6: Building Parallel Coordinates Plot with R)</h1>
 </div>
 
 
@@ -379,7 +384,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">May 24, 2023</p>
+      <p class="date-modified">June 3, 2023</p>
     </div>
   </div>
     
@@ -388,8 +393,11 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<section id="section" class="level2">
+<h2 class="anchored" data-anchor-id="section"></h2>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

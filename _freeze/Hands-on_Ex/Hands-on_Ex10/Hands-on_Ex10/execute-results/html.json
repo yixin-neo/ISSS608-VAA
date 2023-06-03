@@ -1,0 +1,14 @@
+{
+  "hash": "ee0e17c6b92ba604409454a3fba5cd50",
+  "result": {
+    "markdown": "---\ntitle: \"Hands-on Exercise 10 (Week 6: Visualising Correlation Matrices with R)\"\nauthor: \"NYX\"\ndate: '?? May 2023'\ndate-modified: \"2023-06-03\"\neditor: visual\nexecute: \n  freeze: auto\n  warning: false\n  #echo: false\n  #message: false\nformat:\n  html:\n    code-fold: True\n    code-overflow: scroll\n    code-summary: \"Show the code\"\n    code-line-numbers: true\n---\n\n\n## \n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

@@ -423,6 +423,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#importing-the-data" id="toc-importing-the-data" class="nav-link" data-scroll-target="#importing-the-data"><strong>17.4.2 Importing the data</strong></a></li>
   <li><a href="#examining-the-data-structure" id="toc-examining-the-data-structure" class="nav-link" data-scroll-target="#examining-the-data-structure"><strong>17.4.3 Examining the data structure</strong></a></li>
   <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation"><strong>17.4.4 Data Preparation</strong></a></li>
+  <li><a href="#building-the-calendar-heatmaps" id="toc-building-the-calendar-heatmaps" class="nav-link" data-scroll-target="#building-the-calendar-heatmaps"><strong>17.4.5 Building the Calendar Heatmaps</strong></a></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
+  <li><a href="#plotting-multiple-calendar-heatmaps" id="toc-plotting-multiple-calendar-heatmaps" class="nav-link" data-scroll-target="#plotting-multiple-calendar-heatmaps"><strong>17.4.7 Plotting Multiple Calendar Heatmaps</strong></a></li>
+  <li><a href="#plotting-multiple-calendar-heatmaps-1" id="toc-plotting-multiple-calendar-heatmaps-1" class="nav-link" data-scroll-target="#plotting-multiple-calendar-heatmaps-1"><strong>17.4.8 Plotting Multiple Calendar Heatmaps</strong></a></li>
+  </ul></li>
+  <li><a href="#plotting-cycle-plot" id="toc-plotting-cycle-plot" class="nav-link" data-scroll-target="#plotting-cycle-plot"><strong>17.5 Plotting Cycle Plot</strong></a>
+  <ul class="collapse">
+  <li><a href="#step-1-data-import" id="toc-step-1-data-import" class="nav-link" data-scroll-target="#step-1-data-import"><strong>17.5.1 Step 1: Data Import</strong></a></li>
+  <li><a href="#step-2-deriving-month-and-year-fields" id="toc-step-2-deriving-month-and-year-fields" class="nav-link" data-scroll-target="#step-2-deriving-month-and-year-fields"><strong>17.5.2 Step 2: Deriving month and year fields</strong></a></li>
+  <li><a href="#step-4-extracting-the-target-country" id="toc-step-4-extracting-the-target-country" class="nav-link" data-scroll-target="#step-4-extracting-the-target-country"><strong>17.5.3 Step 4: Extracting the target country</strong></a></li>
+  <li><a href="#step-5-computing-year-average-arrivals-by-month" id="toc-step-5-computing-year-average-arrivals-by-month" class="nav-link" data-scroll-target="#step-5-computing-year-average-arrivals-by-month"><strong>17.5.4 Step 5: Computing year average arrivals by month</strong></a></li>
+  <li><a href="#step-6-plotting-the-cycle-plot" id="toc-step-6-plotting-the-cycle-plot" class="nav-link" data-scroll-target="#step-6-plotting-the-cycle-plot"><strong>17.5.5 Step 6: Plotting the cycle plot</strong></a></li>
+  </ul></li>
+  <li><a href="#plotting-slopegraph" id="toc-plotting-slopegraph" class="nav-link" data-scroll-target="#plotting-slopegraph"><strong>17.6 Plotting Slopegraph</strong></a>
+  <ul class="collapse">
+  <li><a href="#step-1-data-import-1" id="toc-step-1-data-import-1" class="nav-link" data-scroll-target="#step-1-data-import-1"><strong>17.6.1 Step 1: Data Import</strong></a></li>
+  <li><a href="#step-2-plotting-the-slopegraph" id="toc-step-2-plotting-the-slopegraph" class="nav-link" data-scroll-target="#step-2-plotting-the-slopegraph"><strong>17.6.2 Step 2: Plotting the slopegraph</strong></a></li>
   </ul></li>
   </ul>
 </nav>
@@ -606,6 +623,7 @@ Note
 </ul>
 </div>
 </div>
+<p>Step 2: Deriving the attacks tibble data frame</p>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
@@ -701,6 +719,579 @@ Note
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</section>
+<section id="building-the-calendar-heatmaps" class="level3">
+<h3 class="anchored" data-anchor-id="building-the-calendar-heatmaps"><strong>17.4.5 Building the Calendar Heatmaps</strong></h3>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>grouped <span class="ot">&lt;-</span> attacks <span class="sc">%&gt;%</span> </span>
+<span id="cb7-2"><a href="#cb7-2"></a>  <span class="fu">count</span>(wkday, hour) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-3"><a href="#cb7-3"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb7-4"><a href="#cb7-4"></a>  <span class="fu">na.omit</span>()</span>
+<span id="cb7-5"><a href="#cb7-5"></a></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="fu">ggplot</span>(grouped,</span>
+<span id="cb7-7"><a href="#cb7-7"></a>       <span class="fu">aes</span>(hour,</span>
+<span id="cb7-8"><a href="#cb7-8"></a>           wkday,</span>
+<span id="cb7-9"><a href="#cb7-9"></a>           <span class="at">fill =</span> n)) <span class="sc">+</span></span>
+<span id="cb7-10"><a href="#cb7-10"></a>  <span class="fu">geom_tile</span>(<span class="at">color =</span> <span class="st">'white'</span>,  <span class="co">#&lt;&lt;&lt; border color and lnie size of tiles</span></span>
+<span id="cb7-11"><a href="#cb7-11"></a>            <span class="at">size=</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
+<span id="cb7-12"><a href="#cb7-12"></a>  <span class="fu">theme_tufte</span>(<span class="at">base_family =</span> <span class="st">'Helvetica'</span>) <span class="sc">+</span> <span class="co">#&lt;&lt; to remove unneccessary graph features</span></span>
+<span id="cb7-13"><a href="#cb7-13"></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span> <span class="co">#&lt;&lt; asp ratio of 1:1</span></span>
+<span id="cb7-14"><a href="#cb7-14"></a>  </span>
+<span id="cb7-15"><a href="#cb7-15"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">name =</span> <span class="st">"# of attacks"</span>,</span>
+<span id="cb7-16"><a href="#cb7-16"></a>                    <span class="at">low =</span> <span class="st">"sky blue"</span>, </span>
+<span id="cb7-17"><a href="#cb7-17"></a>                    <span class="at">high =</span> <span class="st">"dark blue"</span>) <span class="sc">+</span></span>
+<span id="cb7-18"><a href="#cb7-18"></a><span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, </span>
+<span id="cb7-19"><a href="#cb7-19"></a>     <span class="at">y =</span> <span class="cn">NULL</span>, </span>
+<span id="cb7-20"><a href="#cb7-20"></a>     <span class="at">title =</span> <span class="st">"Attacks by weekday and time of day"</span>) <span class="sc">+</span></span>
+<span id="cb7-21"><a href="#cb7-21"></a><span class="fu">theme</span>(<span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb7-22"><a href="#cb7-22"></a>      <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb7-23"><a href="#cb7-23"></a>      <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb7-24"><a href="#cb7-24"></a>      <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex14_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>a tibble data table called <em>grouped</em> is derived by aggregating the attack by <em>wkday</em> and <em>hour</em> fields.</p></li>
+<li><p>a new field called <em>n</em> is derived by using <code>group_by()</code> and <code>count()</code> functions.</p></li>
+<li><p><code>count()</code> is use to count the number of records for each pair of wkday and hour</p></li>
+<li><p><code>na.omit()</code> is used to exclude missing value.</p></li>
+<li><p><code>geom_tile()</code> is used to plot tiles (grids) at each x and y position. <code>color</code> and <code>size</code> arguments are used to specify the border color and line size of the tiles.</p></li>
+<li><p><a href="https://jrnold.github.io/ggthemes/reference/theme_tufte.html"><code>theme_tufte()</code></a> of <a href="https://jrnold.github.io/ggthemes/reference/"><strong>ggthemes</strong></a> package is used to remove unnecessary chart junk. To learn which visual components of default ggplot2 have been excluded, we can comment out this line to examine the default plot.</p></li>
+<li><p><code>coord_equal()</code> is used to ensure the plot will have an aspect ratio of 1:1.</p></li>
+<li><p><code>scale_fill_gradient()</code> function is used to creates a two colour gradient (low-high).</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="section" class="level3">
+<h3 class="anchored" data-anchor-id="section"></h3>
+<p><strong>17.4.6 Building Multiple Calendar Heatmaps</strong></p>
+<p><strong>Challenge:</strong> Building multiple heatmaps for the top four countries with the highest number of attacks.</p>
+</section>
+<section id="plotting-multiple-calendar-heatmaps" class="level3">
+<h3 class="anchored" data-anchor-id="plotting-multiple-calendar-heatmaps"><strong>17.4.7 Plotting Multiple Calendar Heatmaps</strong></h3>
+<p>Step 1: Deriving attack by country object</p>
+<p>In order to identify the top 4 countries with the highest number of attacks, you are required to do the followings:</p>
+<ul>
+<li><p>count the number of attacks by country,</p></li>
+<li><p>calculate the percent of attackes by country, and</p></li>
+<li><p>save the results in a tibble data frame.</p></li>
+</ul>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>attacks_by_country <span class="ot">&lt;-</span> <span class="fu">count</span>(attacks, source_country) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-2"><a href="#cb8-2"></a>  <span class="fu">mutate</span>(<span class="at">percent =</span> <span class="fu">percent</span>(n<span class="sc">/</span><span class="fu">sum</span>(n))) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-3"><a href="#cb8-3"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Step 2: Preparing the tidy data frame</p>
+<p>In this step, you are required to extract the attack records of the top 4 countries from <em>attacks</em> data frame and save the data in a new tibble data frame (i.e.&nbsp;<em>top4_attacks</em>).</p>
+<p>First, prepare vector of top 4 country names</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>top4 <span class="ot">&lt;-</span> attacks_by_country<span class="sc">$</span>source_country[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]</span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="fu">summary</span>(top4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Length     Class      Mode 
+        4 character character </code></pre>
+</div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>top4</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "CN" "US" "KR" "NL"</code></pre>
+</div>
+</div>
+<p>We can achieve the same thing using the code chunk below</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>top4 <span class="ot">&lt;-</span> attacks_by_country <span class="sc">%&gt;%</span>  <span class="fu">top_n</span>(<span class="dv">4</span>, <span class="at">wt=</span> n) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(source_country)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Next, create top4_attacks dataframe by using ‘top4’ list to filter ‘attacks’ dataframe.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>top4_attacks <span class="ot">&lt;-</span> attacks <span class="sc">%&gt;%</span> </span>
+<span id="cb14-2"><a href="#cb14-2"></a>  <span class="fu">filter</span>(source_country <span class="sc">%in%</span> top4) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-3"><a href="#cb14-3"></a>  <span class="fu">count</span>(source_country, wkday,hour) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-4"><a href="#cb14-4"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb14-5"><a href="#cb14-5"></a>  <span class="fu">mutate</span>(<span class="at">source_country =</span> <span class="fu">factor</span>(</span>
+<span id="cb14-6"><a href="#cb14-6"></a>    source_country, <span class="at">levels =</span> top4)) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-7"><a href="#cb14-7"></a>  <span class="fu">na.omit</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>‘top4_attacks’ dataframe is similar to ‘grouped’ dataframe, except that it has one more column called ‘source_country’. This additional column will be useful for faceting later.</p>
+</div>
+</div>
+</section>
+<section id="plotting-multiple-calendar-heatmaps-1" class="level3">
+<h3 class="anchored" data-anchor-id="plotting-multiple-calendar-heatmaps-1"><strong>17.4.8 Plotting Multiple Calendar Heatmaps</strong></h3>
+<p>Step 3: Plotting the Multiple Calender Heatmap by using ggplot2 package.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">ggplot</span>(top4_attacks, </span>
+<span id="cb15-2"><a href="#cb15-2"></a>       <span class="fu">aes</span>(hour, </span>
+<span id="cb15-3"><a href="#cb15-3"></a>           wkday, </span>
+<span id="cb15-4"><a href="#cb15-4"></a>           <span class="at">fill =</span> n)) <span class="sc">+</span> </span>
+<span id="cb15-5"><a href="#cb15-5"></a>  <span class="fu">geom_tile</span>(<span class="at">color =</span> <span class="st">"white"</span>, </span>
+<span id="cb15-6"><a href="#cb15-6"></a>          <span class="at">size =</span> <span class="fl">0.1</span>) <span class="sc">+</span> </span>
+<span id="cb15-7"><a href="#cb15-7"></a>  <span class="fu">theme_tufte</span>(<span class="at">base_family =</span> <span class="st">"Helvetica"</span>) <span class="sc">+</span> </span>
+<span id="cb15-8"><a href="#cb15-8"></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb15-9"><a href="#cb15-9"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">name =</span> <span class="st">"# of attacks"</span>,</span>
+<span id="cb15-10"><a href="#cb15-10"></a>                    <span class="at">low =</span> <span class="st">"sky blue"</span>, </span>
+<span id="cb15-11"><a href="#cb15-11"></a>                    <span class="at">high =</span> <span class="st">"dark blue"</span>) <span class="sc">+</span></span>
+<span id="cb15-12"><a href="#cb15-12"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>source_country, <span class="at">ncol =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb15-13"><a href="#cb15-13"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="cn">NULL</span>, </span>
+<span id="cb15-14"><a href="#cb15-14"></a>     <span class="at">title =</span> <span class="st">"Attacks on top 4 countries by weekday and time of day"</span>) <span class="sc">+</span></span>
+<span id="cb15-15"><a href="#cb15-15"></a>  <span class="fu">theme</span>(<span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-16"><a href="#cb15-16"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>),</span>
+<span id="cb15-17"><a href="#cb15-17"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb15-18"><a href="#cb15-18"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb15-19"><a href="#cb15-19"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex14_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="plotting-cycle-plot" class="level2">
+<h2 class="anchored" data-anchor-id="plotting-cycle-plot"><strong>17.5 Plotting Cycle Plot</strong></h2>
+<p>In this section, i will practise how to plot a cycle plot showing the time-series patterns and trend of visitor arrivals from Vietnam programmatically by using ggplot2 functions.</p>
+<section id="step-1-data-import" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-data-import"><strong>17.5.1 Step 1: Data Import</strong></h3>
+<p>the dataset <em>arrivals_by_air.xlsx</em> will be used.</p>
+<p>The code chunk below imports <em>arrivals_by_air.xlsx</em> by using <code>read_excel()</code> of <strong>readxl</strong> package and save it as a tibble data frame called <em>air</em>.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>air <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"data/arrivals_by_air.xlsx"</span>)</span>
+<span id="cb16-2"><a href="#cb16-2"></a></span>
+<span id="cb16-3"><a href="#cb16-3"></a>air <span class="sc">%&gt;%</span> <span class="fu">head</span>(<span class="dv">5</span>) <span class="sc">%&gt;%</span> <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 2%">
+<col style="width: 6%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 5%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 5%">
+<col style="width: 2%">
+<col style="width: 5%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 4%">
+<col style="width: 2%">
+<col style="width: 3%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Month-Year</th>
+<th style="text-align: right;">Republic of South Africa</th>
+<th style="text-align: right;">Canada</th>
+<th style="text-align: right;">USA</th>
+<th style="text-align: right;">Bangladesh</th>
+<th style="text-align: right;">Brunei</th>
+<th style="text-align: right;">China</th>
+<th style="text-align: right;">Hong Kong SAR (China)</th>
+<th style="text-align: right;">India</th>
+<th style="text-align: right;">Indonesia</th>
+<th style="text-align: right;">Japan</th>
+<th style="text-align: right;">South Korea</th>
+<th style="text-align: right;">Kuwait</th>
+<th style="text-align: right;">Malaysia</th>
+<th style="text-align: right;">Myanmar</th>
+<th style="text-align: right;">Pakistan</th>
+<th style="text-align: right;">Philippines</th>
+<th style="text-align: right;">Saudi Arabia</th>
+<th style="text-align: right;">Sri Lanka</th>
+<th style="text-align: right;">Taiwan</th>
+<th style="text-align: right;">Thailand</th>
+<th style="text-align: right;">United Arab Emirates</th>
+<th style="text-align: right;">Vietnam</th>
+<th style="text-align: right;">Belgium &amp; Luxembourg</th>
+<th style="text-align: right;">CIS</th>
+<th style="text-align: right;">Finland</th>
+<th style="text-align: right;">France</th>
+<th style="text-align: right;">Germany</th>
+<th style="text-align: right;">Ireland</th>
+<th style="text-align: right;">Italy</th>
+<th style="text-align: right;">Netherlands</th>
+<th style="text-align: right;">Spain</th>
+<th style="text-align: right;">Switzerland</th>
+<th style="text-align: right;">United Kingdom</th>
+<th style="text-align: right;">Australia</th>
+<th style="text-align: right;">New Zealand</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2000-01-01</td>
+<td style="text-align: right;">3291</td>
+<td style="text-align: right;">5545</td>
+<td style="text-align: right;">25906</td>
+<td style="text-align: right;">2883</td>
+<td style="text-align: right;">3749</td>
+<td style="text-align: right;">33895</td>
+<td style="text-align: right;">13692</td>
+<td style="text-align: right;">19235</td>
+<td style="text-align: right;">65151</td>
+<td style="text-align: right;">59288</td>
+<td style="text-align: right;">21457</td>
+<td style="text-align: right;">507</td>
+<td style="text-align: right;">27472</td>
+<td style="text-align: right;">1177</td>
+<td style="text-align: right;">2150</td>
+<td style="text-align: right;">8404</td>
+<td style="text-align: right;">1312</td>
+<td style="text-align: right;">3922</td>
+<td style="text-align: right;">15766</td>
+<td style="text-align: right;">12048</td>
+<td style="text-align: right;">1318</td>
+<td style="text-align: right;">1527</td>
+<td style="text-align: right;">1434</td>
+<td style="text-align: right;">2703</td>
+<td style="text-align: right;">1634</td>
+<td style="text-align: right;">4752</td>
+<td style="text-align: right;">12739</td>
+<td style="text-align: right;">1292</td>
+<td style="text-align: right;">3544</td>
+<td style="text-align: right;">4962</td>
+<td style="text-align: right;">925</td>
+<td style="text-align: right;">3731</td>
+<td style="text-align: right;">28986</td>
+<td style="text-align: right;">34616</td>
+<td style="text-align: right;">5034</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2000-02-01</td>
+<td style="text-align: right;">2357</td>
+<td style="text-align: right;">6120</td>
+<td style="text-align: right;">28262</td>
+<td style="text-align: right;">2469</td>
+<td style="text-align: right;">3236</td>
+<td style="text-align: right;">34344</td>
+<td style="text-align: right;">19870</td>
+<td style="text-align: right;">18975</td>
+<td style="text-align: right;">37105</td>
+<td style="text-align: right;">58188</td>
+<td style="text-align: right;">19634</td>
+<td style="text-align: right;">199</td>
+<td style="text-align: right;">29084</td>
+<td style="text-align: right;">1161</td>
+<td style="text-align: right;">2496</td>
+<td style="text-align: right;">9128</td>
+<td style="text-align: right;">623</td>
+<td style="text-align: right;">3988</td>
+<td style="text-align: right;">24861</td>
+<td style="text-align: right;">12745</td>
+<td style="text-align: right;">899</td>
+<td style="text-align: right;">2269</td>
+<td style="text-align: right;">1596</td>
+<td style="text-align: right;">1182</td>
+<td style="text-align: right;">1297</td>
+<td style="text-align: right;">6391</td>
+<td style="text-align: right;">13093</td>
+<td style="text-align: right;">1200</td>
+<td style="text-align: right;">2897</td>
+<td style="text-align: right;">5054</td>
+<td style="text-align: right;">747</td>
+<td style="text-align: right;">3980</td>
+<td style="text-align: right;">35148</td>
+<td style="text-align: right;">26030</td>
+<td style="text-align: right;">3938</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2000-03-01</td>
+<td style="text-align: right;">4036</td>
+<td style="text-align: right;">6255</td>
+<td style="text-align: right;">30439</td>
+<td style="text-align: right;">2904</td>
+<td style="text-align: right;">3342</td>
+<td style="text-align: right;">27053</td>
+<td style="text-align: right;">17086</td>
+<td style="text-align: right;">21049</td>
+<td style="text-align: right;">44205</td>
+<td style="text-align: right;">74426</td>
+<td style="text-align: right;">20719</td>
+<td style="text-align: right;">386</td>
+<td style="text-align: right;">30504</td>
+<td style="text-align: right;">1355</td>
+<td style="text-align: right;">2429</td>
+<td style="text-align: right;">11691</td>
+<td style="text-align: right;">1578</td>
+<td style="text-align: right;">4259</td>
+<td style="text-align: right;">18767</td>
+<td style="text-align: right;">16971</td>
+<td style="text-align: right;">1474</td>
+<td style="text-align: right;">2034</td>
+<td style="text-align: right;">1548</td>
+<td style="text-align: right;">1088</td>
+<td style="text-align: right;">1220</td>
+<td style="text-align: right;">5528</td>
+<td style="text-align: right;">13645</td>
+<td style="text-align: right;">1368</td>
+<td style="text-align: right;">2717</td>
+<td style="text-align: right;">4950</td>
+<td style="text-align: right;">935</td>
+<td style="text-align: right;">3576</td>
+<td style="text-align: right;">36117</td>
+<td style="text-align: right;">31119</td>
+<td style="text-align: right;">4668</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2000-04-01</td>
+<td style="text-align: right;">4241</td>
+<td style="text-align: right;">4521</td>
+<td style="text-align: right;">25378</td>
+<td style="text-align: right;">2843</td>
+<td style="text-align: right;">5117</td>
+<td style="text-align: right;">30464</td>
+<td style="text-align: right;">22346</td>
+<td style="text-align: right;">26160</td>
+<td style="text-align: right;">45480</td>
+<td style="text-align: right;">49985</td>
+<td style="text-align: right;">17489</td>
+<td style="text-align: right;">221</td>
+<td style="text-align: right;">34478</td>
+<td style="text-align: right;">1593</td>
+<td style="text-align: right;">2711</td>
+<td style="text-align: right;">14141</td>
+<td style="text-align: right;">705</td>
+<td style="text-align: right;">6579</td>
+<td style="text-align: right;">22735</td>
+<td style="text-align: right;">20397</td>
+<td style="text-align: right;">1284</td>
+<td style="text-align: right;">2420</td>
+<td style="text-align: right;">1592</td>
+<td style="text-align: right;">1012</td>
+<td style="text-align: right;">1208</td>
+<td style="text-align: right;">5544</td>
+<td style="text-align: right;">13366</td>
+<td style="text-align: right;">1345</td>
+<td style="text-align: right;">2512</td>
+<td style="text-align: right;">4149</td>
+<td style="text-align: right;">941</td>
+<td style="text-align: right;">3850</td>
+<td style="text-align: right;">33792</td>
+<td style="text-align: right;">34824</td>
+<td style="text-align: right;">6890</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2000-05-01</td>
+<td style="text-align: right;">2841</td>
+<td style="text-align: right;">3914</td>
+<td style="text-align: right;">26163</td>
+<td style="text-align: right;">2793</td>
+<td style="text-align: right;">4152</td>
+<td style="text-align: right;">30775</td>
+<td style="text-align: right;">16357</td>
+<td style="text-align: right;">35869</td>
+<td style="text-align: right;">38350</td>
+<td style="text-align: right;">48937</td>
+<td style="text-align: right;">19398</td>
+<td style="text-align: right;">164</td>
+<td style="text-align: right;">34795</td>
+<td style="text-align: right;">1397</td>
+<td style="text-align: right;">2594</td>
+<td style="text-align: right;">13305</td>
+<td style="text-align: right;">679</td>
+<td style="text-align: right;">4625</td>
+<td style="text-align: right;">18399</td>
+<td style="text-align: right;">15769</td>
+<td style="text-align: right;">1042</td>
+<td style="text-align: right;">1833</td>
+<td style="text-align: right;">1167</td>
+<td style="text-align: right;">660</td>
+<td style="text-align: right;">743</td>
+<td style="text-align: right;">4225</td>
+<td style="text-align: right;">10878</td>
+<td style="text-align: right;">1067</td>
+<td style="text-align: right;">2205</td>
+<td style="text-align: right;">3643</td>
+<td style="text-align: right;">764</td>
+<td style="text-align: right;">3025</td>
+<td style="text-align: right;">23377</td>
+<td style="text-align: right;">33139</td>
+<td style="text-align: right;">7006</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="step-2-deriving-month-and-year-fields" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-deriving-month-and-year-fields"><strong>17.5.2 Step 2: Deriving month and year fields</strong></h3>
+<p>Next, two new fields called <em>month</em> and <em>year</em> are derived from <em>Month-Year</em> field.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>air<span class="sc">$</span>month <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">month</span>(air<span class="sc">$</span><span class="st">`</span><span class="at">Month-Year</span><span class="st">`</span>),  <span class="co"># extract month</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a>                    <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>,  <span class="co">#&lt;&lt; 12 months</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a>                    <span class="at">ordered=</span> <span class="cn">TRUE</span>)</span>
+<span id="cb17-4"><a href="#cb17-4"></a></span>
+<span id="cb17-5"><a href="#cb17-5"></a>air<span class="sc">$</span>year <span class="ot">&lt;-</span> <span class="fu">year</span>(<span class="fu">ymd</span>(air<span class="sc">$</span><span class="st">`</span><span class="at">Month-Year</span><span class="st">`</span>))   <span class="co"># extract year</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="step-4-extracting-the-target-country" class="level3">
+<h3 class="anchored" data-anchor-id="step-4-extracting-the-target-country"><strong>17.5.3 Step 4: Extracting the target country</strong></h3>
+<p>Next, the code chunk below is use to create dataframe containing the arrival data for vietnam from 2010 onwards by selecting columns ‘Vietname’, ’ month’ and ‘year’ from the air dataframe.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>Vietnam <span class="ot">&lt;-</span> air <span class="sc">%&gt;%</span> </span>
+<span id="cb18-2"><a href="#cb18-2"></a>  <span class="fu">select</span>(<span class="st">`</span><span class="at">Vietnam</span><span class="st">`</span>, </span>
+<span id="cb18-3"><a href="#cb18-3"></a>         month, </span>
+<span id="cb18-4"><a href="#cb18-4"></a>         year) <span class="sc">%&gt;%</span></span>
+<span id="cb18-5"><a href="#cb18-5"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">2010</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="step-5-computing-year-average-arrivals-by-month" class="level3">
+<h3 class="anchored" data-anchor-id="step-5-computing-year-average-arrivals-by-month"><strong>17.5.4 Step 5: Computing year average arrivals by month</strong></h3>
+<p>The code chunk below uses <code>group_by()</code> and <code>summarise()</code> of <strong>dplyr</strong> to compute year average arrivals by month for all the years in <code>Vietnam</code> dataframe.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>hline.data <span class="ot">&lt;-</span> Vietnam <span class="sc">%&gt;%</span> </span>
+<span id="cb19-2"><a href="#cb19-2"></a>  <span class="fu">group_by</span>(month) <span class="sc">%&gt;%</span></span>
+<span id="cb19-3"><a href="#cb19-3"></a>  <span class="fu">summarise</span>(<span class="at">avgvalue =</span> <span class="fu">mean</span>(<span class="st">`</span><span class="at">Vietnam</span><span class="st">`</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="step-6-plotting-the-cycle-plot" class="level3">
+<h3 class="anchored" data-anchor-id="step-6-plotting-the-cycle-plot"><strong>17.5.5 Step 6: Plotting the cycle plot</strong></h3>
+<p>The code chunk below is used to plot the cycle plot as shown in Slide 12/23.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb20-2"><a href="#cb20-2"></a>  <span class="fu">geom_line</span>(<span class="at">data=</span>Vietnam,</span>
+<span id="cb20-3"><a href="#cb20-3"></a>            <span class="fu">aes</span>(<span class="at">x=</span>year, </span>
+<span id="cb20-4"><a href="#cb20-4"></a>                <span class="at">y=</span><span class="st">`</span><span class="at">Vietnam</span><span class="st">`</span>, </span>
+<span id="cb20-5"><a href="#cb20-5"></a>                <span class="at">group=</span>month), </span>
+<span id="cb20-6"><a href="#cb20-6"></a>            <span class="at">colour=</span><span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb20-7"><a href="#cb20-7"></a>  <span class="fu">geom_hline</span>(<span class="fu">aes</span>(<span class="at">yintercept=</span>avgvalue), </span>
+<span id="cb20-8"><a href="#cb20-8"></a>             <span class="at">data=</span>hline.data, </span>
+<span id="cb20-9"><a href="#cb20-9"></a>             <span class="at">linetype=</span><span class="dv">6</span>, </span>
+<span id="cb20-10"><a href="#cb20-10"></a>             <span class="at">colour=</span><span class="st">"red"</span>, </span>
+<span id="cb20-11"><a href="#cb20-11"></a>             <span class="at">size=</span><span class="fl">0.5</span>) <span class="sc">+</span> </span>
+<span id="cb20-12"><a href="#cb20-12"></a>  <span class="fu">facet_grid</span>(<span class="sc">~</span>month) <span class="sc">+</span></span>
+<span id="cb20-13"><a href="#cb20-13"></a>  <span class="fu">labs</span>(<span class="at">axis.text.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb20-14"><a href="#cb20-14"></a>       <span class="at">title =</span> <span class="st">"Visitor arrivals from Vietnam by air, Jan 2010-Dec 2019"</span>) <span class="sc">+</span></span>
+<span id="cb20-15"><a href="#cb20-15"></a>  <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span></span>
+<span id="cb20-16"><a href="#cb20-16"></a>  <span class="fu">ylab</span>(<span class="st">"No. of Visitors"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex14_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="plotting-slopegraph" class="level2">
+<h2 class="anchored" data-anchor-id="plotting-slopegraph"><strong>17.6 Plotting Slopegraph</strong></h2>
+<p>In this section I will practise how to plot a <a href="https://www.storytellingwithdata.com/blog/2020/7/27/what-is-a-slopegraph">slopegraph</a> by using R.</p>
+<p>Before getting start, make sure that <strong>CGPfunctions</strong> has been installed and loaded onto R environment. Then, refer to <a href="https://cran.r-project.org/web/packages/CGPfunctions/vignettes/Using-newggslopegraph.html">Using newggslopegraph</a> to learn more about the function. Lastly, read more about <code>newggslopegraph()</code> and its arguments by referring to this <a href="https://www.rdocumentation.org/packages/CGPfunctions/versions/0.6.3/topics/newggslopegraph">link</a>.</p>
+<section id="step-1-data-import-1" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-data-import-1"><strong>17.6.1 Step 1: Data Import</strong></h3>
+<p>Import the rice data set into R environment by using the code chunk below.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>rice <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/rice.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Notice that ‘year’ column is in the wrong format of number. We should convert it to factor instead.</p>
+</section>
+<section id="step-2-plotting-the-slopegraph" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-plotting-the-slopegraph"><strong>17.6.2 Step 2: Plotting the slopegraph</strong></h3>
+<p>Next, code chunk below will be used to plot a basic slopegraph as shown below.</p>
+<p>Since slopegraph contains information only for two years, we will filter data in 1960 and 1980 only.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>rice <span class="sc">%&gt;%</span> </span>
+<span id="cb22-2"><a href="#cb22-2"></a>  <span class="fu">mutate</span>(<span class="at">Year =</span> <span class="fu">factor</span>(Year)) <span class="sc">%&gt;%</span></span>
+<span id="cb22-3"><a href="#cb22-3"></a>  <span class="fu">filter</span>(Year <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1961</span>, <span class="dv">1980</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb22-4"><a href="#cb22-4"></a>  <span class="fu">newggslopegraph</span>(Year, Yield, Country,</span>
+<span id="cb22-5"><a href="#cb22-5"></a>                <span class="at">Title =</span> <span class="st">"Rice Yield of Top 11 Asian Counties"</span>,</span>
+<span id="cb22-6"><a href="#cb22-6"></a>                <span class="at">SubTitle =</span> <span class="st">"1961-1980"</span>,</span>
+<span id="cb22-7"><a href="#cb22-7"></a>                <span class="at">Caption =</span> <span class="st">"My VA Prof: Dr. Kam Tin Seong"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex14_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For effective data visualisation design, <code>factor()</code> is used convert the value type of <em>Year</em> field from numeric to factor.</p>
 </div>
 </div>
 

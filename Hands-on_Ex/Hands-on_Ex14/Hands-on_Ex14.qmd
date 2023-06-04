@@ -86,3 +86,62 @@ There are three columns, namely *timestamp*, *source_country* and *tz*.
 Step 1: Deriving *weekday* and *hour of day* fields
 
 Before we can plot the calender heatmap, two new fields namely *wkday* and *hour* need to be derived. In this step, we will write a function to perform the task.
+
+```{r}
+make_hr_wkday <- function (ts, sc, tz) {
+  real_times <- ymd_hms(ts,
+                        tz = tz[1],     #<< for group by tz later, simply use the first tz value of groupby
+                        quiet = TRUE)
+  
+  dt <- data.table(source_country = sc,
+                   wkday= weekdays(real_times),
+                   hour = hour(real_times))
+  return (dt)
+}
+```
+
+::: callout-note
+-   [`ymd_hms()`](https://lubridate.tidyverse.org/reference/ymd_hms.html) and [`hour()`](https://lubridate.tidyverse.org/reference/hour.html) are from [**lubridate**](https://lubridate.tidyverse.org/) package, and
+
+-   [`weekdays()`](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/weekdays) is a **base** R function.
+:::
+
+```{r}
+wkday_levels <- c('Saturday', 'Friday', 
+                  'Thursday', 'Wednesday', 
+                  'Tuesday', 'Monday', 
+                  'Sunday')
+
+attacks <- attacks %>%
+  group_by(tz) %>%
+  do(make_hr_wkday(.$timestamp, 
+                   .$source_country, 
+                   .$tz)) %>% 
+  ungroup() %>% 
+  mutate(wkday = factor(wkday, levels = wkday_levels),
+         hour = factor(hour, levels = 0:23))  #<< 24 hrs 
+```
+
+Explanation of the code chunk above
+
+1.  **`tz`** refers to the **`tz`** column of the **`attacks`** dataframe.
+
+2.  **`tz[1]`** selects the first element of the **`tz`** column within each group.
+
+3.  The **`group_by(tz)`** statement groups the data based on unique values in the **`tz`** column.
+
+4.  The **`do()`** function is used to apply the **`make_hr_wkday`** function to each group of the grouped dataframe.
+
+5.  Within the **`make_hr_wkday`** function, **`tz[1]`** is used to specify the time zone for the conversion of the timestamps within each group. Since each group has the same time zone value, using **`tz[1]`** ensures that the function uses the correct time zone for each group.
+
+By grouping the **`attacks`** dataframe by the **`tz`** column and applying the **`make_hr_wkday`** function within each group, the resulting dataframe will contain the source country, weekday, and hour columns based on the timestamp, source country, and time zone information, grouped by the unique time zones in the **`tz`** column of the **`attacks`** dataframe.
+
+::: callout-note
+Beside extracting the necessary data into *attacks* data frame, `mutate()` of **dplyr** package is used to convert *wkday* and *hour* fields into **factor** so they'll be ordered when plotting
+:::
+
+Table below shows the tidy tibble table after processing.
+
+```{r}
+kable(head(attacks))
+```

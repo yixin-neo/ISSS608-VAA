@@ -1,0 +1,14 @@
+{
+  "hash": "2401e178a9ecb6375b783dc10cd567ab",
+  "result": {
+    "markdown": "---\ntitle: \"Hands-on Exercise 17 (Week 8: Geospatial point data)\"\nauthor: \"NYX\"\ndate: '9 June 2023'\ndate-modified: \"2023-06-09\"\neditor: visual\nexecute: \n  freeze: auto\n  warning: false\n  #echo: false\n  #message: false\nformat:\n  html:\n    code-fold: True\n    code-overflow: scroll\n    code-summary: \"Show the code\"\n    code-line-numbers: true\n---\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

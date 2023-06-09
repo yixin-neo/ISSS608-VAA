@@ -1,0 +1,18 @@
+---
+title: "Hands-on Exercise 16 (Week 8: Choropleth Map)"
+author: "NYX"
+date: '9 June 2023'
+date-modified: "`r Sys.Date()`"
+editor: visual
+execute: 
+  freeze: auto
+  warning: false
+  #echo: false
+  #message: false
+format:
+  html:
+    code-fold: True
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
+---

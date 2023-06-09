@@ -1,0 +1,14 @@
+{
+  "hash": "ddd5286912e21f8b05518d58d5b97b27",
+  "result": {
+    "markdown": "---\ntitle: \"Hands-on Exercise 16 (Week 8: Choropleth Map)\"\nauthor: \"NYX\"\ndate: '9 June 2023'\ndate-modified: \"2023-06-09\"\neditor: visual\nexecute: \n  freeze: auto\n  warning: false\n  #echo: false\n  #message: false\nformat:\n  html:\n    code-fold: True\n    code-overflow: scroll\n    code-summary: \"Show the code\"\n    code-line-numbers: true\n---\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

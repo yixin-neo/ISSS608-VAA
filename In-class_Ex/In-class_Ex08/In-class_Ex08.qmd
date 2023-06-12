@@ -1,0 +1,20 @@
+---
+title: "In-class_Ex07"
+author: "NeoYX"
+date: '3 June 2023'
+date-modified: "`r Sys.Date()`"
+editor: visual
+execute: 
+  freeze: auto
+  warning: false
+  echo: true
+  message: true
+format:
+  html:
+    code-fold: true
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
+---
+
+# 

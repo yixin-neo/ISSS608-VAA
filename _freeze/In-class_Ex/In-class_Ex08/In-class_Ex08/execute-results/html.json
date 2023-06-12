@@ -1,0 +1,14 @@
+{
+  "hash": "442becd645e447f76b3fdc7dd1c3aa56",
+  "result": {
+    "markdown": "---\ntitle: \"In-class_Ex07\"\nauthor: \"NeoYX\"\ndate: '3 June 2023'\ndate-modified: \"2023-06-12\"\neditor: visual\nexecute: \n  freeze: auto\n  warning: false\n  echo: true\n  message: true\nformat:\n  html:\n    code-fold: true\n    code-overflow: scroll\n    code-summary: \"Show the code\"\n    code-line-numbers: true\n---\n\n\n# \n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

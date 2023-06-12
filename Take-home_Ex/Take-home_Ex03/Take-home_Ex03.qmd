@@ -17,29 +17,21 @@ format:
     code-line-numbers: true
 ---
 
-::: callout-note
-**Edge data** should be organised as such: (can use dplyr methods)
+# Vast Challenge 2023 Mini Challenge 3 (Subtask: 3)
 
-First column: Source id (FK to Node second column) - compulsory
+## Tasks and Questions:
 
-Second column: Target id (FK to Node second column) - compulsory
+Use visual analytics to understand patterns of groups in the knowledge graph and highlight anomalous groups.
 
-**Node data**
+1.  Use visual analytics to identify anomalies in the business groups present in the knowledge graph. Limit your response to 400 words and 5 images.
 
-First column: ID (contains all the distinct values of source and target in Edge data) - compulsory
+2.  Develop a visual analytics process to find similar businesses and group them. This analysis should focus on a business's most important features and present those features clearly to the user. Limit your response to 400 words and 5 images.
 
--   Nodes present in edge data must exists in ID of node data, must not have missing in node ID.
+3.  Measure similarity of businesses that you group in the previous question. Express confidence in your groupings visually. Limit your response to 400 words and 4 images.
 
-Second column: Label (only need if Id are all integers)
-:::
+4.  Based on your visualizations, provide evidence for or against the case that anomalous companies are involved in illegal fishing. Which business groups should FishEye investigate further? Limit your response to 600 words and 6 images.
 
-::: callout-warning
-Try not to use R built-in NA/NULL function. Manually type "unknown' / 'missing' as a value instead.
-:::
-
-# Vast Challenge 2023 Mini Challenge 3 (Subtask: 1)
-
-In this challenge, my group and I seek to use visual analytics to identify temporal patterns for individual entities and between entities using the knowledge graph the FishEye Organisation has provided us with. We will also be categorising the type of business relationship patterns found.
+5.  Reflection: What was the most difficult aspect of working with this knowledge graph? Did you have the tools and resources you needed to complete the challenge? What additional resources would have helped you? Limit your response to 300 words
 
 # 1 About the dataset
 
@@ -47,33 +39,31 @@ In this challenge, my group and I seek to use visual analytics to identify tempo
 
 **Node Attributes:**
 
--   id \-- Name of the company that originated (or received) the shipment
+• type -- Type of node as defined above.
 
--   shpcountry \-- Country the company most often associated with when shipping
+• country -- Country associated with the entity. This can be a full country or a two-letter country code.
 
--   rcvcountry \-- Country the company most often associated with when receiving
+• product_services -- Description of product services that the "id" node does.
 
--   dataset \-- Always 'MC2'
+• revenue_omu -- Operating revenue of the "id" node in Oceanus Monetary Units.
+
+• id -- Identifier of the node is also the name of the entry.
+
+• role -- The subset of the "type" node, not in every node attribute.
+
+• dataset -- Always "MC3".
 
 **Edge Attributes:**
 
--   arrivaldate \-- Date the shipment arrived at port in YYYY-MM-DD format.
+• type -- Type of the edge as defined above.
 
--   hscode \-- Harmonized System code for the shipment. Can be joined with the hscodes table to get additional details.
+• source -- ID of the source node.
 
--   valueofgoods_omu \-- Customs-declared value of the total shipment, in Oceanus
+• target -- ID of the target node.
 
--   Monetary Units (OMU)
+• dataset -- Always "MC3".
 
--   volumeteu \-- The volume of the shipment in 'Twenty-foot equivalent units', roughly how many 20-foot standard containers would be required. (Actual number of containers may have been different as there are 20ft and 40ft standard containers and tankers that do not use containers)
-
--   weightkg \-- The weight of the shipment in kilograms (if known)
-
--   dataset \-- Always 'MC2'
-
--   type \-- Always 'shipment' for MC2
-
--   generated_by \-- Name of the program that generated the edge. (Only found on 'bundle' records.)
+• role - The subset of the "type" node, not in every edge attribute.
 
 ## 1.2 Importing the datasets
 
@@ -82,73 +72,1505 @@ Import libraries
 The new libraries used today are :
 
 -   `jsonlite` to import json file
+-   `tidytext` is to do basic text mining in R
 
 ```{r}
-pacman::p_load(jsonlite, igraph, tidygraph, ggraph,
-               visNetwork, lubridate, clock,
-               tidyverse, graphlayouts,knitr,plotly, 
-               ggHoriPlot, ggthemes,hrbrthemes,treemap,patchwork, ggiraph)
+pacman::p_load(jsonlite, igraph, tidygraph, ggraph, DT, visNetwork, lubridate, clock, tidyverse, graphlayouts,knitr,plotly, ggiraph, ggstatsplot,
+ggHoriPlot, ggthemes,hrbrthemes,treemap,patchwork, ggiraph,proxy, tidytext, skimr,
+GGally, parallelPlot, tidyverse)
+```
+
+Load the MC3 dataset
+
+```{r}
+mc3_data <- fromJSON("C:/yixin-neo/ISSS608-VAA/Project/data/mc3.json")
+```
+
+### **Extracting edges**
+
+The code chunk below will be used to extract the *links* data.frame of *mc3_data* and save it as a tibble data.frame called *mc3_edges*.
+
+```{r}
+mc3_edges <- as_tibble(mc3_data$links) %>% 
+  distinct() %>%
+  mutate(source = as.character(source),
+         target = as.character(target),
+         type = as.character(type)) %>%
+  group_by(source, target, type) %>%
+    summarise(weights = n()) %>%
+  filter(source!=target) %>%
+  ungroup()
+```
+
+::: callout-note
+-   `distinct()` is used to ensure that there will be no duplicated records.
+
+-   `mutate()` and `as.character()` are used to convert the field data type from list to character.
+
+-   `group_by()` and `summarise()` are used to count the number of unique links.
+
+-   the `filter(source!=target)` is to ensure that no record with similar source and target.
+:::
+
+There are no duplicates in the mc3_edges dataframe.
+
+```{r}
+sum(duplicated(mc3_edges))
+```
+
+### **Extracting nodes**
+
+The code chunk below will be used to extract the *nodes* data.frame of *mc3_data* and save it as a tibble data.frame called *mc3_nodes*.
+
+```{r}
+mc3_nodes <- as_tibble(mc3_data$nodes) %>%
+  mutate(country = as.character(country),
+         id = as.character(id),
+         product_services = as.character(product_services),
+         revenue_omu = as.numeric(as.character(revenue_omu)),
+         type = as.character(type)) %>%
+  select(id, country, type, revenue_omu, product_services)
+```
+
+::: callout-note
+-   `mutate()` and `as.character()` are used to convert the field data type from list to character.
+
+-   To convert *revenue_omu* from list data type to numeric data type, we need to convert the values into character first by using `as.character()`. Then, `as.numeric()` will be used to convert them into numeric data type.
+
+-   `select()` is used to re-organise the order of the fields.
+:::
+
+Check for duplicates in mc3_nodes dataframe across all columns and remove them.
+
+```{r}
+#sum(duplicated(mc3_nodes))
+#mc3_nodes[duplicated(mc3_nodes), ]
+
+# Remove duplicates based on all columns
+mc3_nodes <- mc3_nodes[!duplicated(mc3_nodes), ]
+```
+
+# **2 Initial Data Exploration**
+
+## **2.1 Exploring the edges data frame**
+
+In the code chunk below, [`skim()`](https://docs.ropensci.org/skimr/reference/skim.html) of [**skimr**](https://docs.ropensci.org/skimr/) package is used to display the summary statistics of *mc3_edges* tibble data frame.
+
+```{r}
+skim(mc3_edges)
+```
+
+The report above reveals that there are no missing values in all fields.
+
+Why are there source columns with maximum character length of 700?
+
+Checking for the longest length value in source column of edge file.
+
+```{r}
+# Find the index of the value with the maximum length
+max_index <- which.max(nchar(mc3_edges$source))
+
+# Extract the value with the maximum length in `source` column
+max_value <- mc3_edges$source[max_index]
+max_value
+```
+
+It seems like we found more issue with the mc3_edge dataframe. Some of the `source` column values are still in a list format. We need to unlist the source companies that are hidden.
+
+```{r}
+#| eval: false
+#| echo: false
+is.vector(mc3_edges$source[3475])
+mc3_edges$source[23338]
+```
+
+### **2.1.1 Cleaning the edges data frame**
+
+Now, I would like to split into mc3_edges dataframe into two dataframes, where
+
+**`df1`** : containing rows where the source does NOT contain "c(" \<- actual source value, no further processing needed
+
+**`df2`** : containing rows where the source contains values starting with "c(" . As the `source` column still contains inner list of source entities , it still needs to be unlisted further.
+
+```{r}
+# Creating an empty data frame for the two subsets
+df1 <- data.frame()
+df2 <- data.frame()
+
+# Looping through each row of the original data frame
+for (i in 1:nrow(mc3_edges)) {
+  if (!grepl("c\\(", mc3_edges$source[i])) {
+    # Append the row to df1 if source does not contain "c("
+    df1 <- rbind(df1, mc3_edges[i, ])
+  } else {
+    # Append the row to df2 if source contains "c("
+    df2 <- rbind(df2, mc3_edges[i, ])
+  }
+}
+```
+
+**`df1` dataframe**
+
+```{r}
+#| echo: false
+kable(head(df1,5))
+```
+
+**`df2` dataframe**
+
+```{r}
+#| echo: false
+kable(head(df2,5))
+```
+
+We would need to clean up the `df2` dataframe's `source` column.
+
+The code chunk below uses the
+
+-   **`gsub`** function to remove the unwanted characters from the **`source`** column. It replaces any occurrence of **`"`** or **`c(`** or **`)`** with an empty string, ''
+
+-   **`trimws`** function to remove any leading or trailing whitespace from the cleaned **`source`** column,
+
+-   **`\\`**: The backslash is an escape character in regular expressions. In this case, it is used to escape the closing parenthesis character, so it is treated as a literal character in the pattern.
+
+```{r}
+df2$source <- gsub('["c(\\)]', '', df2$source)
+df2$source <- trimws(df2$source)
+kable(head(df2,5))
+```
+
+For each row, extract each entity in Source column and insert this entity as a new row.
+
+```{r}
+# Create a new data frame for the modified rows
+df2_modified <- data.frame()
+
+# Loop through each row of df2
+for (i in 1:nrow(df2)) {
+  # Split the source value by comma
+  source_values <- unlist(strsplit(df2$source[i], ", "))
+  
+  # Create a new row for each source value
+  for (value in source_values) {
+    # Create a new row with the same "target", "type", and "weights" values
+    new_row <- data.frame(
+      source = value,
+      target = df2$target[i],
+      type = df2$type[i],
+      weights = df2$weights[i]
+    )
+    
+    # Append the new row to df2_modified
+    df2_modified <- rbind(df2_modified, new_row)
+  }
+}
+
+# Print the modified data frame
+#cat("df2_modified:\n")
+kable(head(df2_modified,10))
+```
+
+Question to think about: 'Do we aggregate the weights for each 'source' -'target' pair or treat them as duplicates?
+
+For now, let us aggregate and store the number of occurrence in 'weights' column. Now we have df2_modified dataframe where each 'source-target' pair is unique and have no duplicates.
+
+```{r}
+df2_modified <- df2_modified %>% 
+  group_by(source, target, type) %>% 
+  summarise(weights = sum(weights)) %>% 
+  ungroup() %>% 
+  arrange(desc(weights))
+
+kable(head(df2_modified))
+```
+
+Finally, we will appended df1 below `df2_modified` to get our edges_combined data frame, now with 24,935 rows after unlisting all source entities.
+
+In the code chunk below, `datatable()` of DT package is used to display mc3_edges tibble data frame as an interactive table on the html document.
+
+```{r}
+# Append df1 to df2_modified
+edges_combined <- rbind(df2_modified, df1)
+
+# Print the combined data frame
+DT::datatable(edges_combined)
+```
+
+Let us use bar chart to visualise the `type` column. (Improve on this bar chart later)
+
+```{r}
+ggplot(data = edges_combined,
+       aes(x = type)) +
+  geom_bar()
+```
+
+The edges_combined df contains relationship between individuals and companies, and describe whether an individual is a Beneficial Owner or a Company Contact of a company.
+
+### 2.1.2 Build a node dataframe using new edge dataframe
+
+Rebuild a brand new `mc3_nodes1` dataframe (enhanced version of `mc3_nodes` dataframe), by appending **unique** `target` and `source` entities from the `edges_combined` dataframe to get a column `id`.
+
+This newly created dataframe only has 1 column `id`. We can bring in nodes attributes like `country`, `type`, `revenue_omu`, `product_services` from the original `mc3_nodes` dataframe into the mc3_nodes1 dataframe.
+
+```{r}
+id1 <- edges_combined %>%
+  select(source) %>%
+  rename(id = source)
+id2 <- edges_combined %>%
+  select(target) %>%
+  rename(id = target)
+mc3_nodes1 <- rbind(id1, id2) %>%
+  distinct() %>%                  #<< ensures no duplicated in `id` column
+  left_join(mc3_nodes, by='id',
+            unmatched = "drop")  #<<< bring in 4 node attributes from `mc3_nodes` df
+```
+
+After the left join, `mc3_nodes1` df increased in number of rows from 34,443 to 35,767 rows because entities like `Adams LLC` has both company contacts and beneficial owner types in `mc3_nodes` df.
+
+Let us take a sneak peak at the `mc3_nodes1` df now. We notice the following:
+
+-   'Andrew Yu' does not have value in the `type` column. However, its type value can be retrieved from the `edges_combined` df.
+
+-   'Andrews PLC' as a single entity has two types, namely 'Company Contacts' and 'Beneficial Owners'.
+
+```{r}
+mc3_nodes1 %>% 
+  arrange(id) %>% 
+  slice(1563:1570) %>%
+  kable()
+```
+
+Looking into the `edges_combined` df where the type attribute of 'Andrew Yu' is stored.
+
+He is a beneficial owner of 'Mar del Paraíso GmbH'.
+
+```{r}
+edges_combined %>% 
+  filter(grepl('Andrew Yu', target)) %>% 
+  kable()
+```
+
+We would like to ingest his relationship type with 'Mar del Paraíso GmbH' into the mc3_nodes1 dataframe.
+
+We can further enrich each id's `type` attribute of the `mc3_nodes1` dataframe by extracting the `type` values of the `target` entity from the `edges_combined` dataframe. The number of records further increased from 35,767 to 39,437 because each target entity in edges_combined df can have more than 1 type. An example is 'Aaron Garcia' - who is both a company contacts and a beneficial owner type to a company.
+
+```{r}
+# Perform a left join to bring in the "type" values from 'edges_combined` df to 'mc3_nodes1` df
+
+merged_df <- left_join(mc3_nodes1, edges_combined, by = c("id" = "target"))
+
+# Replace NA values in the "type.x" column with non-NA values from the "type.y" column
+merged_df$type.x[is.na(merged_df$type.x)] <- merged_df$type.y[is.na(merged_df$type.x)]
+
+# Select the relevant columns and rename "type.x" to "type"
+merged_df <- merged_df %>%
+  select(id, country, type = type.x, revenue_omu, product_services)
+```
+
+::: callout-note
+The code chunk above is used to replace the NA values in the "type.x" column of the **`merged_df`** dataframe with non-NA values from the "type.y" column.
+
+-   **`merged_df$type.x`** refers to the "type.x" column of the **`merged_df`** dataframe. This is the column where we want to replace the NA values.
+
+-   **`is.na(merged_df$type.x)`** creates a logical vector with **`TRUE`** for NA values and **`FALSE`** for non-NA values in the "type.x" column.
+
+-   **`merged_df$type.y[is.na(merged_df$type.x)]`** uses the logical vector as an index to select only the non-NA values from the "type.y" column corresponding to the NA values in the "type.x" column.
+:::
+
+Note that the type attribute of 'Andrew Yu' and similar others have been added to this df.
+
+```{r}
+#| echo: false
+merged_df %>% 
+  arrange(id) %>% 
+  slice(1756:1763) %>%
+  kable()
+```
+
+Check for duplicates. There are once again duplicates after mc3_nodes1 left outer join with edges_combined df because in `edges_combined` df, there are many relationship `types` for each individual and its associated company. (E.g check Cole Allen).
+
+```{r}
+#| echo: false
+#| eval: false
+#sum(duplicated(mc3_nodes1))
+sum(duplicated(merged_df))
+#merged_df[duplicated(merged_df), ]
+```
+
+We will drop the duplicates in `merged_df` df, leaving us with 36,731 rows. `merged_df` is now an enhanced version of my main nodes file. It contains nodes (seafood and non-seafood related) that are present in the `edges_combined` df. In addition, node attribute `type` column was also enhanced into this df from `edges_combined` df. Using `datatable()` of DT pacakge, let us take a look at `merged_df` as an interactive table on the html document using.
+
+```{r}
+merged_df <- merged_df[!duplicated(merged_df), ]  # 36,731 rows
+DT::datatable(merged_df)
+```
+
+Finally, the nodes and edges dataframes are ready! We will use the `merged_df` as our main nodes file and `edges_combined` as main edges file from now. Before further cleaning, with what we have now, lets build an initial visualisation of the network.
+
+### 2.1.3 Building network model with tidygraph
+
+First, create a graph object using `tbl_graph()` function. Then calculate betweenness and closeness centrality scores.
+
+```{r}
+mc3_graph <- tbl_graph(nodes = merged_df,
+                       edges = edges_combined,
+                       directed = FALSE) %>%
+  mutate(betweenness_centrality = centrality_betweenness(),
+         closeness_centrality = centrality_closeness())
+
+mc3_graph <- mc3_graph %>% 
+  mutate(membership = components(mc3_graph)$membership)
 ```
 
 ```{r}
 #| eval: false
 #| echo: false
-MC2 <- jsonlite::fromJSON("C:/yixin-neo/ISSS608-VAA/Project/data/mc2_challenge_graph.json")
+is.connected(mc3_graph)
+#components(mc3_graph)
+count_components(mc3_graph)
+```
+
+### 2.1.4 Visualising network graph
+
+We will filter nodes with high betweenness centrality scores (\>2,000,000) and visualise them to see the relationships that they have.
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+set.seed(1234)
+mc3_graph %>%
+  filter(betweenness_centrality >= 2000000) %>%
+ggraph(layout = "fr") +
+  geom_edge_link(aes(#width= weights,
+                     alpha=0.5)) +
+  geom_node_point(aes(
+    size = betweenness_centrality,
+    #color = type,
+    alpha = 0.3)) +
+  geom_node_label(aes(label = id),repel=TRUE, size=2.5, alpha = 0.8) +
+  scale_size_continuous(range=c(1,10)) +
+  theme_graph() +
+  labs(title = 'Initial network visualisation \n(Seafood and non-seafood)',
+       subtitle = 'Entities with betweenness scores > 2,000,000')
+```
+
+Below is a dataframe showing us the top 10 entities with the highest betweenness scores.
+
+```{r}
+mc3_graph %>%  activate(nodes) %>%  as_tibble() %>% arrange(desc(betweenness_centrality)) %>% slice(1:10) %>% kable() 
+```
+
+The top 10 betweenness entities above are not dealing with seafood related industries directly. In the next section, we will filter entities from the `merged_df` dataframe for only seafood related entities. We may revisit the non-seafood entities later when we have specific targets/companies to investigate.
+
+[HIVE](https://jtr13.github.io/cc21fall2/hive-plots-with-the-ggraph-and-hiver-packages.html) plot (Later )
+
+```{r}
+#| echo: false
+#| eval: false
+#| fig-width: 12
+#| fig-asp: 0.618
+mc3_graph1 <- mc3_graph %>% 
+  mutate(type = ifelse(is.na(type), 'Unknown', type)) %>% 
+  filter(membership == 6, betweenness_centrality > 1000000)
+  #filter(closeness_centrality <=7.263588e-06)
+
+
+ggraph(mc3_graph1, 'hive', axis = type, sort.by = revenue_omu) + 
+  geom_edge_hive(size = 0.01) + #aes(colour = factor(weights))
+  geom_axis_hive(aes(colour = type), size = 3, label = FALSE) + 
+  coord_fixed()
+
+# + facet_nodes(~product_type)
+```
+
+# **3 Exploring the `merged_df` nodes data frame**
+
+In the code chunk below, [`skim()`](https://docs.ropensci.org/skimr/reference/skim.html) of [**skimr**](https://docs.ropensci.org/skimr/) package is used to display the summary statistics of `merged_df` tibble data frame. We will not be exploring *`mc3_nodes` dataframe as `merged_df` dataframe is an enhanced version of it.*
+
+```{r}
+skim(merged_df)
+```
+
+The report above reveals that there are many missing values in `country`, `type`, `product_services` columns. In addition, that there are several 'Unknown' values in the `product_services` column, which is a good as missing. This section focuses on cleaning the `product_services` columns by first performing text sensing and adding a label to each company as either 'seafood', 'others' or 'unknown'.
+
+The report above also reveal that there are 91% Na values in the `revenue_omu` column.
+
+Check the distribution of the `type` column in merged_df dataframe.
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+merged_df$type1 <- ifelse(is.na(merged_df$type), "Missing", merged_df$type)
+merged_df$type1 <- as.factor(merged_df$type1)
+
+
+ggplot(data = merged_df,
+       aes(x = reorder(type1,type1,
+                     function(x)+length(x)))) +
+  geom_bar(fill='lightblue') +
+  ylim(0,20000) +
+  geom_text(stat="count", 
+            aes(label=paste0(..count.., ", ", 
+                             round(..count../sum(..count..)*100, 1), "%")),
+            hjust=-0.1,
+            size = 5) +
+  coord_flip() +
+  theme_minimal() +
+  labs(x = 'Relationship type between entities',
+       title = 'Distribution of business relationships') +
+  theme(plot.title = element_text(size = 22,
+                                  face='bold', 
+                                  hjust = 0.5),
+        axis.title.x=element_text(size= 20,
+                                  hjust = 0.5),
+        axis.title.y=element_text(size= 20),
+        axis.text.x = element_text(size = 15, 
+                                  color = "black", 
+                                  angle = 0, 
+                                  hjust = 0.5, 
+                                  vjust = 0.5),
+        axis.text.y = element_text(size = 15, 
+                                  color = "black", 
+                                  angle = 0, 
+                                  hjust = 0.5, 
+                                  vjust = 0.5),
+        panel.grid.major.y = element_blank() )
+```
+
+## **3.1 Text Sensing with tidytext**
+
+In section 2.1.2, we saw in `merged_df` dataframe that the `product_services` column contains raw text data on products that each entity provides. We would like to give each company a meaningful `label` based on its product_services.
+
+Hence in this section, we will perform basic text sensing using appropriate functions of [**tidytext**](https://juliasilge.github.io/tidytext/) package.
+
+### **3.1.1 Simple word count**
+
+The code chunk below calculates number of times the word *fish* appeared in the field *product_services*.
+
+```{r}
+merged_df %>% 
+    mutate(n_fish = str_count(product_services, "fish")) %>% arrange(desc(n_fish)) %>% head()
+```
+
+### **3.1.2 Tokenisation**
+
+The word tokenisation have different meaning in different scientific domains. In text sensing, **tokenisation** is the process of breaking up a given text into units called **tokens**. Tokens can be individual words, phrases or even whole sentences. In the process of tokenisation, some characters like punctuation marks may be discarded. The tokens usually become the input for the processes like parsing and text mining.
+
+In the code chunk below, [`unnest_token()`](https://juliasilge.github.io/tidytext/reference/unnest_tokens.html) of tidytext is used to split text in *`product_services`* columninto words.
+
+```{r}
+token_nodes <- merged_df %>%
+  mutate(product_services = ifelse(is.na(product_services), 'unknown', product_services)) %>% 
+  unnest_tokens(word, 
+                product_services)
+```
+
+::: callout-note
+-   The two basic arguments to `unnest_tokens()` used here are column names.
+
+-   First we have the output column name that will be created as the text is unnested into it (*word*, in this case), and then the input column that the text comes from (*product_services*, in this case).
+
+-   Before tokenising, the NA values under `product_services` have been replaced by 'unknown' string.
+
+-   By default, punctuation has been stripped.
+
+-   By default, `unnest_tokens()` converts the tokens to lowercase, which makes them easier to compare or combine with other datasets. (Use the *to_lower = FALSE* argument to turn off this behavior).
+:::
+
+```{r}
+#| eval: false
+#| echo: false
+token_nodes %>%
+  count(word, sort = TRUE) %>%
+  top_n(30) %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(x = word, y = n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip() +
+      labs(x = "Count",
+      y = "Unique words",
+      title = "Count of unique words found in product_services field")
+```
+
+### **3.1.3 Removing stopwords**
+
+We will use the tidytext package's function called [`stop_words`](https://juliasilge.github.io/tidytext/reference/stop_words.html) that will help us clean up stop words. In addition, we can add in additional stopwords in the stopwords list.
+
+```{r}
+# Create a new dataframe with customised stopwords
+new_stopwords <- data.frame(word = c("unknown", "character", "0", "products","range", "offers","including"))
+
+# Add the new stopwords to the existing stop_words dataframe
+stop_words <- bind_rows(stop_words, new_stopwords)
+
+# remove stopwords from `token_nodes`
+stopwords_removed <- token_nodes %>% 
+  anti_join(stop_words)
+```
+
+::: callout-note
+There are two processes:
+
+-   Load the stop_words data included with tidytext. This data is simply a list of words that you may want to remove in a natural language analysis.
+
+-   Then `anti_join()` of dplyr package is used to remove all stop words from the analysis.
+:::
+
+Now we can visualise the words extracted by using the code chunk below.
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+stopwords_removed %>%
+  count(word, sort = TRUE) %>%
+  top_n(50) %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(x = word, y = n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip() +
+      labs(x = "Count",
+      y = "Unique words",
+      title = "Count of unique words found in product_services field") +
+   theme(axis.text.y = element_text(size = 7.5, hjust = 0))
+```
+
+The diagram above shows that some words like 'fish', 'seafood', 'salmon' are related to the seafood industry and we could tag companies containing these words to the label 'seafood'. The non-seafood related industry companies could be tag to the label 'others' while missing product services could be tag to 'unknown'.
+
+## 3.2 Preparing a master node dataframe with unique `id` per row
+
+### 3.2.1 Adding a `label` column using `product_services` column
+
+Creating `nodes_all_notagg` dataframe where this df contains a new column called `label` that groups all the fishing related companies together and non-seafood related companies together. There are three categories in `label` column namely 'seafood', ' others', 'unknown'. `nodes_all_notagg` dataframe is created from `merged_df`.
+
+Note that in `nodes_all_notagg` dataframe , there can be duplicated ids bacause an entity can be associated to more than 1 country, 1 relationship type and 1 product labels group.
+
+(Refer to 'Manipur Market Ltd. Liability Co' if needed)
+
+```{r}
+#library(stringr)
+
+# Define the seafood keywords
+seafood_keywords <- c("sea food", "seafood", "fish", "prawn", "shrimp", "shell", "crab", "lobster", "mussel", "cavier", "oyster", "octopus", "squid", "aquatic", "crayfish", "tuna", "salmon", "scallop", "mackerel", "trout", "sardine", "winkle", "Barramundi", "tilapia")
+
+# Add the 'label' column based on the 'product_services' column
+nodes_all_notagg <- merged_df %>%
+  mutate(product_services = ifelse(is.na(product_services), 'Unknown', product_services)) %>% 
+  mutate(label = ifelse(product_services == 'Unknown' | product_services == 'character(0)', 'unknown',
+                        ifelse(str_detect(product_services, regex(paste(seafood_keywords, collapse = "|"), ignore_case = TRUE)), 'seafood', 'others')))
+
+```
+
+In the code chunk above, we first check if **`product_services`** is equal to either "Unknown" or "character(0), if true, 'label' is set to 'unknown'.
+
+Next, if `product_services` contains seafood_keywords, then 'label' is set to 'seafood'.
+
+If none of the previous conditions are met, 'label' is set to 'others'.
+
+::: callout-note
+`nodes_all_notagg` df can be used with `edges_combined` edge file
+:::
+
+Visualising the newly created `label` column using bar charts. The results are as expected because most of the Beneficial Owners and Company Contacts do not have values under the `product_services` column.
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+ggplot(data = nodes_all_notagg,
+       aes(x = reorder(label,label,
+                       function(x) + length(x)))) +
+  geom_bar(fill='lightblue') +
+  ylim(0,50000) +
+  coord_flip() +
+  geom_text(stat="count", 
+            aes(label=paste0(..count.., ", ", 
+                             round(..count../sum(..count..)*100, 1), "%")),
+            hjust= -0.1,
+            size = 5) +
+
+  theme_minimal() +
+  
+  labs(x = 'Product services labels',
+       title = 'Distribution of labels') +
+  theme(plot.title = element_text(size = 22,
+                                  face='bold', 
+                                  hjust = 0.5),
+        axis.title.x=element_text(size= 20,
+                                  hjust = 0.5),
+        axis.title.y=element_text(size= 20),
+        axis.text.x = element_text(size = 15, 
+                                  color = "black", 
+                                  angle = 0, 
+                                  hjust = 0.5, 
+                                  vjust = 0.5),
+        axis.text.y = element_text(size = 15, 
+                                  color = "black", 
+                                  angle = 0, 
+                                  hjust = 0.5, 
+                                  vjust = 0.5),
+        panel.grid.major.y = element_blank() )
+
+```
+
+### 3.2.2 Aggregation to ensure no duplicates of id in master node df
+
+As explained earlier , the entity names in the `id` column of the `nodes_all_notagg` dataframe is not unique.
+
+Thus from `nodes_all_notagg` dataframe, we will create an aggregated version of it called `nodes_all_agg` dataframe (our master node df) , where there is only 1 instance of each id. It would mean aggregation is needed in order not to lose any information.
+
+First, group by `id` and create new columns :
+
+`country_qty` : number of countries that an entity is associated with
+
+`type_qty` : number of business relationship types an entity has
+
+`revenue_sum`: total revenue of entity
+
+`label_qty`: number of categories of products associated with entity
+
+`country_concat` : list of all countries associated with entity
+
+`type_concat` : list of all business relationship types associated with entity
+
+`label_concat` : list of all product labels associated with entity
+
+```{r}
+ nodes_all_agg <- nodes_all_notagg %>%
+  group_by(id) %>%
+  summarise(country_qty = ifelse(all(is.na(country)), 0, n_distinct(country)),
+            type_qty = ifelse(all(is.na(type)), 0, n_distinct(type)),
+            label_qty = n_distinct(label),
+            revenue_sum = sum(revenue_omu),
+            country_concat = ifelse(country_qty > 1, paste(unique(country), collapse = ', '), country[1]),
+            type_concat = ifelse(type_qty > 1, paste(unique(type), collapse = ', '), type[1]),
+            label_concat = ifelse(label_qty > 1, paste(unique(label), collapse = ', '), label[1]),
+            product_services_concat = paste(product_services, collapse = "| ")
+            )
+```
+
+::: callout-note
+The codes above checks for each entity
+
+-   `country` values contains all null. If so, `country_qyt` column is 0. Otherwise, the number of distinct countries is computed using `n_distinct()`.
+
+-   the number of distinct countries (**`country_qty`**) is greater than 1. If it is, it uses **`paste()`** with **`unique(country)`** to concatenate only the unique **`country`** values, separated by a comma and a space. Otherwise, it simply uses the first **`country`** value in the group (**`country[1]`**). This ensures that the **`country`** values are concatenated only if they are different within each group.
+:::
+
+Take a peek at a few rows in \`nodes_all_agg'. It contains information of seafood and non-seafood related entities and has 34,442 rows in total.
+
+```{r}
+nodes_all_agg %>% arrange(desc(country_qty)) %>% slice(100:105) %>%  kable()
+```
+
+### 3.2.3 seafood_entities df
+
+In this section, we will subset the `nodes_all_agg` dataframe above by filtering `label` == 'seafood' to extract only seafood-related entities information.
+
+Filter for ids with `label_concat` column containing seafood
+
+```{r}
+#| echo: false
+seafood_entities <- nodes_all_agg %>% 
+  filter(grepl('seafood', label_concat, ignore.case = TRUE))
+```
+
+Take a peek at a few rows in `seafood_entities`. There are 651 seafood related entities.
+
+```{r}
+#| echo: false
+seafood_entities %>% arrange(desc(country_qty)) %>% slice(100:105) %>%  kable()
+```
+
+### 3.2.4 `seafood_edges` df
+
+Next, we need to filter only the relevant relationship from the edges_combined df according to `seafood_entities` df .
+
+Filter the relevant rows from `edges_combined` df where either of its `target` or `source` values are found in `id` column of `seafood_entities` dataframe. This would filter out all relationship related to seafood related entities. There are no duplicates in `seafood_edges` df.
+
+```{r}
+# Filter rows in edges_combined df based on matching values of id column in the'seafood_entities' dataframe
+seafood_edges <- edges_combined[edges_combined$source %in% seafood_entities$id | edges_combined$target %in% seafood_entities$id, ]
+```
+
+```{r}
+#| echo: false
+DT::datatable(seafood_edges)
 ```
 
 ```{r}
 #| eval: false
 #| echo: false
-carp <- jsonlite::fromJSON("C:/yixin-neo/ISSS608-VAA/Project/data/bundles/carp.json")
+sum(duplicated(seafood_entities$id))
+sum(duplicated(seafood_edges, subset= c('target', 'source')))
 ```
 
-Pull out the nodes and edge data and save them as tibble data frames.
+### 3.2.5 `seafood_nodes` df
+
+Using `seafood_edges` df, create a node file called `seafood_nodes` for network visualisation later.
+
+A left join with `nodes_all_agg` is required to ingest all the nodes attributes.
+
+```{r}
+# Extract unique ids from 'source' and 'target' columns of 'seafood_edges' dataframe
+unique_entities <- unique(c(seafood_edges$source, seafood_edges$target))
+
+# Create a new 'seafood_nodes' dataframe as a tibble
+seafood_nodes <- as_tibble(data.frame(id = unique_entities))
+
+# Perform left outer join with my nodes master table 'nodes_all_agg' 
+seafood_nodes <- left_join(seafood_nodes, nodes_all_agg, by = "id")
+```
+
+```{r}
+#| echo: false
+DT::datatable(seafood_nodes,options = list(iDisplayLength = 5))
+```
+
+# 4 The analysis (Seafood)
+
+## Seafood_graph tbl object
+
+The `seafood_nodes` and `seafood_edges` dfs will be the main files used to create a tbl graph object. The `tbl_graph` function from `tidygraph` library will be used.
+
+The `seafood_graph` object has 3114 nodes and 2505 edges. There are 609 subgraphs inside.
+
+In addition, we will calculate various centrality scores and also add a column called `membership` for us to recognise which subgraph each id belongs to.
+
+```{r}
+seafood_graph<- tbl_graph(nodes=seafood_nodes,
+                          edges = seafood_edges,
+                          directed = FALSE)
+
+seafood_graph <- seafood_graph %>% 
+  activate(nodes) %>% 
+  mutate(betweenness_centrality = centrality_betweenness(),
+         closeness_centrality = centrality_closeness(),
+         eigenvector_centrality = centrality_eigen(),
+         membership = components(seafood_graph)$membership)
+
+```
+
+`seafood_graph` nodes interactive datatable below to show all the additional centrality and membership attributes calculated using wrapper functions of the `tidygraph` package. You could sort the various columns inside.
+
+```{r}
+#| echo: false
+#seafood_graph %>% activate(nodes) %>% slice(100:105) %>%  kable()
+
+DT::datatable(seafood_graph %>% activate(nodes) %>%  as_tibble() ,options = list(iDisplayLength = 5))
+```
 
 ```{r}
 #| eval: false
 #| echo: false
-MC2_nodes <- as_tibble(MC2$nodes) %>% 
-  select(id,shpcountry,rcvcountry)
+length(unique(seafood_entities$id))
+length(unique(seafood_edges$source)) + length(unique(seafood_edges$target))
+count_components(seafood_graph)
+
+```
+
+We will build a network graph that contains only seafood_related business relationships. The graph will show only entities with high betweenness scores.
+
+Prepare edge file for `visNetwork` library. Rename `source` to `from` and `target` to `to`.
+
+```{r}
+seafood_edges_vis <- seafood_edges %>% 
+  rename(from = source) %>% 
+  rename(to = target) %>% 
+  mutate(title = type)
+```
+
+Prepare node file for `visNetwork` library. By renaming `type_concat` to `group`, visnetwork could help us to colour the nodes by business relationship types.
+
+```{r}
+seafood_nodes_vis <- seafood_graph %>% 
+  activate(nodes) %>% 
+  as_tibble() %>% 
+  mutate(group = type_concat) %>% 
+  mutate(title = paste('id = ',id, "\n ,Betweenness =", betweenness_centrality,"\n ,Revenue =", revenue_sum, "\n ,Country =", country_concat))
+```
+
+Let us visualise the nodes with betweenness score 15 and above.
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+set.seed(1234)
+visNetwork(seafood_nodes_vis %>% filter(betweenness_centrality >= 15),
+           seafood_edges_vis,
+           main = "Interactive Network graph of top betweenness entities",
+           height = "500px", width = "100%") %>%
+  visIgraphLayout(layout = "layout_nicely") %>%
+  visEdges(smooth = list(enables = TRUE,
+                         type= 'straightCross'),
+           shadow = FALSE,
+           dash = FALSE) %>% 
+  visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T),
+             nodesIdSelection = TRUE,
+             selectedBy = "group") %>%
+  visInteraction(hideEdgesOnDrag = TRUE) %>% 
+  visLegend() %>%
+  visLayout(randomSeed = 123)
+```
+
+All the entities shown above have relatively higher betweenness scores than other entities in the entire network. Hovering the mouse over each node and edge will reveal attributes like betweenness scores, country associated each node with and its revenue.
+
+At a glance, there are two subgraphs (bottom) with 5 high betweenness nodes connected to one another, forming a larger than normal network. We are interested in subgraphs with longer network diameter like these because they represent more complex business relationship. For instance, in such complex subgraphs, entities involved are 'company', 'business owners' and 'company contacts' and there are also more than 1 company in the network. From literature review, having entities associated to two or more companies (conflict of interests could occur) could suggests transshipment activities. This could allows us to investigate the entities in the complex subgraphs to check for any IUU crime.
+
+Instead of having to 'eye-ball' each of 609 the seafood network subgraphs to identify those with longer network diameter, we can extract edge data of each subgraph (using `membership` column) and compile the network diameter of each subgraph into a dataframe.
+
+## Calculate network diameter
+
+```{r}
+# Get unique membership values
+unique_memberships <- unique(seafood_nodes_vis$membership)
+
+# Initialize empty list to store results
+results <- list()
+
+# Iterate over each membership value
+for (x in unique_memberships) {
+  # Filter nodes based on membership
+  nodes <- seafood_nodes_vis %>%
+    filter(membership == x)
+  
+  # Filter edges based on nodes
+  edges <- seafood_edges_vis %>%
+    filter(from %in% nodes$id | to %in% nodes$id)
+  
+  # Create subgraph
+  subgraph <- as_tbl_graph(edges, directed = FALSE)
+  
+  # Calculate network diameter
+  diameter <- with_graph(subgraph, graph_diameter())
+  
+  # Store results in list
+  results[[as.character(x)]] <- diameter
+}
+# Create DataFrame with membership and network diameter columns
+diameter_df <- tibble(
+  membership = unique_memberships,
+  network_diameter = unlist(results)
+)
+```
+
+Let us visualise the distribution of network_diameter of all the seafood subgraphs.
+
+First, let us fix the order of the `network diameter` field by descending counts of network diameter.
+
+```{r}
+diameter_counts <- count(diameter_df, network_diameter)
+
+# Reorder the factor levels of network_diameter based on count
+diameter_df$network_diameter1 <- factor(
+  diameter_df$network_diameter,
+  levels = diameter_counts$network_diameter[order(diameter_counts$n, decreasing = FALSE)]
+)
+
 ```
 
 ```{r}
 #| eval: false
 #| echo: false
-glimpse(MC2_nodes)
+#| fig-width: 12
+#| fig-asp: 0.618
+# Plot the bar chart
+ggplot(data = diameter_df, aes(x = network_diameter1)) +
+  geom_bar(fill='lightblue') +
+  ylim(0,400) +
+  coord_flip() +
+  theme_minimal() +
+  geom_text(stat="count", 
+            aes(label=paste0(..count.., ", ", 
+                             round(..count../sum(..count..)*100, 1), "%")),
+            hjust= -0.1,
+            size = 5) +
+  labs(title = 'Distribution of Network Diameter',
+       x = 'Network diameter') +
+
+  theme(plot.title = element_text(size = 22,
+                                  face='bold', 
+                                  hjust = 0.5),
+        axis.title.x=element_text(size= 20,
+                                  hjust = 0.5),
+        axis.title.y=element_text(20),
+        axis.text.x = element_text(size = 15, 
+                                  color = "black", 
+                                  angle = 0, 
+                                  hjust = 0.5, 
+                                  vjust = 0.5),
+        axis.text.y = element_text(size = 15, 
+                                  color = "black", 
+                                  angle = 0, 
+                                  hjust = 0.5, 
+                                  vjust = 0.5),
+        panel.grid.major.y = element_blank() )
 ```
 
-Rearranging the columns in edge file as we require `source` and `target` columns to be the first two columns.
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+d <- highlight_key(diameter_df %>% arrange(desc(network_diameter1))) 
+
+
+p<-ggplot(data=diameter_df, 
+       aes(x=as.factor(network_diameter1))) +
+  geom_bar(fill='lightblue') +
+  coord_flip() +
+  theme_minimal() + 
+    labs(title = 'Distribution of Network Diameter',
+         x= 'Network diameter') +
+  theme(plot.title = element_text(face='bold'))
+
+gg <- highlight(ggplotly(p),        
+                "plotly_selected")  
+
+crosstalk::bscols(gg,
+                  DT::datatable(d,options = list(iDisplayLength = 5)),
+                  widths=5)
+```
+
+There are about 32 subgraphs with network diameter of 4 and above. We can investigate these subgraphs closer.
+
+## 4.1 Subgraphs with high NETWORK RISK
+
+First, let us ingest the network diameter of each subgraph into the main `seafood_nodes_vis` dataframe by performing a left join with `diameter_df` using `membership` columns in both df as join key.
+
+```{r}
+seafood_nodes_vis<- seafood_nodes_vis %>% 
+  left_join(diameter_df, by='membership',
+            unmatched = "drop") %>% 
+  arrange(desc(network_diameter), desc(betweenness_centrality)) %>% 
+  select(id,membership,network_diameter,betweenness_centrality,closeness_centrality,eigenvector_centrality,revenue_sum,country_qty,type_qty,label_qty,country_concat,type_concat,label_concat,product_services_concat,group,title)
+```
+
+Is there a difference in the betweenness scores across network diameter?
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+ggbetweenstats(data = seafood_nodes_vis, x = network_diameter, y = betweenness_centrality,
+               xlab = "network_diameter", ylab = "betweenness_centrality",
+               type = "np", pairwise.comparisons = TRUE, pairwise.display = "s",
+               sort = "descending",
+               sort.fun = median,
+               mean.ci = T, p.adjust.method = "fdr",  conf.level = 0.95,
+               title = "Comparison of Betweenness centrality across different network diameters") +
+  scale_y_continuous(limits = c(0, 2500)) +
+   theme(axis.title.y=element_text(angle = 0,
+                                  vjust=0.9))
+```
+
+From the plot above, p value\< 0.05 and we have evidence to conclude that the betweenness scores across network of different diameter are different. There are many entities with very high betweenness scores in subgraphs with network_diameter of 2, 4 and 6. However, in this section we will only focus on subgraphs with network_diameter of 4 and above because of more complex business relationships within them.
+
+Next filter the subgraphs where network diameter is 4 and above.
+
+```{r}
+network_risk_nodes_vis<- seafood_nodes_vis %>% 
+  filter(network_diameter >= 4) %>% 
+  arrange(desc(network_diameter), desc(betweenness_centrality))
+```
+
+There are only 2 subgraphs with network diameter of 6. They are subgraphs 112 and 227.
+
+```{r}
+#network_risk_nodes_vis %>% select(id,membership, network_diameter) %>%  head(10) %>% kable()
+
+DT::datatable(network_risk_nodes_vis ,options = list(iDisplayLength = 5))
+```
+
+**Visualisation of the two subgraphs with highest network diameter.**
+
+Filter for all the nodes and edges in subgraph 112 from `seafood_nodes_vis` dataframe.
+
+```{r}
+m<- 112
+sub112_nodes_vis <- seafood_nodes_vis %>%  filter(membership==m)
+sub112_edges_vis <- seafood_edges_vis[seafood_edges_vis$from %in% sub112_nodes_vis$id | seafood_edges_vis$to %in% sub112_nodes_vis$id, ]
+```
+
+Visualise the network graph 112.
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+set.seed(1234)
+visNetwork(sub112_nodes_vis, #%>% filter(betweenness_centrality >= 20),
+           sub112_edges_vis,
+           main = "Network graph of subgraph 112 with diameter =6",
+           height = "500px", width = "100%") %>%
+  visIgraphLayout(layout = "layout_with_fr") %>%
+  visEdges(smooth = list(enables = TRUE,
+                         type= 'straightCross'),
+           shadow = FALSE,
+           dash = FALSE) %>% 
+  visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T),
+             nodesIdSelection = TRUE,
+             selectedBy = "group") %>%
+  visInteraction(hideEdgesOnDrag = TRUE) %>% 
+  visLegend() %>%
+  visLayout(randomSeed = 123)
+```
+
+In this subgraph, we can see **three** companies (blue) linked together by **two** individuals, namely Andrew Reed and John Hernandez.
+
+Andrew Reed is a beneficial owner to both 'Adair S.A. de C.V.' and 'Oka  Ltd. Corporation Transport'.
+
+John Hernandez is a Company contacts of 'Danish Plaice Swordfish AB Shipping' and beneficial owner of 'Adair S.A. de C.V.'
+
+The datatable containing details of the members in subgraph 112 allows us to filter them by betweenness scores and other attributes.
+
+```{r}
+DT::datatable(seafood_nodes_vis %>%  filter(membership==m), options = list(iDisplayLength = 5))
+```
+
+Filter for all the nodes and edges in subgraph 227 from `seafood_nodes_vis` dataframe
+
+```{r}
+m<- 227
+sub227_nodes_vis <- seafood_nodes_vis %>%  filter(membership==m)
+sub227_edges_vis <- seafood_edges_vis[seafood_edges_vis$from %in% sub227_nodes_vis$id | seafood_edges_vis$to %in% sub227_nodes_vis$id, ]
+```
+
+Visualising the subgraph 227
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+set.seed(1234)
+visNetwork(sub227_nodes_vis, #%>% filter(betweenness_centrality >= 20),
+           sub227_edges_vis,
+           main = "Network graph of subgraph 227 with diameter =6",
+           height = "500px", width = "100%") %>%
+  visIgraphLayout(layout = "layout_with_fr") %>%
+  visEdges(smooth = list(enables = TRUE,
+                         type= 'straightCross'),
+           shadow = FALSE,
+           dash = FALSE) %>% 
+  visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T),
+             nodesIdSelection = TRUE,
+             selectedBy = "group") %>%
+  visInteraction(hideEdgesOnDrag = TRUE) %>% 
+  visLegend() %>%
+  visLayout(randomSeed = 123)
+```
+
+In this subgraph, we can see **three** companies linked by **two** individuals, namely Christopher Rodrigues and Lisa Brown.
+
+Lisa Brown is beneficial owner to both 'Tide NV solutions' and 'Deep Blue Cargo ship'.
+
+Christopher Rodriguez is a beneficial owner of 'Deep Blue Cargo ship' and a company contacts of 'Lewis PLC'. It seems to suggest that Deep Blue Cargo ship' could have business dealings with 'Lewis PLC' via Christopher.
+
+The datatable containing details of the members in subgraph 227 allows us to filter them by betweenness scores and other attributes.
 
 ```{r}
 #| eval: false
 #| echo: false
-MC2_edges <- as_tibble(MC2$links) %>% 
-  select(source,target,arrivaldate,hscode,valueofgoods_omu,volumeteu,weightkg,valueofgoodsusd)  
-# can exclude dataste column as they all contain the same values.
+sub227_nodes_vis <- sub227_nodes_vis %>%
+  mutate(type = case_when(
+    type_concat %in% c('Company', 'Company, Beneficial Owner, Company Contacts', 'Company, Beneficial Owner', 'Company, Company Contacts') ~ 'Company',
+    type_concat %in% c('Beneficial Owner', 'Beneficial Owner, Company Contacts','Beneficial Owner, Company Contacts','Company Contacts, Beneficial Owner') ~ 'Beneficial Owner',
+    type_concat == 'Company Contacts' ~ 'Company Contacts',
+    TRUE ~ NA_character_
+  ))
+
 ```
 
 ```{r}
 #| eval: false
 #| echo: false
-glimpse(MC2_edges)
+#| fig-width: 12
+#| fig-asp: 0.618
+hive227 <- tbl_graph(sub227_nodes_vis,sub227_edges_vis, directed = FALSE)
+hive227 %>% activate(nodes)
+
+
+  
+ggraph(hive227, 'hive', axis = type_concat) + 
+  geom_edge_hive() + 
+  geom_axis_hive(aes(colour = type_concat), size = 3, label = FALSE) + 
+  coord_fixed() 
+# + facet_nodes(~product_type)
 ```
 
-# 2 Data cleaning
+```{r}
+DT::datatable(seafood_nodes_vis %>%  filter(membership==m) , options = list(iDisplayLength = 5))
+```
 
-## 2.1 Check for null values
+## 4.2 High FINANCIAL RISK
 
-# 4 References
+In this section, we will look out for subgraphs with exceptionally high total revenue. As we expect bigger subgraphs to have higher revenue, thus the total revenue will be divided by the number of companies in the subgraph for fair comparison.
 
-https://hohenfeld.is/posts/graphs-are-fun-an-introduction-to-graphs-in-r/
+The code chunk below first group by `membership` and `network_diameter` columns to calculate sum of revenue called `total_revenue_subgraph`. It then sum up the number of times 'Company' appeared under the `type_concat` column to give us the number of distinct companies inside the subgraph. Finally, the total revenue for each subgraph is divided by the number of companies to give `revenue_per_company` field.
 
-On ggraph edgelink
+```{r}
+financial_risk_nodes <- seafood_nodes_vis %>%
+  group_by(membership, network_diameter) %>%
+  summarize(
+    total_revenue_subgraph = as.numeric(sum(revenue_sum, na.rm=TRUE)),
+    no_of_companies_subgraph = as.numeric(sum(str_count(type_concat, "Company") * !grepl("Company Contacts", type_concat)))) %>% 
+  ungroup() %>%
+mutate(
+    revenue_per_company = ifelse(no_of_companies_subgraph == 0, total_revenue_subgraph, round(total_revenue_subgraph / no_of_companies_subgraph))) %>% 
+  arrange(desc(revenue_per_company))
+```
 
-https://cran.r-project.org/web/packages/ggraph/vignettes/Edges.html
+The summary function tells us that there is an extreme outlier revenue_per_company value of \$55,376,193. We will exclude this outlier when we chart the dotplot.
 
-Visnetwork
+```{r}
+summary(financial_risk_nodes$revenue_per_company)
+```
 
-http://datastorm-open.github.io/visNetwork/
+**Visualising the distribution of revenue per company in the remaining 650 subgraphs.**
 
-Horizon plot
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+p <- ggplot(data=financial_risk_nodes[-1, ],
+            aes(x=revenue_per_company)) +
+  geom_dotplot_interactive(aes(tooltip=as.factor(membership)),
+                           stackgroups = TRUE,
+                           binwidth = 10000,
+                           method = "histodot") +
+  scale_y_continuous(NULL,
+                     breaks= NULL)  #null to suppress axis labels
 
-https://rivasiker.github.io/ggHoriPlot/
+girafe(ggobj=p,
+       width_svg = 6,
+       height_svg = 6*0.618)
+```
+
+Hovering the mouse above the dotplot will reveal their subgraph numbers. The top 10 subgraphs with the highest total revenue per company (present in the subgraph) are listed below:
+
+```{r}
+#| echo: false
+financial_risk_nodes %>%  slice(1:10) %>%  select(revenue_per_company, membership, network_diameter, no_of_companies_subgraph) %>%  kable()
+```
+
+**Visualising the top 2 subgraphs in terms of revenue per company.**
+
+Subgraph 193
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+m<- 193
+sub227_nodes_vis <- seafood_nodes_vis %>%  filter(membership==m)
+sub227_edges_vis <- seafood_edges_vis[seafood_edges_vis$from %in% sub227_nodes_vis$id | seafood_edges_vis$to %in% sub227_nodes_vis$id, ]
+
+set.seed(1234)
+visNetwork(sub227_nodes_vis, #%>% filter(betweenness_centrality >= 20),
+           sub227_edges_vis,
+           main = "Network graph of subgraph 193 with diameter = 1",
+           height = "500px", width = "100%") %>%
+  visIgraphLayout(layout = "layout_nicely") %>%
+  visEdges(smooth = list(enables = TRUE,
+                         type= 'straightCross'),
+           shadow = FALSE,
+           dash = FALSE) %>% 
+  visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T),
+             nodesIdSelection = TRUE,
+             selectedBy = "group") %>%
+  visInteraction(hideEdgesOnDrag = TRUE) %>% 
+  visLegend() %>%
+  visLayout(randomSeed = 123)
+```
+
+In this subgraph, there are no companies involved. The revenue of 55376,193 comes from Callahan-Peterson and the product service he gives is 'Fishery'. Danielle Myers could be a business partner of Callahan-Peterson as the edge relationship is 'Beneficial owner'.
+
+Information about the two members:
+
+```{r}
+DT::datatable(seafood_nodes_vis %>%  filter(membership==m))
+```
+
+Subgraph 498
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+m<- 498
+sub227_nodes_vis <- seafood_nodes_vis %>%  filter(membership==m)
+sub227_edges_vis <- seafood_edges_vis[seafood_edges_vis$from %in% sub227_nodes_vis$id | seafood_edges_vis$to %in% sub227_nodes_vis$id, ]
+
+set.seed(1234)
+visNetwork(sub227_nodes_vis, #%>% filter(betweenness_centrality >= 20),
+           sub227_edges_vis,
+           main = "Network graph of subgraph 498 with diameter = 2",
+           height = "500px", width = "100%") %>%
+  visIgraphLayout(layout = "layout_with_fr") %>%
+  visEdges(smooth = list(enables = TRUE,
+                         type= 'straightCross'),
+           shadow = FALSE,
+           dash = FALSE) %>% 
+  visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T),
+             nodesIdSelection = TRUE,
+             selectedBy = "group") %>%
+  visInteraction(hideEdgesOnDrag = TRUE) %>% 
+  visLegend() %>%
+  visLayout(randomSeed = 123)
+```
+
+In this subgraph, the revenue of Sea Star LLC shipping is 1,507,513 and it has 10 beneficial owners with no other revenues reported. The product service offered by this company is 'Operation of fish hatcheries and preserves'. Interestingly, Matthew Williams is a company contacts of two companies offering unknown products services and also beneficial owners to two other companies; one of it is 'Wave Warriors S.A. de C.V. Express' company which has the highest betweenness score in the entire dataset. Its product services is "Beer, ale, and malt liquors.."
+
+Information about the members:
+
+```{r}
+DT::datatable(seafood_nodes_vis %>%  filter(membership==m),options = list(iDisplayLength = 5))
+```
+
+## 4.3 High COUNTRY RISK
+
+In this section, we will focus on subgraphs with business relationship involving many countries. This could usually indicate transshipment across carriers from different countries.
+
+According to literature reviews, a method of IUU is via "Flags of convenience" where vessels fly different country flags at different location to avoid inspections and intersections by local governing bodies.
+
+The code chunk below is a continuation from section 4.3. It create a new column `no_of_countries_subgraph` where it computes the number of distinct values of countries present in each subgraph.
+
+```{r}
+country_risk_nodes <- seafood_nodes_vis %>%
+  group_by(membership, network_diameter) %>%
+  summarize(
+    total_revenue_subgraph = as.numeric(sum(revenue_sum, na.rm=TRUE)),
+    no_of_companies_subgraph = as.numeric(sum(str_count(type_concat, "Company") * !grepl("Company Contacts", type_concat))),
+  no_of_countries_subgraph = n_distinct(na.omit(unlist(strsplit(country_concat, ", "))))) %>%
+  ungroup() %>%
+mutate(
+    revenue_per_company = ifelse(no_of_companies_subgraph == 0, total_revenue_subgraph, round(total_revenue_subgraph / no_of_companies_subgraph))) %>% 
+  arrange(desc(revenue_per_company))
+```
+
+We will use a bar chart to visualise the count of countries
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+d <- highlight_key(country_risk_nodes %>% arrange(desc(no_of_countries_subgraph))) 
+
+
+p<-ggplot(data=country_risk_nodes, 
+       aes(x=as.factor(no_of_countries_subgraph))) +
+  geom_bar(fill = 'lightblue') +
+  coord_flip() +
+  theme_minimal() + 
+    labs(title= 'Distribution of \nnumber of countries \nin subgraphs',
+         x= 'Number of countries involved in a subgraph')
+
+gg <- highlight(ggplotly(p),        
+                "plotly_selected")  
+
+crosstalk::bscols(gg,
+                  DT::datatable(d,options = list(iDisplayLength = 5)),
+                  widths=5)
+```
+
+Subgraph 6 is associated with the highest number of countries (10).
+
+Subgraph 85 is associated with 4 different countries.
+
+There are 15 other subgraphs that are associated with 3 different countries.
+
+Subgraph 6 is very special so let us zoom in on its network graph.
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+m<- 6
+sub227_nodes_vis <- seafood_nodes_vis %>%  filter(membership==m)
+sub227_edges_vis <- seafood_edges_vis[seafood_edges_vis$from %in% sub227_nodes_vis$id | seafood_edges_vis$to %in% sub227_nodes_vis$id, ]
+
+set.seed(1234)
+visNetwork(sub227_nodes_vis, #%>% filter(betweenness_centrality >= 20),
+           sub227_edges_vis,
+           main = "Network graph of subgraph 6 with diameter = 4",
+           height = "500px", width = "100%") %>%
+  visIgraphLayout(layout = "layout_with_fr") %>%
+  visEdges(smooth = list(enables = TRUE,
+                         type= 'straightCross'),
+           shadow = FALSE,
+           dash = FALSE) %>% 
+  visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T),
+             nodesIdSelection = TRUE,
+             selectedBy = "group") %>%
+  visInteraction(hideEdgesOnDrag = TRUE) %>% 
+  visLegend() %>%
+  visLayout(randomSeed = 123)
+```
+
+In the above subgraph, there are two companies 'Aqua Aura SE Marine life' registered in countries (*Mawazam, Rio Isla, Icarnia, Oceanus, Nalakond, Coralmarica, Alverossia, Isliandor, Talandria*) and ' BlueWater Bistro GmbH Industrial' company registered in (*Marebak*).
+
+Information about its members:
+
+```{r}
+DT::datatable(seafood_nodes_vis %>%  filter(membership==m) , options = list(iDisplayLength = 5))
+```
+
+## 4.4 Finding similar subgraphs (groups)
+
+In this section, we will use parallel coordinate plot to visualise and analyse multivariate, numerical data we have of each subgraphs. We will be comparing multiple variables
+
+-   `no_of_companies_subgraph` : the number of distinct companies in the subgraph
+
+-   `no_of_beneficial_owners_subgraph`: the number of beneficial owners in the subgraph
+
+-   `top_betweenness` : the highest betweenness score of an entity in the subgraph
+
+-   `revenue_per_company`: the total revenue of the subgraph divided by the total number of companies in subgraph
+
+Preparing the dataframe for the plot by creating two more new columns to calculate the number of beneficial owners and top betweenness score in each subgraph.
+
+```{r}
+prll <- seafood_nodes_vis %>%
+  group_by(membership, network_diameter) %>%
+  summarize(
+    total_revenue_subgraph = as.numeric(sum(revenue_sum, na.rm=TRUE)),
+    no_of_companies_subgraph = as.numeric(sum(str_count(type_concat, "Company") * !grepl("Company Contacts", type_concat))),
+  no_of_countries_subgraph = n_distinct(na.omit(unlist(strsplit(country_concat, ", ")))),
+  no_of_beneficial_owners_subgraph = sum(str_count(type_concat, "Beneficial Owner|Beneficial Owner, Company Contacts")),
+  top_betweenness = max(betweenness_centrality)) %>%
+  ungroup() %>%
+mutate(
+    revenue_per_company = ifelse(no_of_companies_subgraph == 0, total_revenue_subgraph, round(total_revenue_subgraph / no_of_companies_subgraph)),
+    membership = as.factor(membership)) %>% 
+  arrange(desc(revenue_per_company))
+```
+
+We will filter subgraphs with network diameter 3 and above. The graph will also be faceted by the number of countries involvment in each subgraph. (Refer to the subtitle for the meaning of each box)
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+set.seed(1234)
+ggparcoord(prll %>% 
+             filter(as.numeric(network_diameter) >=3) %>%
+             mutate(no_of_countries_subgraph=as.factor(no_of_countries_subgraph),
+                    network_diameter=as.factor(network_diameter)),
+           columns = c(4,6:8),
+           groupColumn = 2,
+           scale = "uniminmax",
+           alphaLines = 0.3,
+           boxplot = TRUE, 
+           title = "Parallel Coordinates Plot of subgraph variables") +
+  theme(plot.title = element_text(face='bold'),
+        legend.position = "right",
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 10),
+        axis.text.x = element_text(angle = 35, hjust = 1),
+        axis.title.y = element_blank()) +
+  labs(subtitle='Box 1: 1 country, Box 2: 2 countries, Box 3: 3 countries, Box 4: 10 countries') +
+  
+  facet_wrap(~ `no_of_countries_subgraph`)
+```
+
+Box 1 shows that there is one subgraph with network diameter =3 that has only 1 country in the relationship.
+
+In box 2, the subgraphs with higher network diameter tend to have more beneficial owners in the relationship.
+
+In box 3, there are subgraphs with more number of companies in the relationship. The number of beneficial owner, top betweenness score and revenue per company is also slightly higher than in box 2.
+
+Box 4 shows that there is one subgraph with network diameter =4 that has 10 countries in the relationship. The number of beneficial owners and top betweenness scores in te subgraph are also observed to be the highest amongst all the boxes.
+
+```{r}
+#| echo: false
+#| eval: false
+#| fig-width: 12
+#| fig-height: 8
+ggplotly(ggparcoord(prll %>% filter(network_diameter ==4),
+           columns = c(2:8),
+           groupColumn = 1,
+           scale = "uniminmax",
+           alphaLines = 0.2,
+           boxplot = TRUE, 
+           title = "Parallel Coordinates Plot of seafood_nodes variables") +
+      theme(legend.position = "right",
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 10),
+        axis.text.x = element_text(angle = 45, hjust = 1)))
+
+```
+
+```{r}
+#| echo: false
+#| eval: false
+#| fig-width: 12
+#| fig-height: 8
+set.seed(1234)
+ggparcoord(prll %>% 
+             filter(as.numeric(network_diameter) >=3) %>%
+             mutate(no_of_countries_subgraph=as.factor(no_of_countries_subgraph),
+                    network_diameter=as.factor(network_diameter)),
+           columns = c(4,5,6:8),
+           groupColumn = 2,
+           scale = "uniminmax",
+           alphaLines = 0.3,
+           boxplot = TRUE, 
+           title = "Parallel Coordinates Plot of subgraph variables") +
+  theme(plot.title = element_text(face='bold'),
+        legend.position = "right",
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 10),
+        axis.text.x = element_text(angle = 35, hjust = 1),
+        axis.title.y = element_blank()) +
+  labs(subtitle='Box 1: 1 country, Box 2: 2 countries, Box 3: 3 countries, Box 4: 10 countries')
+```
+
+# 5 Conclusion
+
+From the anomalies raised in the earlier sections, it would be worth investigating subgraphs with bigger network diamaters , higher revenue per company and subgraphs with multiple countries presence.
+
+```{r}
+#| echo: false
+#| eval: false
+seafood_edges_vis %>% group_by(to) %>% mutate(count = n()) %>% arrange(desc(count))
+```
+
+```{r}
+#| echo: false
+#| eval: false
+para <- seafood_nodes_vis %>% 
+  #filter(membership %in% c(31,6,402,479,174,112,527,501,228,273)) %>% 
+  filter(betweenness_centrality>= 100) %>% 
+
+  mutate(revenue_sum = ifelse(is.na(revenue_sum), 0, revenue_sum)) %>% 
+  mutate(country_concat = ifelse(is.na(country_concat), 'unknown', country_concat)) %>% 
+  mutate(membership = as.factor(membership)) %>% 
+  mutate(country_qty = as.factor(country_qty)) %>% 
+  mutate(type_qty = as.factor(type_qty)) %>% 
+  mutate(label_qty = as.factor(label_qty)) %>% 
+  mutate(label_concat = as.factor(label_concat))
+  
+  
+```
+
+```{r}
+#| echo: false
+#| eval: false
+unique(para$membership)
+```
+
+```{r}
+#| echo: false
+#| eval: false
+a <- ggparcoord(para,
+           columns = c(2,3,5,9,4),
+           groupColumn = 12,
+           scale = "uniminmax",
+           alphaLines = 0.2,
+           boxplot = TRUE, 
+           title = "Parallel Coordinates Plot of seafood_nodes variables") +
+      theme(legend.position = "right",
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 10),
+        axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplotly(a)
+```
+
+# 6 REFERENCES
+
+Kam, T. S. (2022, December 4). R for Data Science. r4va. Retrieved from [https://r4va.netlify.app/]{.underline}
+
+Truelove, J. (2021, September 19). Hive plots with the ggraph and hiver packages. GitHub Pages. [https://jtr13.github.io/cc21fall2/hive-plots-with-the-ggraph-and-hiver-packages.html]{.underline}
+
+Nowak, B. J. (2021, September 30). R Network Analysis with Tidygraph. Netlify. [https://bjnnowak.netlify.app/2021/09/30/r-network-analysis-with-tidygraph/](#0)
+
+Ross, Z. (2019, April 2). Easy multi-panel plots in R using facet_wrap and facet_grid from ggplot2. ZevRoss Spatial Analysis Blog. [http://zevross.com/blog/2019/04/02/easy-multi-panel-plots-in-r-using-facet_wrap-and-facet_grid-from-ggplot2/]{.underline}

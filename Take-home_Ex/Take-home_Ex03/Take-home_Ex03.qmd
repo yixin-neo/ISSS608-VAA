@@ -740,7 +740,7 @@ First, group by `id` and create new columns :
   summarise(country_qty = ifelse(all(is.na(country)), 0, n_distinct(country)),
             type_qty = ifelse(all(is.na(type)), 0, n_distinct(type)),
             label_qty = n_distinct(label),
-            revenue_sum = sum(revenue_omu),
+            revenue_sum = sum(revenue_omu, na.rm=TRUE),
             country_concat = ifelse(country_qty > 1, paste(unique(country), collapse = ', '), country[1]),
             type_concat = ifelse(type_qty > 1, paste(unique(type), collapse = ', '), type[1]),
             label_concat = ifelse(label_qty > 1, paste(unique(label), collapse = ', '), label[1]),
@@ -1203,43 +1203,67 @@ In this section, we will look out for subgraphs with exceptionally high total re
 The code chunk below first group by `membership` and `network_diameter` columns to calculate sum of revenue called `total_revenue_subgraph`. It then sum up the number of times 'Company' appeared under the `type_concat` column to give us the number of distinct companies inside the subgraph. Finally, the total revenue for each subgraph is divided by the number of companies to give `revenue_per_company` field.
 
 ```{r}
+
 financial_risk_nodes <- seafood_nodes_vis %>%
   group_by(membership, network_diameter) %>%
   summarize(
     total_revenue_subgraph = as.numeric(sum(revenue_sum, na.rm=TRUE)),
-    no_of_companies_subgraph = as.numeric(sum(str_count(type_concat, "Company") * !grepl("Company Contacts", type_concat)))) %>% 
+    no_of_companies_subgraph = sum(str_count(type_concat, "\\bCompany\\b")) - sum(str_count(type_concat, "\\bCompany Contacts\\b"))) %>% 
   ungroup() %>%
 mutate(
     revenue_per_company = ifelse(no_of_companies_subgraph == 0, total_revenue_subgraph, round(total_revenue_subgraph / no_of_companies_subgraph))) %>% 
   arrange(desc(revenue_per_company))
+
 ```
 
-The summary function tells us that there is an extreme outlier revenue_per_company value of \$55,376,193. We will exclude this outlier when we chart the dotplot.
+The summary function shows signs of extreme outliers revenue_per_company value of \$291,436,839. We might have to consider using log scale for box plots.
 
 ```{r}
 summary(financial_risk_nodes$revenue_per_company)
 ```
 
-**Visualising the distribution of revenue per company in the remaining 650 subgraphs.**
+**Visualising the distribution of revenue per company across different network diameters.**
 
 ```{r}
-#| fig-width: 12
-#| fig-asp: 0.618
-p <- ggplot(data=financial_risk_nodes[-1, ],
-            aes(x=revenue_per_company)) +
-  geom_dotplot_interactive(aes(tooltip=as.factor(membership)),
-                           stackgroups = TRUE,
-                           binwidth = 10000,
-                           method = "histodot") +
-  scale_y_continuous(NULL,
-                     breaks= NULL)  #null to suppress axis labels
+library(scales)
 
-girafe(ggobj=p,
-       width_svg = 6,
-       height_svg = 6*0.618)
+ggplotly(ggplot(data = financial_risk_nodes %>% 
+                  mutate(network_diameter=as.factor(network_diameter)), 
+                aes(x = reorder(network_diameter, 
+                                -revenue_per_company, 
+                                median), 
+                    y = revenue_per_company, 
+                    fill=network_diameter)) +
+           
+   geom_boxplot(outlier.colour="blue", 
+                outlier.size=1) +
+     
+   geom_point(aes(label=membership),
+              position = 'jitter',
+              size=0.5) +
+     
+   stat_summary(fun.y=mean, 
+                geom="point", 
+                shape=20, 
+                size=2.5, 
+                color="pink", 
+                fill="red") +
+   xlab("Network diameter size") +
+   ylab("Revenue per company") +
+   ggtitle("Revenue per company by network diameter size") +
+   #scale_fill_brewer(palette='Set2') +
+   theme(plot.title = element_text(face= 'bold',
+                                   hjust = 0.5),
+         legend.position = 'none') +
+     
+   scale_y_continuous(trans = log10_trans()))
+    #breaks = trans_breaks("log10", function(x) 10^x),
+    #labels = trans_format("log10", math_format(10^.x))))
 ```
 
-Hovering the mouse above the dotplot will reveal their subgraph numbers. The top 10 subgraphs with the highest total revenue per company (present in the subgraph) are listed below:
+Hovering the mouse above the points will reveal their subgraph membership numbers. Surprisely, there are more smaller network diameter groups with higher revenue per company.
+
+The top 10 subgraphs with the highest total revenue per company are listed below. The network diameters are mainly 1 or 2.
 
 ```{r}
 #| echo: false
@@ -1253,14 +1277,14 @@ Subgraph 193
 ```{r}
 #| fig-width: 12
 #| fig-asp: 0.618
-m<- 193
+m<- 396
 sub227_nodes_vis <- seafood_nodes_vis %>%  filter(membership==m)
 sub227_edges_vis <- seafood_edges_vis[seafood_edges_vis$from %in% sub227_nodes_vis$id | seafood_edges_vis$to %in% sub227_nodes_vis$id, ]
 
 set.seed(1234)
 visNetwork(sub227_nodes_vis, #%>% filter(betweenness_centrality >= 20),
            sub227_edges_vis,
-           main = "Network graph of subgraph 193 with diameter = 1",
+           main = "Network graph of subgraph 396 with diameter = 1",
            height = "500px", width = "100%") %>%
   visIgraphLayout(layout = "layout_nicely") %>%
   visEdges(smooth = list(enables = TRUE,
@@ -1275,7 +1299,7 @@ visNetwork(sub227_nodes_vis, #%>% filter(betweenness_centrality >= 20),
   visLayout(randomSeed = 123)
 ```
 
-In this subgraph, there are no companies involved. The revenue of 55376,193 comes from Callahan-Peterson and the product service he gives is 'Fishery'. Danielle Myers could be a business partner of Callahan-Peterson as the edge relationship is 'Beneficial owner'.
+In this subgraph, Morgan Group commands a very high revenue of 291 million with only one business relationship with Jason Cole who is its Beneficial owner. Morgan Group sells fish (smoked or not smoked) products.
 
 Information about the two members:
 
@@ -1288,14 +1312,14 @@ Subgraph 498
 ```{r}
 #| fig-width: 12
 #| fig-asp: 0.618
-m<- 498
+m<- 577
 sub227_nodes_vis <- seafood_nodes_vis %>%  filter(membership==m)
 sub227_edges_vis <- seafood_edges_vis[seafood_edges_vis$from %in% sub227_nodes_vis$id | seafood_edges_vis$to %in% sub227_nodes_vis$id, ]
 
 set.seed(1234)
 visNetwork(sub227_nodes_vis, #%>% filter(betweenness_centrality >= 20),
            sub227_edges_vis,
-           main = "Network graph of subgraph 498 with diameter = 2",
+           main = "Network graph of subgraph 577 with diameter = 2",
            height = "500px", width = "100%") %>%
   visIgraphLayout(layout = "layout_with_fr") %>%
   visEdges(smooth = list(enables = TRUE,
@@ -1310,7 +1334,7 @@ visNetwork(sub227_nodes_vis, #%>% filter(betweenness_centrality >= 20),
   visLayout(randomSeed = 123)
 ```
 
-In this subgraph, the revenue of Sea Star LLC shipping is 1,507,513 and it has 10 beneficial owners with no other revenues reported. The product service offered by this company is 'Operation of fish hatcheries and preserves'. Interestingly, Matthew Williams is a company contacts of two companies offering unknown products services and also beneficial owners to two other companies; one of it is 'Wave Warriors S.A. de C.V. Express' company which has the highest betweenness score in the entire dataset. Its product services is "Beer, ale, and malt liquors.."
+In this subgraph, the total revenue of the three individuals is 131 million recorded under the name of 'WIlson LLC'. The product service offered by this company is 'Fish, dried but not smoked'. 'Wilson LLC' seems like a company than company contacts or beneficial owner.
 
 Information about the members:
 
@@ -1331,7 +1355,7 @@ country_risk_nodes <- seafood_nodes_vis %>%
   group_by(membership, network_diameter) %>%
   summarize(
     total_revenue_subgraph = as.numeric(sum(revenue_sum, na.rm=TRUE)),
-    no_of_companies_subgraph = as.numeric(sum(str_count(type_concat, "Company") * !grepl("Company Contacts", type_concat))),
+    no_of_companies_subgraph = sum(str_count(type_concat, "\\bCompany\\b")) - sum(str_count(type_concat, "\\bCompany Contacts\\b")),
   no_of_countries_subgraph = n_distinct(na.omit(unlist(strsplit(country_concat, ", "))))) %>%
   ungroup() %>%
 mutate(
@@ -1339,7 +1363,7 @@ mutate(
   arrange(desc(revenue_per_company))
 ```
 
-We will use a bar chart to visualise the count of countries
+We will use a bar chart to visualise the count of countries in the business relationship.
 
 ```{r}
 #| fig-width: 12
@@ -1369,7 +1393,7 @@ Subgraph 85 is associated with 4 different countries.
 
 There are 15 other subgraphs that are associated with 3 different countries.
 
-Subgraph 6 is very special so let us zoom in on its network graph.
+Subgraph 6 is very special because of the relationship between more than 10 countries so let us zoom in on its network graph.
 
 ```{r}
 #| fig-width: 12
@@ -1423,7 +1447,7 @@ prll <- seafood_nodes_vis %>%
   group_by(membership, network_diameter) %>%
   summarize(
     total_revenue_subgraph = as.numeric(sum(revenue_sum, na.rm=TRUE)),
-    no_of_companies_subgraph = as.numeric(sum(str_count(type_concat, "Company") * !grepl("Company Contacts", type_concat))),
+    no_of_companies_subgraph = sum(str_count(type_concat, "\\bCompany\\b")) - sum(str_count(type_concat, "\\bCompany Contacts\\b")),
   no_of_countries_subgraph = n_distinct(na.omit(unlist(strsplit(country_concat, ", ")))),
   no_of_beneficial_owners_subgraph = sum(str_count(type_concat, "Beneficial Owner|Beneficial Owner, Company Contacts")),
   top_betweenness = max(betweenness_centrality)) %>%

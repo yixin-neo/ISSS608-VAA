@@ -828,6 +828,12 @@ DT::datatable(seafood_nodes,options = list(iDisplayLength = 5))
 
 # 4 The analysis (Seafood)
 
+In this section, we will detect anomalies in three aspects:
+
+1.  Identifying subgraphs (a group of business relationships) with high network diameter
+2.  Identifying subgraphs with high average revenue
+3.  Identifying subgraphs associated with a lot of countries
+
 ## Seafood_graph tbl object
 
 The `seafood_nodes` and `seafood_edges` dfs will be the main files used to create a tbl graph object. The `tbl_graph` function from `tidygraph` library will be used.
@@ -914,11 +920,15 @@ visNetwork(seafood_nodes_vis %>% filter(betweenness_centrality >= 15),
 
 All the entities shown above have relatively higher betweenness scores than other entities in the entire network. Hovering the mouse over each node and edge will reveal attributes like betweenness scores, country associated each node with and its revenue.
 
-At a glance, there are two subgraphs (bottom) with 5 high betweenness nodes connected to one another, forming a larger than normal network. We are interested in subgraphs with longer network diameter like these because they represent more complex business relationship. For instance, in such complex subgraphs, entities involved are 'company', 'business owners' and 'company contacts' and there are also more than 1 company in the network. From literature review, having entities associated to two or more companies (conflict of interests could occur) could suggests transshipment activities. This could allows us to investigate the entities in the complex subgraphs to check for any IUU crime.
+At a glance, there are two subgraphs (bottom) with 5 high betweenness nodes connected to one another, forming a larger than normal network. We are interested in subgraphs like these with longer network diameter because they represent more complex business relationship. For instance, in such complex subgraphs, entities involved are 'company', 'business owners' and 'company contacts' and there are also more than 1 company in the network. From literature review, having entities associated to two or more companies (conflict of interests could occur) could suggests transshipment activities. This could allows us to investigate the entities in the complex subgraphs to check for any IUU crime.
 
-Instead of having to 'eye-ball' each of 609 the seafood network subgraphs to identify those with longer network diameter, we can extract edge data of each subgraph (using `membership` column) and compile the network diameter of each subgraph into a dataframe.
+## 4.1 High NETWORK RISK
 
-## Calculate network diameter
+In this section, instead of having to 'eye-ball' each of the seafood network subgraphs above, to identify those with longer network diameter, we can extract edge data of each subgraph (using `membership` column) and compile the network diameter of each subgraph into a dataframe.
+
+### 4.1.1 Calculate network diameter of each subgraph
+
+In the code chunk below , the `graph_diameter()` function is used .
 
 ```{r}
 # Get unique membership values
@@ -1029,9 +1039,7 @@ crosstalk::bscols(gg,
                   widths=5)
 ```
 
-There are about 32 subgraphs with network diameter of 4 and above. We can investigate these subgraphs closer.
-
-## 4.1 Subgraphs with high NETWORK RISK
+From the plot above, there are about 32 subgraphs with network diameter of 4 and above. We should investigate these subgraphs closer.
 
 First, let us ingest the network diameter of each subgraph into the main `seafood_nodes_vis` dataframe by performing a left join with `diameter_df` using `membership` columns in both df as join key.
 
@@ -1042,6 +1050,8 @@ seafood_nodes_vis<- seafood_nodes_vis %>%
   arrange(desc(network_diameter), desc(betweenness_centrality)) %>% 
   select(id,membership,network_diameter,betweenness_centrality,closeness_centrality,eigenvector_centrality,revenue_sum,country_qty,type_qty,label_qty,country_concat,type_concat,label_concat,product_services_concat,group,title)
 ```
+
+### 4.1.2 Betweenness scores across network diameter
 
 Is there a difference in the betweenness scores across network diameter?
 
@@ -1078,7 +1088,7 @@ There are only 2 subgraphs with network diameter of 6. They are subgraphs 112 an
 DT::datatable(network_risk_nodes_vis ,options = list(iDisplayLength = 5))
 ```
 
-**Visualisation of the two subgraphs with highest network diameter.**
+**4.1.3 Interactive netowrk graph of top 2 highest network diameter**
 
 Filter for all the nodes and edges in subgraph 112 from `seafood_nodes_vis` dataframe.
 
@@ -1196,6 +1206,8 @@ ggraph(hive227, 'hive', axis = type_concat) +
 DT::datatable(seafood_nodes_vis %>%  filter(membership==m) , options = list(iDisplayLength = 5))
 ```
 
+So far we have only explored the top 2 subgraphs with diameter. There are several other subgraphs with diameter of 4 that can be explored.
+
 ## 4.2 High FINANCIAL RISK
 
 In this section, we will look out for subgraphs with exceptionally high total revenue. As we expect bigger subgraphs to have higher revenue, thus the total revenue will be divided by the number of companies in the subgraph for fair comparison.
@@ -1261,7 +1273,7 @@ ggplotly(ggplot(data = financial_risk_nodes %>%
     #labels = trans_format("log10", math_format(10^.x))))
 ```
 
-Hovering the mouse above the points will reveal their subgraph membership numbers. Surprisely, there are more smaller network diameter groups with higher revenue per company.
+Hovering the mouse above the points will reveal their subgraph membership numbers. The median of revenue per company is highest for subgraphs with higher diameter. Surprisely, there are also several revenue outliers in the smaller network diameter groups.
 
 The top 10 subgraphs with the highest total revenue per company are listed below. The network diameters are mainly 1 or 2.
 
@@ -1348,7 +1360,7 @@ In this section, we will focus on subgraphs with business relationship involving
 
 According to literature reviews, a method of IUU is via "Flags of convenience" where vessels fly different country flags at different location to avoid inspections and intersections by local governing bodies.
 
-The code chunk below is a continuation from section 4.3. It create a new column `no_of_countries_subgraph` where it computes the number of distinct values of countries present in each subgraph.
+The code chunk below is a continuation from section 4.2 previously. It creates a new column `no_of_countries_subgraph` where it computes the number of distinct values of countries present in each subgraph.
 
 ```{r}
 country_risk_nodes <- seafood_nodes_vis %>%
@@ -1420,7 +1432,9 @@ visNetwork(sub227_nodes_vis, #%>% filter(betweenness_centrality >= 20),
   visLayout(randomSeed = 123)
 ```
 
-In the above subgraph, there are two companies 'Aqua Aura SE Marine life' registered in countries (*Mawazam, Rio Isla, Icarnia, Oceanus, Nalakond, Coralmarica, Alverossia, Isliandor, Talandria*) and ' BlueWater Bistro GmbH Industrial' company registered in (*Marebak*).
+In the above subgraph, the main company 'Aqua Aura SE Marine life' is registered in many countries like *Mawazam, Rio Isla, Icarnia, Oceanus, Nalakond, Coralmarica, Alverossia, Isliandor, Talandria*.
+
+The second company ' BlueWater Bistro GmbH Industrial' company registered only in *Marebak*.
 
 Information about its members:
 
@@ -1428,9 +1442,11 @@ Information about its members:
 DT::datatable(seafood_nodes_vis %>%  filter(membership==m) , options = list(iDisplayLength = 5))
 ```
 
+We have only explored the top 2 subgraphs with highest revenue. Many other subgraphs like 316, 173 and 193 could be investigated for their high revenue.
+
 ## 4.4 Finding similar subgraphs (groups)
 
-In this section, we will use parallel coordinate plot to visualise and analyse multivariate, numerical data we have of each subgraphs. We will be comparing multiple variables
+In this section, we will use parallel coordinate plot to visualise and analyse multivariate, numerical data we have of each subgraphs. We hope to find patterns between different subgraphs. We will be comparing multiple variables
 
 -   `no_of_companies_subgraph` : the number of distinct companies in the subgraph
 

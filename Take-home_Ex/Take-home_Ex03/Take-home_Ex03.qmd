@@ -830,9 +830,9 @@ DT::datatable(seafood_nodes,options = list(iDisplayLength = 5))
 
 In this section, we will detect anomalies in three aspects:
 
-1.  Identifying subgraphs (a group of business relationships) with high network diameter
-2.  Identifying subgraphs with high average revenue
-3.  Identifying subgraphs associated with a lot of countries
+1.  Identifying subgraphs (a group of business relationships) with **high network diameter**. Subgraphs with higher network diameter would contain more companies and through such graphs, we can identify beneficial owners who owns more than 1 company.
+2.  Identifying subgraphs with **high average revenue**.
+3.  Identifying subgraphs associated with **a lot of countries**.
 
 ## Seafood_graph tbl object
 
@@ -1088,7 +1088,7 @@ There are only 2 subgraphs with network diameter of 6. They are subgraphs 112 an
 DT::datatable(network_risk_nodes_vis ,options = list(iDisplayLength = 5))
 ```
 
-**4.1.3 Interactive netowrk graph of top 2 highest network diameter**
+### **4.1.3 Interactive netowrk graph of top 2 highest network diameter**
 
 Filter for all the nodes and edges in subgraph 112 from `seafood_nodes_vis` dataframe.
 
@@ -1208,6 +1208,72 @@ DT::datatable(seafood_nodes_vis %>%  filter(membership==m) , options = list(iDis
 
 So far we have only explored the top 2 subgraphs with diameter. There are several other subgraphs with diameter of 4 that can be explored.
 
+### 4.1.4 Find business owners who owns relatively more companies
+
+If we would like to identify high diameter subgraphs that contains individual who own more than 1 company, we can simply do a group by `to` column of the `seafood_edgess_vis` dataframe and aggregate to find such people.
+
+```{r}
+big_players <- seafood_edges_vis %>% 
+  group_by(to) %>% 
+  mutate(no_of_companies_owned = n()) %>% 
+  ungroup() %>% 
+  select(from,to,type,no_of_companies_owned) %>% 
+  arrange(desc(no_of_companies_owned))
+
+```
+
+Displaying the individuals who own more than one company in the datatable below. We can see two individual owners who owns three companies, and they are Adam Johnson and James Brown.
+
+```{r}
+d <- highlight_key(big_players) 
+
+
+p<-ggplot(data=big_players, 
+       aes(x=as.factor(no_of_companies_owned))) +
+  geom_bar(fill = 'lightblue') +
+  coord_flip() +
+  theme_minimal() + 
+    labs(title= 'Distribution of \nNumber of companies owned \n by each Business Owner',
+         x= 'Number of companies owned')
+
+gg <- highlight(ggplotly(p),        
+                "plotly_selected")  
+
+crosstalk::bscols(gg,
+                  DT::datatable(d,options = list(iDisplayLength = 5)),
+                  widths=5)
+```
+
+Cross referencing with the seafood_nodes interative datatable in Section 4 above, if we search for "James Brown', we would see that he belongs to subgraph 291 and has a betweenness score of 119, which is rather high. Let us plot the network graph that is related to James brown.
+
+```{r}
+#| fig-width: 12
+#| fig-asp: 0.618
+m<- 291
+sub227_nodes_vis <- seafood_nodes_vis %>%  filter(membership==m)
+sub227_edges_vis <- seafood_edges_vis[seafood_edges_vis$from %in% sub227_nodes_vis$id | seafood_edges_vis$to %in% sub227_nodes_vis$id, ]
+
+
+set.seed(1234)
+visNetwork(sub227_nodes_vis, #%>% filter(betweenness_centrality >= 20),
+           sub227_edges_vis,
+           main = "Network graph of subgraph 291 with diameter = 4",
+           height = "500px", width = "100%") %>%
+  visIgraphLayout(layout = "layout_with_fr") %>%
+  visEdges(smooth = list(enables = TRUE,
+                         type= 'straightCross'),
+           shadow = FALSE,
+           dash = FALSE) %>% 
+  visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T),
+             nodesIdSelection = TRUE,
+             selectedBy = "group") %>%
+  visInteraction(hideEdgesOnDrag = TRUE) %>% 
+  visLegend() %>%
+  visLayout(randomSeed = 123)
+```
+
+The network diameter of this graph might not be the highest (of 6) however, it contains James Brown whom owns the most number of companies in the seafood dataset. There is also one other individual 'Adam Johnson' who is worth investigating.
+
 ## 4.2 High FINANCIAL RISK
 
 In this section, we will look out for subgraphs with exceptionally high total revenue. As we expect bigger subgraphs to have higher revenue, thus the total revenue will be divided by the number of companies in the subgraph for fair comparison.
@@ -1279,12 +1345,12 @@ The top 10 subgraphs with the highest total revenue per company are listed below
 
 ```{r}
 #| echo: false
-financial_risk_nodes %>%  slice(1:10) %>%  select(revenue_per_company, membership, network_diameter, no_of_companies_subgraph) %>%  kable()
+financial_risk_nodes %>%  slice(1:10) %>%  select(membership, revenue_per_company, network_diameter, no_of_companies_subgraph) %>%  kable()
 ```
 
 **Visualising the top 2 subgraphs in terms of revenue per company.**
 
-Subgraph 193
+Subgraph 396
 
 ```{r}
 #| fig-width: 12
@@ -1319,7 +1385,7 @@ Information about the two members:
 DT::datatable(seafood_nodes_vis %>%  filter(membership==m))
 ```
 
-Subgraph 498
+Subgraph 577
 
 ```{r}
 #| fig-width: 12
@@ -1372,7 +1438,8 @@ country_risk_nodes <- seafood_nodes_vis %>%
   ungroup() %>%
 mutate(
     revenue_per_company = ifelse(no_of_companies_subgraph == 0, total_revenue_subgraph, round(total_revenue_subgraph / no_of_companies_subgraph))) %>% 
-  arrange(desc(revenue_per_company))
+  arrange(desc(no_of_countries_subgraph)) %>% 
+  select(membership, no_of_countries_subgraph, network_diameter,total_revenue_subgraph, no_of_companies_subgraph, revenue_per_company )
 ```
 
 We will use a bar chart to visualise the count of countries in the business relationship.
@@ -1380,7 +1447,7 @@ We will use a bar chart to visualise the count of countries in the business rela
 ```{r}
 #| fig-width: 12
 #| fig-asp: 0.618
-d <- highlight_key(country_risk_nodes %>% arrange(desc(no_of_countries_subgraph))) 
+d <- highlight_key(country_risk_nodes) 
 
 
 p<-ggplot(data=country_risk_nodes, 
@@ -1435,6 +1502,8 @@ visNetwork(sub227_nodes_vis, #%>% filter(betweenness_centrality >= 20),
 In the above subgraph, the main company 'Aqua Aura SE Marine life' is registered in many countries like *Mawazam, Rio Isla, Icarnia, Oceanus, Nalakond, Coralmarica, Alverossia, Isliandor, Talandria*.
 
 The second company ' BlueWater Bistro GmbH Industrial' company registered only in *Marebak*.
+
+James Martinez is a beneficial owner to two companies in this subgraphs.
 
 Information about its members:
 

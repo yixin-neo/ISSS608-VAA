@@ -592,7 +592,7 @@
     "href": "Take-home_Ex/Take-home_Ex03/Take-home_Ex03.html",
     "title": "Take-home_Ex03",
     "section": "",
-    "text": "Use visual analytics to understand patterns of groups in the knowledge graph and highlight anomalous groups.\n\nUse visual analytics to identify anomalies in the business groups present in the knowledge graph. Limit your response to 400 words and 5 images.\nDevelop a visual analytics process to find similar businesses and group them. This analysis should focus on a business’s most important features and present those features clearly to the user. Limit your response to 400 words and 5 images.\nMeasure similarity of businesses that you group in the previous question. Express confidence in your groupings visually. Limit your response to 400 words and 4 images.\nBased on your visualizations, provide evidence for or against the case that anomalous companies are involved in illegal fishing. Which business groups should FishEye investigate further? Limit your response to 600 words and 6 images.\nReflection: What was the most difficult aspect of working with this knowledge graph? Did you have the tools and resources you needed to complete the challenge? What additional resources would have helped you? Limit your response to 300 words"
+    "text": "In this challenge, I will attempt to do the following:\n\nUse visual analytics to identify anomalies in the business groups present in the knowledge graph provided by FishEye Organisation.\nBased on the visualizations on Network Risk, Financial Risk and Country Risk, suggest some anomalous companies that could be involved in illegal fishing."
   },
   {
     "objectID": "Take-home_Ex/Take-home_Ex03/Take-home_Ex03.html#data-dictionary",

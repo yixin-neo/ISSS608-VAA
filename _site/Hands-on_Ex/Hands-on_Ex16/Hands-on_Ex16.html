@@ -450,8 +450,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#choropleth-mapping-geospatial-data-using-tmap" id="toc-choropleth-mapping-geospatial-data-using-tmap" class="nav-link" data-scroll-target="#choropleth-mapping-geospatial-data-using-tmap"><strong>18.4 Choropleth Mapping Geospatial Data Using <em>tmap</em></strong></a>
   <ul class="collapse">
   <li><a href="#plotting-a-choropleth-map-quickly-by-using-qtm" id="toc-plotting-a-choropleth-map-quickly-by-using-qtm" class="nav-link" data-scroll-target="#plotting-a-choropleth-map-quickly-by-using-qtm"><strong>18.4.1 Plotting a choropleth map quickly by using <em>qtm()</em></strong></a></li>
-  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1"></a></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
   <li><a href="#data-classification-methods-of-tmap" id="toc-data-classification-methods-of-tmap" class="nav-link" data-scroll-target="#data-classification-methods-of-tmap"><strong>18.4.3 Data classification methods of tmap</strong></a></li>
+  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1"></a></li>
+  <li><a href="#map-layouts" id="toc-map-layouts" class="nav-link" data-scroll-target="#map-layouts"><strong>21.4.5 Map Layouts</strong></a></li>
+  <li><a href="#drawing-small-multiple-choropleth-maps" id="toc-drawing-small-multiple-choropleth-maps" class="nav-link" data-scroll-target="#drawing-small-multiple-choropleth-maps"><strong>21.4.6 Drawing Small Multiple Choropleth Maps</strong></a></li>
+  <li><a href="#mappping-spatial-object-meeting-a-selection-criterion" id="toc-mappping-spatial-object-meeting-a-selection-criterion" class="nav-link" data-scroll-target="#mappping-spatial-object-meeting-a-selection-criterion"><strong>21.4.7 Mappping Spatial Object Meeting a Selection Criterion</strong></a></li>
   </ul></li>
   <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference"><strong>18.5 Reference</strong></a>
   <ul class="collapse">
@@ -491,7 +495,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">June 10, 2023</p>
+      <p class="date-modified">June 17, 2023</p>
     </div>
   </div>
     
@@ -507,12 +511,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="getting-started" class="level2">
 <h2 class="anchored" data-anchor-id="getting-started"><strong>18.2 Getting Started</strong></h2>
-<p>In this hands-on exercise, the key R package use is <a href="https://cran.r-project.org/web/packages/tmap/"><strong>tmap</strong></a> package in R. Beside <strong>tmap</strong> package, four other R packages will be used. They are:</p>
+<p>In this hands-on exercise, the key R package use is <a href="https://cran.r-project.org/web/packages/tmap/"><strong>tmap</strong></a> package in R. Tmaps stands for thematic maps. Beside <strong>tmap</strong> package, four other R packages will be used. They are:</p>
 <ul>
 <li><p><a href="https://readr.tidyverse.org/"><strong>readr</strong></a> for importing delimited text file,</p></li>
 <li><p><a href="https://tidyr.tidyverse.org/"><strong>tidyr</strong></a> for tidying data,</p></li>
 <li><p><a href="https://dplyr.tidyverse.org/"><strong>dplyr</strong></a> for wrangling data and</p></li>
-<li><p><a href="https://cran.r-project.org/web/packages/sf/"><strong>sf</strong></a> for handling geospatial data.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/sf/"><strong>sf</strong></a> for handling geospatial data. Another <a href="https://r-spatial.github.io/sf/">link</a></p></li>
 </ul>
 <p>Among the four packages, <strong>readr</strong>, <strong>tidyr</strong> and <strong>dplyr</strong> are part of <strong>tidyverse</strong> package.</p>
 <p>The code chunk below will be used to install and load these packages in RStudio.</p>
@@ -527,11 +531,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Two data set will be used to create the choropleth map. They are:</p>
 <ul>
 <li><p>Master Plan 2014 Subzone Boundary (Web) (i.e.&nbsp;<code>MP14_SUBZONE_WEB_PL</code>) in <strong>ESRI shapefile format</strong>. It can be downloaded at <a href="https://data.gov.sg/">data.gov.sg</a> This is a geospatial data. It consists of the geographical boundary of Singapore at the planning subzone level. The data is based on URA Master Plan 2014.</p></li>
-<li><p>Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2011-2020 in csv format (i.e.&nbsp;<code>respopagesextod2011to2020.csv</code>). This is an <strong>aspatial data file</strong>. It can be downloaded at <a href="https://www.singstat.gov.sg/">Department of Statistics, Singapore</a> Although it does not contain any coordinates values, but it's <code>PA</code> and <code>SZ</code> (FK) fields can be used as unique identifiers to geocode to <code>MP14_SUBZONE_WEB_PL</code> shapefile (<code>SUBZONE_N</code> as join key). Aim to get <code>geometry</code> column from shapefile.</p></li>
+<li><p>Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2011-2020 in csv format (i.e.&nbsp;<code>respopagesextod2011to2020.csv</code>). This is an <strong>aspatial data file</strong>. It can be downloaded at <a href="https://www.singstat.gov.sg/">Department of Statistics, Singapore</a> Although it does not contain any coordinates values, but it’s <code>PA</code> and <code>SZ</code> (FK) fields can be used as unique identifiers to geocode to <code>MP14_SUBZONE_WEB_PL</code> shapefile (<code>SUBZONE_N</code> as join key). Aim to get <code>geometry</code> column from shapefile.</p></li>
 </ul>
 <section id="importing-geospatial-data-into-r" class="level3">
 <h3 class="anchored" data-anchor-id="importing-geospatial-data-into-r"><strong>18.3.2 Importing Geospatial Data into R</strong></h3>
 <p>The code chunk below uses the <em>st_read()</em> function of <strong>sf</strong> package to import <code>MP14_SUBZONE_WEB_PL</code> shapefile into R as a simple feature data frame called <code>mpsz</code>.</p>
+<p><code>dsn</code> : destination folder (A collection of files that <code>sf</code> function needs to read geospatial stuff)</p>
+<p><code>layer</code>: data file (do not need to state the extension) sf will automatically use the appropriate drivers. See below. For instance, sf will know that the projected crs is SVY21.</p>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
@@ -547,6 +553,20 @@ Geometry type: MULTIPOLYGON
 Dimension:     XY
 Bounding box:  xmin: 2667.538 ymin: 15748.72 xmax: 56396.44 ymax: 50256.33
 Projected CRS: SVY21</code></pre>
+</div>
+</div>
+<p>mpsz is a sf object but in a dataframe format. It has a <code>geometry</code> field at the back, it contains coordinate pairs of polygons. Each value of <code>geometry</code> column is a list. We can use tidyverse functions to manipulate mpsz.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>During joins, to retain geospatial properties, make sure the sf object in the left table of a left join.</p>
 </div>
 </div>
 <div class="cell">
@@ -900,15 +920,16 @@ $ Time &lt;dbl&gt; 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2
 <span id="cb15-5"><a href="#cb15-5"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span>  <span class="co">#&lt;&lt;&lt; ungroup to release the grouping and continue with other wrangling</span></span>
 <span id="cb15-6"><a href="#cb15-6"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> AG,</span>
 <span id="cb15-7"><a href="#cb15-7"></a>              <span class="at">values_from =</span> POP) <span class="sc">%&gt;%</span> </span>
-<span id="cb15-8"><a href="#cb15-8"></a>  <span class="fu">mutate</span>(<span class="at">YOUNG =</span> <span class="fu">rowSums</span>(.[<span class="dv">3</span><span class="sc">:</span><span class="dv">5</span>]) <span class="sc">+</span> <span class="fu">rowSums</span>(.[<span class="dv">6</span>])) <span class="sc">%&gt;%</span> </span>
-<span id="cb15-9"><a href="#cb15-9"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">ECONOMY ACTIVE</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">rowSums</span>(.[<span class="dv">7</span><span class="sc">:</span><span class="dv">15</span>])) <span class="sc">%&gt;%</span> </span>
-<span id="cb15-10"><a href="#cb15-10"></a>  <span class="fu">mutate</span>(<span class="at">AGED =</span> <span class="fu">rowSums</span>(.[<span class="dv">16</span><span class="sc">:</span><span class="dv">21</span>])) <span class="sc">%&gt;%</span> </span>
-<span id="cb15-11"><a href="#cb15-11"></a>  <span class="fu">mutate</span>(<span class="at">TOTAL =</span> <span class="fu">rowSums</span>(.[<span class="dv">3</span><span class="sc">:</span><span class="dv">21</span>])) <span class="sc">%&gt;%</span> </span>
-<span id="cb15-12"><a href="#cb15-12"></a>  <span class="fu">mutate</span>(<span class="at">DEPENDENCY =</span> (YOUNG <span class="sc">+</span> AGED) <span class="sc">/</span> <span class="st">`</span><span class="at">ECONOMY ACTIVE</span><span class="st">`</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb15-13"><a href="#cb15-13"></a>  <span class="fu">select</span>(PA, SZ, YOUNG, </span>
-<span id="cb15-14"><a href="#cb15-14"></a>         <span class="st">`</span><span class="at">ECONOMY ACTIVE</span><span class="st">`</span>, AGED,</span>
-<span id="cb15-15"><a href="#cb15-15"></a>         TOTAL, DEPENDENCY)</span>
-<span id="cb15-16"><a href="#cb15-16"></a> <span class="fu">kable</span>(<span class="fu">head</span>(popdata2020,<span class="dv">5</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb15-8"><a href="#cb15-8"></a>  <span class="fu">mutate</span>(<span class="at">YOUNG =</span> <span class="fu">rowSums</span>(.[<span class="dv">3</span><span class="sc">:</span><span class="dv">6</span>]) <span class="sc">+</span> <span class="fu">rowSums</span>(.[<span class="dv">12</span>])) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-9"><a href="#cb15-9"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">ECONOMY ACTIVE</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">rowSums</span>(.[<span class="dv">7</span><span class="sc">:</span><span class="dv">11</span>]) <span class="sc">+</span></span>
+<span id="cb15-10"><a href="#cb15-10"></a>           <span class="fu">rowSums</span>(.[<span class="dv">13</span><span class="sc">:</span><span class="dv">15</span>])) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-11"><a href="#cb15-11"></a>  <span class="fu">mutate</span>(<span class="at">AGED =</span> <span class="fu">rowSums</span>(.[<span class="dv">16</span><span class="sc">:</span><span class="dv">21</span>])) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-12"><a href="#cb15-12"></a>  <span class="fu">mutate</span>(<span class="at">TOTAL =</span> <span class="fu">rowSums</span>(.[<span class="dv">3</span><span class="sc">:</span><span class="dv">21</span>])) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-13"><a href="#cb15-13"></a>  <span class="fu">mutate</span>(<span class="at">DEPENDENCY =</span> (YOUNG <span class="sc">+</span> AGED) <span class="sc">/</span> <span class="st">`</span><span class="at">ECONOMY ACTIVE</span><span class="st">`</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-14"><a href="#cb15-14"></a>  <span class="fu">select</span>(PA, SZ, YOUNG, </span>
+<span id="cb15-15"><a href="#cb15-15"></a>         <span class="st">`</span><span class="at">ECONOMY ACTIVE</span><span class="st">`</span>, AGED,</span>
+<span id="cb15-16"><a href="#cb15-16"></a>         TOTAL, DEPENDENCY)</span>
+<span id="cb15-17"><a href="#cb15-17"></a> <span class="fu">kable</span>(<span class="fu">head</span>(popdata2020,<span class="dv">5</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped">
@@ -936,55 +957,52 @@ $ Time &lt;dbl&gt; 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2
 <tr class="odd">
 <td style="text-align: left;">Ang Mo Kio</td>
 <td style="text-align: left;">Ang Mo Kio Town Centre</td>
-<td style="text-align: right;">1060</td>
-<td style="text-align: right;">2990</td>
+<td style="text-align: right;">1440</td>
+<td style="text-align: right;">2610</td>
 <td style="text-align: right;">760</td>
 <td style="text-align: right;">4810</td>
-<td style="text-align: right;">0.6086957</td>
+<td style="text-align: right;">0.8429119</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Ang Mo Kio</td>
 <td style="text-align: left;">Cheng San</td>
-<td style="text-align: right;">4590</td>
-<td style="text-align: right;">17510</td>
+<td style="text-align: right;">6640</td>
+<td style="text-align: right;">15460</td>
 <td style="text-align: right;">6050</td>
 <td style="text-align: right;">28150</td>
-<td style="text-align: right;">0.6076528</td>
+<td style="text-align: right;">0.8208279</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Ang Mo Kio</td>
 <td style="text-align: left;">Chong Boon</td>
-<td style="text-align: right;">4250</td>
-<td style="text-align: right;">15850</td>
+<td style="text-align: right;">6150</td>
+<td style="text-align: right;">13950</td>
 <td style="text-align: right;">6470</td>
 <td style="text-align: right;">26570</td>
-<td style="text-align: right;">0.6763407</td>
+<td style="text-align: right;">0.9046595</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Ang Mo Kio</td>
 <td style="text-align: left;">Kebun Bahru</td>
-<td style="text-align: right;">3820</td>
-<td style="text-align: right;">13810</td>
+<td style="text-align: right;">5540</td>
+<td style="text-align: right;">12090</td>
 <td style="text-align: right;">5120</td>
 <td style="text-align: right;">22750</td>
-<td style="text-align: right;">0.6473570</td>
+<td style="text-align: right;">0.8817204</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Ang Mo Kio</td>
 <td style="text-align: left;">Sembawang Hills</td>
-<td style="text-align: right;">1560</td>
-<td style="text-align: right;">3950</td>
+<td style="text-align: right;">2100</td>
+<td style="text-align: right;">3410</td>
 <td style="text-align: right;">1310</td>
 <td style="text-align: right;">6820</td>
-<td style="text-align: right;">0.7265823</td>
+<td style="text-align: right;">1.0000000</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-</section>
-<section id="section" class="level4">
-<h4 class="anchored" data-anchor-id="section"></h4>
 <p>18.3.4.2 Joining the attribute data and geospatial data</p>
 <p>Before we can perform the georelational join, one extra step is required to convert the values in PA and SZ fields to uppercase. This is because the values of PA and SZ fields are made up of upper- and lowercase. On the other, hand the SUBZONE_N and PLN_AREA_N are in uppercase.</p>
 <div class="cell">
@@ -1058,14 +1076,15 @@ Note
 </section>
 <section id="choropleth-mapping-geospatial-data-using-tmap" class="level2">
 <h2 class="anchored" data-anchor-id="choropleth-mapping-geospatial-data-using-tmap"><strong>18.4 Choropleth Mapping Geospatial Data Using <em>tmap</em></strong></h2>
-<p>Two approaches can be used to prepare thematic map using <em>tmap</em>, they are:</p>
+<p>Actually ggplot2 can help to visualise but it lack mapping features. We could have used ggplot() and geom_sf(). So we use <code>tmap</code> library instead</p>
+<p><strong>Two approaches</strong> can be used to prepare thematic map using <em>tmap</em>, they are:</p>
 <ul>
 <li><p>Plotting a thematic map quickly by using <em>qtm()</em>.</p></li>
-<li><p>Plotting highly customisable thematic map by using tmap elements. (More fine controls)</p></li>
+<li><p>Plotting highly customisable thematic map by using tmap elements. (More fine controls) <code>shape</code>, <code>fill</code>, <code>border</code></p></li>
 </ul>
 <section id="plotting-a-choropleth-map-quickly-by-using-qtm" class="level3">
 <h3 class="anchored" data-anchor-id="plotting-a-choropleth-map-quickly-by-using-qtm"><strong>18.4.1 Plotting a choropleth map quickly by using <em>qtm()</em></strong></h3>
-<p>The easiest and quickest to draw a choropleth map using <strong>tmap</strong> is using <em>qtm()</em>. It is concise and provides a good default visualisation in many cases.</p>
+<p>The easiest and quickest to draw a choropleth map using <strong>tmap</strong> is using <em>qtm()</em>. It is concise and provides a good default visualisation in many cases. qtm() stands for QUICK tmap.</p>
 <p>The code chunk below will draw a cartographic standard choropleth map as shown below.</p>
 <div class="cell">
 <details>
@@ -1091,40 +1110,42 @@ Note
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li><p><em>tmap_mode()</em> with "plot" option is used to produce a static map. For interactive mode, "view" option should be used.</p></li>
+<li><p><em>tmap_mode()</em> with “plot” option is used to produce a static map. For interactive mode, “view” option should be used.</p></li>
 <li><p><em>fill</em> argument is used to map the attribute (i.e.&nbsp;DEPENDENCY)</p></li>
 </ul>
 </div>
 </div>
 </section>
-<section id="section-1" class="level3">
-<h3 class="anchored" data-anchor-id="section-1"></h3>
-<p><strong>18.4.2 Creating a choropleth map by using <em>tmap</em>'s elements</strong></p>
-<p>Despite its usefulness of drawing a choropleth map quickly and easily, the disadvantge of <em>qtm()</em> is that it makes aesthetics of individual layers harder to control. To draw a high quality cartographic choropleth map as shown in the figure below, <strong>tmap</strong>'s drawing elements should be used.</p>
+<section id="section" class="level3">
+<h3 class="anchored" data-anchor-id="section"></h3>
+<p><strong>18.4.2 Creating a choropleth map by using <em>tmap</em>’s elements</strong></p>
+<p>Despite its usefulness of drawing a choropleth map quickly and easily, the disadvantge of <em>qtm()</em> is that it makes aesthetics of individual layers harder to control. To draw a high quality cartographic choropleth map as shown in the figure below, <strong>tmap</strong>’s drawing elements should be used.</p>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020) <span class="sc">+</span></span>
 <span id="cb21-2"><a href="#cb21-2"></a>  <span class="fu">tm_fill</span>(<span class="st">'DEPENDENCY'</span>,</span>
-<span id="cb21-3"><a href="#cb21-3"></a>          <span class="at">style =</span> <span class="st">'quantile'</span>, <span class="co">#&lt;&lt; affect how values of DEPENDENCY is binned</span></span>
-<span id="cb21-4"><a href="#cb21-4"></a>          <span class="at">palette =</span> <span class="st">'Blues'</span>,</span>
-<span id="cb21-5"><a href="#cb21-5"></a>          <span class="at">title =</span> <span class="st">"Dependency ratio"</span>) <span class="sc">+</span></span>
-<span id="cb21-6"><a href="#cb21-6"></a> <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Distribution of Dependency Ratio by planning subzone"</span>,</span>
-<span id="cb21-7"><a href="#cb21-7"></a>           <span class="at">main.title.position =</span> <span class="st">"center"</span>,</span>
-<span id="cb21-8"><a href="#cb21-8"></a>           <span class="at">main.title.size =</span> <span class="fl">1.2</span>,</span>
-<span id="cb21-9"><a href="#cb21-9"></a>           <span class="at">legend.height =</span> <span class="fl">0.45</span>, </span>
-<span id="cb21-10"><a href="#cb21-10"></a>           <span class="at">legend.width =</span> <span class="fl">0.35</span>,</span>
-<span id="cb21-11"><a href="#cb21-11"></a>           <span class="at">frame =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb21-12"><a href="#cb21-12"></a>  </span>
-<span id="cb21-13"><a href="#cb21-13"></a>  <span class="fu">tm_legend</span>(<span class="at">position =</span> <span class="fu">c</span>(<span class="st">'right'</span>,<span class="st">'bottom'</span>),</span>
-<span id="cb21-14"><a href="#cb21-14"></a>            <span class="at">frame=</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb21-15"><a href="#cb21-15"></a></span>
-<span id="cb21-16"><a href="#cb21-16"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span> <span class="co">#&lt;&lt; the outline of each SZ</span></span>
-<span id="cb21-17"><a href="#cb21-17"></a>  <span class="fu">tm_compass</span>(<span class="at">type=</span><span class="st">"8star"</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span> <span class="co">#&lt;&lt; compass</span></span>
-<span id="cb21-18"><a href="#cb21-18"></a>  <span class="fu">tm_scale_bar</span>() <span class="sc">+</span> <span class="co">#&lt;&lt; the BW scale bar</span></span>
-<span id="cb21-19"><a href="#cb21-19"></a>  <span class="fu">tm_grid</span>(<span class="at">alpha =</span><span class="fl">0.2</span>) <span class="sc">+</span> <span class="co">#&lt;&lt; the plot grid lines</span></span>
-<span id="cb21-20"><a href="#cb21-20"></a>  <span class="fu">tm_credits</span>(<span class="st">"Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)</span><span class="sc">\n</span><span class="st"> and Population data from Department of Statistics DOS"</span>, </span>
-<span id="cb21-21"><a href="#cb21-21"></a>             <span class="at">position =</span> <span class="fu">c</span>(<span class="st">"left"</span>, <span class="st">"bottom"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb21-3"><a href="#cb21-3"></a>          <span class="co">#n = 6, # n defines the number of classes of below</span></span>
+<span id="cb21-4"><a href="#cb21-4"></a>          <span class="at">style =</span> <span class="st">'quantile'</span>, <span class="co">#&lt;&lt; affect how values of DEPENDENCY is binned, a classification method</span></span>
+<span id="cb21-5"><a href="#cb21-5"></a>          <span class="at">palette =</span> <span class="st">'Blues'</span>,</span>
+<span id="cb21-6"><a href="#cb21-6"></a>          <span class="at">title =</span> <span class="st">"Dependency ratio"</span>) <span class="sc">+</span></span>
+<span id="cb21-7"><a href="#cb21-7"></a> <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Distribution of Dependency Ratio by planning subzone"</span>,</span>
+<span id="cb21-8"><a href="#cb21-8"></a>           <span class="at">main.title.position =</span> <span class="st">"center"</span>,</span>
+<span id="cb21-9"><a href="#cb21-9"></a>           <span class="at">main.title.size =</span> <span class="fl">1.2</span>,</span>
+<span id="cb21-10"><a href="#cb21-10"></a>           <span class="at">legend.height =</span> <span class="fl">0.45</span>, </span>
+<span id="cb21-11"><a href="#cb21-11"></a>           <span class="at">legend.width =</span> <span class="fl">0.35</span>,</span>
+<span id="cb21-12"><a href="#cb21-12"></a>           <span class="at">frame =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb21-13"><a href="#cb21-13"></a>  </span>
+<span id="cb21-14"><a href="#cb21-14"></a>  <span class="fu">tm_legend</span>(<span class="at">position =</span> <span class="fu">c</span>(<span class="st">'right'</span>,<span class="st">'bottom'</span>),</span>
+<span id="cb21-15"><a href="#cb21-15"></a>            <span class="at">outside =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb21-16"><a href="#cb21-16"></a>            <span class="at">frame=</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb21-17"><a href="#cb21-17"></a></span>
+<span id="cb21-18"><a href="#cb21-18"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span> <span class="co">#&lt;&lt; the outline of each SZ</span></span>
+<span id="cb21-19"><a href="#cb21-19"></a>  <span class="fu">tm_compass</span>(<span class="at">type=</span><span class="st">"8star"</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span> <span class="co">#&lt;&lt; compass</span></span>
+<span id="cb21-20"><a href="#cb21-20"></a>  <span class="fu">tm_scale_bar</span>() <span class="sc">+</span> <span class="co">#&lt;&lt; the BW scale bar</span></span>
+<span id="cb21-21"><a href="#cb21-21"></a>  <span class="fu">tm_grid</span>(<span class="at">alpha =</span><span class="fl">0.2</span>) <span class="sc">+</span> <span class="co">#&lt;&lt; the plot grid lines</span></span>
+<span id="cb21-22"><a href="#cb21-22"></a>  <span class="fu">tm_credits</span>(<span class="st">"Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)</span><span class="sc">\n</span><span class="st"> and Population data from Department of Statistics DOS"</span>, </span>
+<span id="cb21-23"><a href="#cb21-23"></a>             <span class="at">position =</span> <span class="fu">c</span>(<span class="st">"left"</span>, <span class="st">"bottom"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="Hands-on_Ex16_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
@@ -1139,7 +1160,7 @@ Note
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>        0%        20%        40%        60%        80%       100% 
- 0.0000000  0.5000000  0.5514706  0.5888009  0.6576000 19.0000000 </code></pre>
+ 0.1111111  0.6919431  0.7655602  0.8208279  0.8988166 19.0000000 </code></pre>
 </div>
 </div>
 <div class="cell">
@@ -1185,7 +1206,7 @@ Note
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li><p>The default interval binning used to draw the choropleth map is called "pretty". A detailed discussion of the data classification methods supported by <strong>tmap</strong> will be provided in sub-section 4.3.</p></li>
+<li><p>The default interval binning used to draw the choropleth map is called “pretty”. A detailed discussion of the data classification methods supported by <strong>tmap</strong> will be provided in sub-section 4.3.</p></li>
 <li><p>The default colour scheme used is <code>YlOrRd</code> of ColorBrewer. You will learn more about the color scheme in sub-section 4.4.</p></li>
 <li><p>By default, Missing value will be shaded in grey.</p></li>
 </ul>
@@ -1227,7 +1248,7 @@ Note
 <ul>
 <li><p><em>col</em> = border colour,</p></li>
 <li><p><em>lwd</em> = border line width. The default is 1, and</p></li>
-<li><p><em>lty</em> = border line type. The default is "solid".</p></li>
+<li><p><em>lty</em> = border line type. The default is “solid”.</p></li>
 </ul>
 </section>
 </section>
@@ -1236,8 +1257,8 @@ Note
 <p>Most choropleth maps employ some methods of data classification. The point of classification is to take a large number of observations and group them into data ranges or classes.</p>
 <p><strong>tmap</strong> provides a total ten data classification methods, namely: <em>fixed</em>, <em>sd</em>, <em>equal</em>, <em>pretty</em> (default), <em>quantile</em>, <em>kmeans</em>, <em>hclust</em>, <em>bclust</em>, <em>fisher</em>, and <em>jenks</em>.</p>
 <p>To define a data classification method, the <em>style</em> argument of <em>tm_fill()</em> or <em>tm_polygons()</em> will be used.</p>
-<section id="plotting-choropleth-maps-with-built-in-classification-methods" class="level4">
-<h4 class="anchored" data-anchor-id="plotting-choropleth-maps-with-built-in-classification-methods">21.4.3.1 Plotting choropleth maps with built-in classification methods</h4>
+<section id="plotting-choropleth-maps-with-built-in-classificationmethods" class="level4">
+<h4 class="anchored" data-anchor-id="plotting-choropleth-maps-with-built-in-classificationmethods">21.4.3.1 Plotting choropleth maps with built-in <a href="https://www.rdocumentation.org/packages/classInt/versions/0.4-9/topics/classIntervals">classification</a>methods</h4>
 <p>The code chunk below shows a quantile data classification that used 5 classes.</p>
 <div class="cell">
 <details>
@@ -1274,7 +1295,7 @@ Note
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
- 0.0000  0.5240  0.5691  0.6495  0.6451 19.0000      92 </code></pre>
+ 0.1111  0.7147  0.7866  0.8585  0.8763 19.0000      92 </code></pre>
 </div>
 </div>
 <div class="cell">
@@ -1286,7 +1307,7 @@ Note
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>        0%        25%        50%        75%       100% 
- 0.0000000  0.5240379  0.5690842  0.6450497 19.0000000 </code></pre>
+ 0.1111111  0.7147312  0.7866515  0.8763293 19.0000000 </code></pre>
 </div>
 </div>
 <div class="cell">
@@ -1348,6 +1369,26 @@ Note
 <p><img src="Hands-on_Ex16_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p><strong>Types of classification methods</strong></p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The “fixed” style permits a “classIntervals” object to be specified with given breaks, set in the <strong><code>fixedBreaks</code></strong> argument; the length of <strong><code>fixedBreaks</code></strong> should be n+1; this style can be used to insert rounded break values.</p>
+<p>The “sd” style chooses breaks based on <strong><code>pretty</code></strong> of the centred and scaled variables, and may have a number of classes different from n; the returned <strong><code>par=</code></strong> includes the centre and scale values.</p>
+<p>The “equal” style divides the range of the variable into n parts.</p>
+<p>The “pretty” style chooses a number of breaks not necessarily equal to n using <strong><code>pretty</code></strong>, but likely to be legible; arguments to <strong><code>pretty</code></strong> may be passed through <strong><code>...</code></strong>.</p>
+<p>The “quantile” style provides quantile breaks; arguments to <strong><code>quantile</code></strong> may be passed through <strong><code>...</code></strong>.</p>
+<p>The “kmeans” style uses <strong><code>kmeans</code></strong> to generate the breaks; it may be anchored using <strong><code>set.seed</code></strong>; the <strong><code>pars</code></strong> attribute returns the kmeans object generated; if <strong><code>kmeans</code></strong> fails, a jittered input vector containing <strong><code>rtimes</code></strong> replications of <strong><code>var</code></strong> is tried --- with few unique values in <strong><code>var</code></strong>, this can prove necessary; arguments to <strong><code>kmeans</code></strong> may be passed through</p>
+<p>The “jenks” style has been ported from Jenks’ code, and has been checked for consistency with ArcView, ArcGIS, and MapInfo (with some remaining differences); added here thanks to Hisaji Ono (originally reported as Basic, now seen as Fortran (as described in a talk last seen at http://www.irlogi.ie/wp-content/uploads/2016/11/NUIM_ChoroHarmful.pdf, slides 26-27)). Note that the sense of interval closure is reversed from the other styles, and in this implementation has to be right-closed - use cutlabels=TRUE in <strong><code>findColours</code></strong> on the object returned to show the closure clearly, and use <strong><code>findCols</code></strong> to extract the classes for each value. This style will subsample by default for more than 3000 observations.</p>
+</div>
+</div>
 </section>
 <section id="plotting-choropleth-map-with-custom-break" class="level4">
 <h4 class="anchored" data-anchor-id="plotting-choropleth-map-with-custom-break">21.4.3.2 Plotting choropleth map with custom break</h4>
@@ -1360,7 +1401,7 @@ Note
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
- 0.0000  0.5240  0.5691  0.6495  0.6451 19.0000      92 </code></pre>
+ 0.1111  0.7147  0.7866  0.8585  0.8763 19.0000      92 </code></pre>
 </div>
 </div>
 <div class="cell">
@@ -1372,7 +1413,7 @@ Note
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>        0%        25%        50%        75%       100% 
- 0.0000000  0.5240379  0.5690842  0.6450497 19.0000000 </code></pre>
+ 0.1111111  0.7147312  0.7866515  0.8763293 19.0000000 </code></pre>
 </div>
 </div>
 <p>---- TBC on break points -</p>
@@ -1390,8 +1431,212 @@ Note
 <p><img src="Hands-on_Ex16_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>----------------------------------</p>
 </section>
+</section>
+<section id="section-1" class="level3">
+<h3 class="anchored" data-anchor-id="section-1"></h3>
+<p><strong>21.4.4 Colour Scheme</strong></p>
+<p><strong>tmap</strong> supports colour ramps either defined by the user or a set of predefined colour ramps from the <strong>RColorBrewer</strong> package.</p>
+<section id="using-colourbrewer-palette" class="level4">
+<h4 class="anchored" data-anchor-id="using-colourbrewer-palette">21.4.4.1 Using ColourBrewer palette</h4>
+<p>To change the colour, we assign the preferred colour to <em>palette</em> argument of <em>tm_fill()</em> as shown in the code chunk below.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020) <span class="sc">+</span></span>
+<span id="cb43-2"><a href="#cb43-2"></a>  <span class="fu">tm_fill</span>(<span class="st">'DEPENDENCY'</span>,</span>
+<span id="cb43-3"><a href="#cb43-3"></a>          <span class="at">n =</span><span class="dv">6</span>,</span>
+<span id="cb43-4"><a href="#cb43-4"></a>          <span class="at">style =</span> <span class="st">'quantile'</span>,</span>
+<span id="cb43-5"><a href="#cb43-5"></a>          <span class="at">palette =</span> <span class="st">'Blues'</span>) <span class="sc">+</span></span>
+<span id="cb43-6"><a href="#cb43-6"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex16_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Notice that the choropleth map is shaded in green.</p>
+<p>To reverse the colour shading, add a "-" prefix.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb44-2"><a href="#cb44-2"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
+<span id="cb44-3"><a href="#cb44-3"></a>          <span class="at">style =</span> <span class="st">"quantile"</span>,</span>
+<span id="cb44-4"><a href="#cb44-4"></a>          <span class="at">palette =</span> <span class="st">"-Greens"</span>) <span class="sc">+</span></span>
+<span id="cb44-5"><a href="#cb44-5"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex16_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The colour scheme has been reverse. The brighter green regions represents high dependency ratio.</p>
+</section>
+</section>
+<section id="map-layouts" class="level3">
+<h3 class="anchored" data-anchor-id="map-layouts"><strong>21.4.5 Map Layouts</strong></h3>
+<p>Map layout refers to the combination of all map elements into a cohensive map. Map elements include among others the objects to be mapped, the title, the scale bar, the compass, margins and aspects ratios. Colour settings and data classification methods covered in the previous section relate to the palette and break-points are used to affect how the map looks.</p>
+<section id="map-legend" class="level4">
+<h4 class="anchored" data-anchor-id="map-legend">21.4.5.1 Map Legend</h4>
+<p>In <strong>tmap</strong>, several <em>legend</em> options are provided to change the placement, format and appearance of the legend.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb45-2"><a href="#cb45-2"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>, </span>
+<span id="cb45-3"><a href="#cb45-3"></a>          <span class="at">style =</span> <span class="st">"jenks"</span>, </span>
+<span id="cb45-4"><a href="#cb45-4"></a>          <span class="at">palette =</span> <span class="st">"Blues"</span>, </span>
+<span id="cb45-5"><a href="#cb45-5"></a>          <span class="at">legend.hist =</span> <span class="cn">TRUE</span>,  <span class="co"># &lt;&lt;&lt;&lt; add hist (follow classification method)</span></span>
+<span id="cb45-6"><a href="#cb45-6"></a>          <span class="at">legend.is.portrait =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb45-7"><a href="#cb45-7"></a>          <span class="at">legend.hist.z =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
+<span id="cb45-8"><a href="#cb45-8"></a>  </span>
+<span id="cb45-9"><a href="#cb45-9"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Distribution of Dependency Ratio by planning subzone </span><span class="sc">\n</span><span class="st">(Jenks classification)"</span>,</span>
+<span id="cb45-10"><a href="#cb45-10"></a>            <span class="at">main.title.position =</span> <span class="st">"center"</span>,</span>
+<span id="cb45-11"><a href="#cb45-11"></a>            <span class="at">main.title.size =</span> <span class="dv">1</span>,</span>
+<span id="cb45-12"><a href="#cb45-12"></a>            <span class="at">legend.height =</span> <span class="fl">0.45</span>, </span>
+<span id="cb45-13"><a href="#cb45-13"></a>            <span class="at">legend.width =</span> <span class="fl">0.35</span>,</span>
+<span id="cb45-14"><a href="#cb45-14"></a>            <span class="at">legend.outside =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb45-15"><a href="#cb45-15"></a>            <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="st">"right"</span>, <span class="st">"bottom"</span>),</span>
+<span id="cb45-16"><a href="#cb45-16"></a>            <span class="at">frame =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb45-17"><a href="#cb45-17"></a>  </span>
+<span id="cb45-18"><a href="#cb45-18"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex16_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="map-style" class="level4">
+<h4 class="anchored" data-anchor-id="map-style">21.4.5.2 Map style</h4>
+<p><strong>tmap</strong> allows a wide variety of layout settings to be changed. They can be called by using <em>tmap_style()</em>.</p>
+<p>The code chunk below shows the <em>classic</em> style is used.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb46-2"><a href="#cb46-2"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>, </span>
+<span id="cb46-3"><a href="#cb46-3"></a>          <span class="at">style =</span> <span class="st">"quantile"</span>, </span>
+<span id="cb46-4"><a href="#cb46-4"></a>          <span class="at">palette =</span> <span class="st">"-Blues"</span>) <span class="sc">+</span></span>
+<span id="cb46-5"><a href="#cb46-5"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb46-6"><a href="#cb46-6"></a>  <span class="fu">tmap_style</span>(<span class="st">"classic"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex16_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>------------- CONTINUE_---------------</p>
+<p>To reset the default style, refer to the code chunk below.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a><span class="fu">tmap_style</span>(<span class="st">"white"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="drawing-small-multiple-choropleth-maps" class="level3">
+<h3 class="anchored" data-anchor-id="drawing-small-multiple-choropleth-maps"><strong>21.4.6 Drawing Small Multiple Choropleth Maps</strong></h3>
+<p>do not need to use facet all the time, can change the fill format like below</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb48-2"><a href="#cb48-2"></a>  <span class="fu">tm_fill</span>(<span class="fu">c</span>(<span class="st">"YOUNG"</span>, <span class="st">"AGED"</span>),</span>
+<span id="cb48-3"><a href="#cb48-3"></a>          <span class="at">style =</span> <span class="st">"equal"</span>, </span>
+<span id="cb48-4"><a href="#cb48-4"></a>          <span class="at">palette =</span> <span class="st">"Blues"</span>) <span class="sc">+</span></span>
+<span id="cb48-5"><a href="#cb48-5"></a>  <span class="fu">tm_layout</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="st">"right"</span>, <span class="st">"bottom"</span>)) <span class="sc">+</span></span>
+<span id="cb48-6"><a href="#cb48-6"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb48-7"><a href="#cb48-7"></a>  <span class="fu">tmap_style</span>(<span class="st">"white"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex16_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>----------- continue ——-</p>
+<section id="by-defining-a-group-by-variable-in-tm_facets" class="level4">
+<h4 class="anchored" data-anchor-id="by-defining-a-group-by-variable-in-tm_facets">21.4.6.2 By defining a group-by variable in <em>tm_facets()</em></h4>
+<p>In this example, multiple small choropleth maps are created by using <strong>tm_facets()</strong>.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020) <span class="sc">+</span></span>
+<span id="cb49-2"><a href="#cb49-2"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
+<span id="cb49-3"><a href="#cb49-3"></a>          <span class="at">style =</span> <span class="st">"quantile"</span>,</span>
+<span id="cb49-4"><a href="#cb49-4"></a>          <span class="at">palette =</span> <span class="st">"Blues"</span>,</span>
+<span id="cb49-5"><a href="#cb49-5"></a>          <span class="at">thres.poly =</span> <span class="dv">0</span>) <span class="sc">+</span> </span>
+<span id="cb49-6"><a href="#cb49-6"></a>  <span class="fu">tm_facets</span>(<span class="at">by=</span><span class="st">"REGION_N"</span>, </span>
+<span id="cb49-7"><a href="#cb49-7"></a>            <span class="at">free.coords=</span><span class="cn">TRUE</span>,  <span class="co">#&lt;&lt;&lt;&lt;&lt;&lt;&lt; only plot the region PLUS enlarge it</span></span>
+<span id="cb49-8"><a href="#cb49-8"></a>            <span class="at">drop.units=</span><span class="cn">FALSE</span>) <span class="sc">+</span>  <span class="co">#&lt;&lt; if TRUE, will not plot the empty color part of fill</span></span>
+<span id="cb49-9"><a href="#cb49-9"></a>  <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb49-10"><a href="#cb49-10"></a>            <span class="at">title.position =</span> <span class="fu">c</span>(<span class="st">"center"</span>, <span class="st">"center"</span>), </span>
+<span id="cb49-11"><a href="#cb49-11"></a>            <span class="at">title.size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb49-12"><a href="#cb49-12"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex16_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="by-creating-multiple-stand-alone-maps-with-tmap_arrange" class="level4">
+<h4 class="anchored" data-anchor-id="by-creating-multiple-stand-alone-maps-with-tmap_arrange">21.4.6.3 By creating multiple stand-alone maps with <em>tmap_arrange()</em></h4>
+<p>In this example, multiple small choropleth maps are created by creating multiple STAND_ALONE maps with <strong>tmap_arrange()</strong>.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a><span class="co">#standalone 1</span></span>
+<span id="cb50-2"><a href="#cb50-2"></a>youngmap <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span> </span>
+<span id="cb50-3"><a href="#cb50-3"></a>  <span class="fu">tm_polygons</span>(<span class="st">"YOUNG"</span>, </span>
+<span id="cb50-4"><a href="#cb50-4"></a>              <span class="at">style =</span> <span class="st">"quantile"</span>, </span>
+<span id="cb50-5"><a href="#cb50-5"></a>              <span class="at">palette =</span> <span class="st">"Blues"</span>)</span>
+<span id="cb50-6"><a href="#cb50-6"></a></span>
+<span id="cb50-7"><a href="#cb50-7"></a><span class="co">#standalone 2</span></span>
+<span id="cb50-8"><a href="#cb50-8"></a>agedmap <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span> </span>
+<span id="cb50-9"><a href="#cb50-9"></a>  <span class="fu">tm_polygons</span>(<span class="st">"AGED"</span>, </span>
+<span id="cb50-10"><a href="#cb50-10"></a>              <span class="at">style =</span> <span class="st">"quantile"</span>, </span>
+<span id="cb50-11"><a href="#cb50-11"></a>              <span class="at">palette =</span> <span class="st">"Blues"</span>)</span>
+<span id="cb50-12"><a href="#cb50-12"></a></span>
+<span id="cb50-13"><a href="#cb50-13"></a><span class="fu">tmap_arrange</span>(youngmap, agedmap, <span class="at">asp=</span><span class="dv">1</span>, <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex16_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="mappping-spatial-object-meeting-a-selection-criterion" class="level3">
+<h3 class="anchored" data-anchor-id="mappping-spatial-object-meeting-a-selection-criterion"><strong>21.4.7 Mappping Spatial Object Meeting a Selection Criterion</strong></h3>
+<p>Instead of creating small multiple choropleth map, you can also use <strong>selection funtion</strong> to map spatial objects meeting the selection criterion.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020[mpsz_pop2020<span class="sc">$</span>REGION_N<span class="sc">==</span><span class="st">"CENTRAL REGION"</span>, ])<span class="sc">+</span></span>
+<span id="cb51-2"><a href="#cb51-2"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>, </span>
+<span id="cb51-3"><a href="#cb51-3"></a>          <span class="at">style =</span> <span class="st">"quantile"</span>, </span>
+<span id="cb51-4"><a href="#cb51-4"></a>          <span class="at">palette =</span> <span class="st">"Blues"</span>, </span>
+<span id="cb51-5"><a href="#cb51-5"></a>          <span class="at">legend.hist =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb51-6"><a href="#cb51-6"></a>          <span class="at">legend.is.portrait =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb51-7"><a href="#cb51-7"></a>          <span class="at">legend.hist.z =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
+<span id="cb51-8"><a href="#cb51-8"></a>  <span class="fu">tm_layout</span>(<span class="at">legend.outside =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb51-9"><a href="#cb51-9"></a>            <span class="at">legend.height =</span> <span class="fl">0.45</span>, </span>
+<span id="cb51-10"><a href="#cb51-10"></a>            <span class="at">legend.width =</span> <span class="fl">5.0</span>,</span>
+<span id="cb51-11"><a href="#cb51-11"></a>            <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="st">"right"</span>, <span class="st">"bottom"</span>),</span>
+<span id="cb51-12"><a href="#cb51-12"></a>            <span class="at">frame =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb51-13"><a href="#cb51-13"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex16_files/figure-html/unnamed-chunk-42-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="co">#quantile(list, percentile break)</span></span>
+<span id="cb52-2"><a href="#cb52-2"></a><span class="fu">quantile</span>(<span class="fu">c</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>),<span class="fu">c</span>(<span class="fl">0.2</span>,<span class="fl">0.4</span>,<span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>20% 40% 50% 
+  2   4   5 </code></pre>
+</div>
+</div>
 </section>
 </section>
 <section id="reference" class="level2">
@@ -1420,7 +1665,7 @@ Note
 <ul>
 <li><p><a href="https://dplyr.tidyverse.org/">dplyr</a></p></li>
 <li><p><a href="https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html">Tidy data</a></p></li>
-<li><p><a href="https://cran.r-project.org/web/packages/tidyr/tidyr.pdf">tidyr: Easily Tidy Data with 'spread()' and 'gather()' Functions</a></p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/tidyr/tidyr.pdf">tidyr: Easily Tidy Data with ‘spread()’ and ‘gather()’ Functions</a></p></li>
 </ul>
 
 

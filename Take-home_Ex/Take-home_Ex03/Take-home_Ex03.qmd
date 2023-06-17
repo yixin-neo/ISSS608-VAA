@@ -1683,3 +1683,14 @@ Truelove, J. (2021, September 19). Hive plots with the ggraph and hiver packages
 Nowak, B. J. (2021, September 30). R Network Analysis with Tidygraph. Netlify. [https://bjnnowak.netlify.app/2021/09/30/r-network-analysis-with-tidygraph/](#0)
 
 Ross, Z. (2019, April 2). Easy multi-panel plots in R using facet_wrap and facet_grid from ggplot2. ZevRoss Spatial Analysis Blog. [http://zevross.com/blog/2019/04/02/easy-multi-panel-plots-in-r-using-facet_wrap-and-facet_grid-from-ggplot2/]{.underline}
+
+```{r}
+#| echo: false
+#| eval: false
+file_path1 <- "C:/Users/NYX/Desktop/TH_3/seafood_nodes_vis.csv"
+file_path2 <- "C:/Users/NYX/Desktop/TH_3/seafood_edges_vis.csv"
+file_path3 <- "C:/Users/NYX/Desktop/TH_3/edges_combined.csv"
+write_csv(seafood_nodes_vis, file=file_path1)
+write_csv(seafood_edges_vis, file=file_path2)
+write_csv(edges_combined, file=file_path3)
+```
